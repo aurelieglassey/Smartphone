@@ -111,6 +111,7 @@ public class MainFrameSmartphone extends JFrame{
 				       File file = chooser.getSelectedFile();
 				       System.out.println("Nom fichier : " +file.getName());
 				       
+				       //salut fabien
 				      
 				       
 				    
