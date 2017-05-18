@@ -30,6 +30,7 @@ import javax.sound.sampled.DataLine;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 
@@ -43,18 +44,37 @@ public class Smartphone extends JFrame implements ActionListener
 	private JButton btnHome = new JButton ("Home");
 	private JButton btnReturn = new JButton ("Return");
 
+	private File rootFolder;
+	private File imageFolder;
+	private File soundFolder;
 	
 	private ArrayList<AbstractApp> apps = new ArrayList<>();
 	private ArrayList<JButton> appButtons = new ArrayList<>();
 	
 	public Smartphone ()
 	{
+		try
+		{
+			this.rootFolder = (new File(".\\smartphone_root\\")).getCanonicalFile();
+			this.imageFolder = new File( this.rootFolder, "images");
+			this.soundFolder = new File( this.rootFolder, "sounds");
+
+			if ( ! this.imageFolder.exists() ) this.imageFolder.mkdir();
+			if ( ! this.soundFolder.exists() ) this.soundFolder.mkdir();
+		}
+		catch (Exception e)
+		{
+			JOptionPane.showMessageDialog(
+				null,
+				"Impossible d'accéder au dossier racine du smartphone. Le programme va s'arrêter."
+			);
+		}
+		
 		//Panel du centre avec dimensions
 		panelcenter.setPreferredSize(new Dimension(480, 800));
 		panelcenter.setLayout( new CardLayout() );
 		
 		homescreen.setName( "Homescreen" );
-		homescreen.setBackground( Color.BLACK );
 		
 		this.prepareApps();
 		
@@ -90,8 +110,9 @@ public class Smartphone extends JFrame implements ActionListener
 
 	private void prepareApps()
 	{
-		addApp( new MusicApp() );
-		addApp( new ContactApp() );
+		addApp( new MusicApp( this ) );
+		addApp( new ContactApp( this ) );
+		addApp( new GalleryApp( this ) );
 	}
 	
 	private void addApp( AbstractApp app )
@@ -131,5 +152,20 @@ public class Smartphone extends JFrame implements ActionListener
 				}
 			}
 		}
+	}
+
+	public File getRootFolder()
+	{
+		return this.rootFolder;
+	}
+
+	public File getImageFolder()
+	{
+		return this.imageFolder;
+	}
+	
+	public File getSoundFolder()
+	{
+		return this.soundFolder;
 	}
 }

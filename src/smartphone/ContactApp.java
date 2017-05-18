@@ -2,8 +2,8 @@ package smartphone;
 
 public class ContactApp extends AbstractApp
 {
-	public ContactApp()
+	public ContactApp( Smartphone phone )
 	{
-		super("Contact app");
+		super( phone, "Contact app" );
 	}
 }

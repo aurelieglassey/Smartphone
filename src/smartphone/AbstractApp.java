@@ -1,23 +1,26 @@
 package smartphone;
 
 import java.awt.Color;
+import java.io.Serializable;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-public abstract class AbstractApp
+public abstract class AbstractApp implements Serializable
 {
+	protected Smartphone phone;
 	protected String name;
 	protected JPanel panel;
 	protected JButton button;
 	
-	public AbstractApp( String appName )
+	public AbstractApp( Smartphone phone, String appName )
 	{
+		this.phone = phone;
 		this.name = appName;
 		
 		this.panel = new JPanel();
 		this.panel.setName( this.name );
-		this.panel.setBackground( Color.BLUE );
+		//this.panel.setBackground( new Color(255,0,0,50) );
 		
 		this.button = new JButton( this.name );
 	}

@@ -12,9 +12,9 @@ public class MusicApp extends AbstractApp
 	private JFileChooser chooser = new JFileChooser();
 	private JButton open = new JButton("Ouvrir");
 	
-	public MusicApp()
+	public MusicApp( Smartphone phone )
 	{
-		super("Music app");
+		super( phone, "Music app" );
 		
 		open.addActionListener( new Listener() );
 		this.panel.add(open);
