@@ -3,6 +3,8 @@ package smartphone;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 
@@ -18,12 +20,15 @@ public class ContactApp extends AbstractApp
 	protected ArrayList<Contact> contactlist = new ArrayList<>();
 	protected JList<Contact> list = new JList(contactlist.toArray());
 	
-	JButton add = new JButton ("Add contact");
-	JButton modify = new JButton ("Modifiy contact");
-	JButton name = new JButton("Name");
-	JButton Firstname = new JButton("Firstname");
-	JButton email = new JButton("email");
-	JButton PhoneNumber = new JButton("Phone number");
+	JButton bAddContact = new JButton ("Add contact");
+	JButton bModifyContact = new JButton ("Modifiy contact");
+	JButton bSaveContact = new JButton ("Save");
+	JButton bCancel = new JButton ("Cancel"); //pas oublier 
+	
+	JButton bname = new JButton("Name");
+	JButton bFirstname = new JButton("Firstname");
+	JButton bemail = new JButton("email");
+	JButton bPhoneNumber = new JButton("Phone number");
 		
 	JTextField textname = new JTextField();
 	JTextField textfirstname = new JTextField();
@@ -35,12 +40,33 @@ public class ContactApp extends AbstractApp
 	{
 		super("Contact app");
 				
-		this.panel.add();
+		bAddContact.addActionListener(new ListenerAdd());
+		this.panel.add(bAddContact);
 		this.panel.add(list);
+		
 		
 		
 	}
 	
+	class ListenerAdd implements ActionListener
+	{
+
+		public void actionPerformed(ActionEvent e)
+		{
+			if(e.getSource()==bAddContact)
+			{
+				ContactApp.this.panel.remove(ContactApp.this.panel);
+				
+				JPanel panelAddContact = new JPanel();
+				
+				System.out.println("d");
+				
+				
+			}
+			
+		}
+		
+	}
 	
 
 	
