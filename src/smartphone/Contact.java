@@ -1,20 +1,58 @@
 package smartphone;
 
-public class Contact
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+
+
+public class Contact implements Serializable 
 {
 
 	//private Photo photocontact;
 	private String name;
 	private String firstname;
-	private String address;
+	private String email;
 	private String phone;
 	
-	Contact (String name, String firstname, String addrSess, String phone){
+	Contact (String name, String firstname, String email, String phone){
 		this.name = name; 
 		this.firstname=firstname;
-		this.address = address;
+		this.email = email;
 		this.phone = phone;
 	}
+	
+	
+
+	//on clique sur le bouton et appel de ces méthodes
+	//création du contact
+	//addContact
+	//serialisation
+	
+	
+	public static void deserializeContact()
+	{
+		try 
+		{
+			FileInputStream fichier = new FileInputStream("C:\\Temp\\tests.ser");
+			ObjectInputStream input = new ObjectInputStream(fichier);
+			Contact c = (Contact) input.readObject();
+		}
+		
+		catch (java.io.IOException e) {
+			e.printStackTrace();
+		}
+		catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -35,13 +73,13 @@ public class Contact
 	{
 		this.firstname = firstname;
 	}
-	public String getAddress()
+	public String getemail()
 	{
-		return address;
+		return email;
 	}
-	public void setAddress(String address)
+	public void setemail(String address)
 	{
-		this.address = address;
+		this.email = email;
 	}
 	public String getPhone()
 	{
