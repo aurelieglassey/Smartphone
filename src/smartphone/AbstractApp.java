@@ -17,7 +17,7 @@ public abstract class AbstractApp
 		
 		this.panel = new JPanel();
 		this.panel.setName( this.name );
-		this.panel.setBackground( Color.WHITE );
+		this.panel.setBackground( Color.PINK );
 		
 		this.button = new JButton( this.name );
 	}
