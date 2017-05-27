@@ -25,7 +25,7 @@ public class ContactApp extends AbstractApp
 	protected ArrayList<Contact> contactlist = new ArrayList<>();
 	protected JList<Contact> list = new JList(contactlist.toArray());
 	
-	Contact contact;
+	Contact newcontact;
 	
 	JButton bAddContact = new JButton ("Add contact");
 	JButton bModifyContact = new JButton ("Modifiy contact");
@@ -67,7 +67,7 @@ public class ContactApp extends AbstractApp
 		
 
 		
-		//Ajouter les Boutons save et cancel
+		//Ajouter les Boutons save et cancel + actionlistener
 		
 		
 		
@@ -146,7 +146,7 @@ public class ContactApp extends AbstractApp
 			
 			if (e.getSource()==bSaveContact)
 			{
-				addContact(contact);
+				addContact(newcontact);
 				
 				
 			}
@@ -164,8 +164,10 @@ public class ContactApp extends AbstractApp
 	
 	public void addContact(Contact c) //ajout du contact dans l'arraylist et sauvegarde de l'arraylist ou le contact à été ajouté
 	{
-		this.contactlist.add(c);
+		newcontact = new Contact (textname.getText(), textfirstname.getText(), textemail.getText(), textphonenumber.getText() );
+		this.contactlist.add(newcontact);
 		serializeContact(contactlist);
+		//ajout d'un label contact enregistré 
 	}
 	
 	/*private void modifyContact(Contact c)
@@ -186,19 +188,15 @@ public class ContactApp extends AbstractApp
 	*/
 	
 	
-	public static void serializeContact(ArrayList<Contact> contactlist){ 
+	public static void serializeContact(ArrayList<Contact> contactlist) throws IOException{ 
 		
-		try 
-		{
-			FileOutputStream fichier = new FileOutputStream ("C:\\Users\\Aurélie\\Desktop");
-			ObjectOutputStream output = new ObjectOutputStream(fichier);
-			output.writeObject(contactlist);
-			output.close();
+		
+		FileOutputStream fichier = new FileOutputStream ("C:\\Users\\Aurélie\\Desktop");
+		ObjectOutputStream output = new ObjectOutputStream(fichier);
+		output.writeObject(contactlist);
+		output.close();
 			
-		}
-		catch (java.io.IOException e) {
-			e.printStackTrace();
-		}
+		
 	}
 	
 }
