@@ -7,5 +7,10 @@ public class Main
 		Smartphone frame = new Smartphone();
 		
 		frame.setVisible( true );
+		
+		Contact c = new Contact("Aure", "Glassey", "@", "079");
+		ContactApp.addContact(c);
+		
+		
 	}
 }

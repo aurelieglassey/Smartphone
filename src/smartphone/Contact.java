@@ -23,10 +23,7 @@ public class Contact implements Serializable
 	
 	
 
-	//on clique sur le bouton et appel de ces méthodes
-	//création du contact
-	//addContact
-	//serialisation
+	
 	
 	
 	public static void deserializeContact()

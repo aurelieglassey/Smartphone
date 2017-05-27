@@ -25,6 +25,8 @@ public class ContactApp extends AbstractApp
 	protected ArrayList<Contact> contactlist = new ArrayList<>();
 	protected JList<Contact> list = new JList(contactlist.toArray());
 	
+	Contact contact;
+	
 	JButton bAddContact = new JButton ("Add contact");
 	JButton bModifyContact = new JButton ("Modifiy contact");
 	JButton bSaveContact = new JButton ("Save");
@@ -62,6 +64,13 @@ public class ContactApp extends AbstractApp
 		tmp.add( list, BorderLayout.CENTER );
 		
 		this.panel.add( tmp, BorderLayout.NORTH );
+		
+
+		
+		//Ajouter les Boutons save et cancel
+		
+		
+		
 	}
 	
 	class ListenerAdd implements ActionListener
@@ -126,6 +135,25 @@ public class ContactApp extends AbstractApp
 				panelAddContactCenter.add(lPhoneNumber);
 				panelAddContactCenter.add(textphonenumber);*/
 				
+				
+				
+				
+				
+				
+				
+				
+			}
+			
+			if (e.getSource()==bSaveContact)
+			{
+				addContact(contact);
+				
+				
+			}
+			
+			if (e.getSource()==bCancel)
+			{
+				//retour au panel précédent avec AddContact
 			}
 			
 		}
@@ -134,9 +162,10 @@ public class ContactApp extends AbstractApp
 	
 
 	
-	private void addContact(Contact c)
+	public void addContact(Contact c) //ajout du contact dans l'arraylist et sauvegarde de l'arraylist ou le contact à été ajouté
 	{
 		this.contactlist.add(c);
+		serializeContact(contactlist);
 	}
 	
 	/*private void modifyContact(Contact c)
