@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-
+//regarder comment récupérer le clique sur la bonne colonne de l'arraylist getselectedrow ou je sais plus
 public class ContactApp extends AbstractApp
 {
 	private Contact[] listContact;
@@ -37,6 +37,7 @@ public class ContactApp extends AbstractApp
 	JButton bAddContact = new JButton ("Add contact");
 	JButton bSaveContact = new JButton ("Save");
 	JButton bCancel = new JButton ("Cancel"); 
+	JButton bRemove = new JButton ("Remove contact");
 	
 	JPanel panelnorth = new JPanel();
 	JPanel panellist = new JPanel();
@@ -82,10 +83,10 @@ public class ContactApp extends AbstractApp
 		this.panel.setLayout(new BorderLayout());
 		
 		this.panel.add(temporaire);
-		temporaire.addActionListener(new ListenerAdd());
+		temporaire.addActionListener(new ListenerContact());
 		
 		Contact c = new Contact("Glassey ", "Aurélie ", "@@@", "079");
-		Contact c1 = new Contact("Terrani ", "Fabien ", "@@@", "070");
+		Contact c1 = new Contact("Ducrey ", "Cécile ", "@@@", "070");
 		ContactRepertory.contactlist.add(c);
 		ContactRepertory.contactlist.add(c1);
 		
@@ -112,7 +113,10 @@ public class ContactApp extends AbstractApp
 			add(panellist, BorderLayout.CENTER);
 			add(panelnorth, BorderLayout.NORTH);
 			
-			bAddContact.addActionListener(new ListenerAdd());
+			bAddContact.addActionListener(new ListenerContact());
+			bSaveContact.addActionListener(new ListenerContact());
+			bCancel.addActionListener(new ListenerContact());
+			bRemove.addActionListener(new ListenerContact());
 			
 					
 			pack();
@@ -121,7 +125,7 @@ public class ContactApp extends AbstractApp
 	}
 
 	
-	class ListenerAdd implements ActionListener //création d'une fenêtre temporaire après contactApp
+	class ListenerContact implements ActionListener //création d'une fenêtre temporaire après contactApp
 	{
 
 		public void actionPerformed(ActionEvent e)
@@ -144,30 +148,26 @@ public class ContactApp extends AbstractApp
 				panelfab.setBackground(Color.black);
 				add(panelfab);
 				
-				
-				JPanel panelnorth = new JPanel(); //pour les boutons cancel et save
+				//pour les boutons cancel et save
+				JPanel panelnorth = new JPanel(); 
 				panelnorth.setPreferredSize(new Dimension(480, 50));
 				panelnorth.setLayout(new GridLayout(1, 2));
 				panelnorth.add(bCancel);
 				panelnorth.add(bSaveContact);
 				
-				
-				
-				
-				JPanel panelBox = new JPanel (); //Pour les données à remplir d'un contact
+				//Pour les données à remplir d'un contact
+				JPanel panelBox = new JPanel (); 
 				panelBox.setPreferredSize(new Dimension(480, 400));
 				
-				
 				panelBox.setBackground(Color.red);
-				
 				panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.Y_AXIS));
 
 				panelBox.add(lname);
 				panelBox.add(textname);
-			
+				
 				panelBox.add(lFirstname);
 				panelBox.add(textfirstname);
-				
+
 				panelBox.add(lemail);
 				panelBox.add(textemail);
 				
@@ -177,77 +177,83 @@ public class ContactApp extends AbstractApp
 				panelfab.add(panelnorth, BorderLayout.NORTH);
 				panelfab.add(panelBox, BorderLayout.CENTER);		
 				
-				
-				
 				//pack();
 				
-				
-				
 			}
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			if (e.getSource()==bSaveContact)
-			{
-				
-				ContactRepertory.addContact(textname.getText(), textfirstname.getText(), textemail.getText(), textphonenumber.getText());
-					
-				
-				
-				
-			}
 			
 			if (e.getSource()==bCancel)
 			{
 				//retour au panel précédent avec AddContact
 			}
 			
+			
+			if (e.getSource()==bSaveContact)
+			{
+				//est ce que fabien veut une "erreur" si deux fois le même prénom entré ?
+				ContactRepertory.addContact(textname.getText(), textfirstname.getText(), textemail.getText(), textphonenumber.getText());
+				//JLabel l = new JLabel("Contact enregistré");//ajout d'un label contact enregistré 
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			if (e.getSource()==list.getSelectedValue())
 			{
 				modifyContact(newcontact);
 			}
+			
+			if (e.getSource()==bRemove)
+			{
+				//remove(newcontact);
+			}
+			
 			
 		}
 		
 	}
 	
 
+	public static void removeContact(Contact c)
+	{
+		contactlist.remove(c);
+	}
 	
 	
 	private void modifyContact(Contact c)
@@ -258,15 +264,12 @@ public class ContactApp extends AbstractApp
 		textemail.getText();
 		textphonenumber.getText();
 		
-		removeContact(c);
+		//removeContact(c);
 		//on appuie sur Save : sauvegarde 
 		
 	}
 
-	private void removeContact(Contact c)
-	{
-		//this.contactlist.remove(c);
-	}
+	
 	
 	
 	/*private void refreshlist(ArrayList<Contact> contactlist)

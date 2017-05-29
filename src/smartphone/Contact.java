@@ -23,37 +23,6 @@ public class Contact implements Serializable
 	}
 	
 	
-
-	
-	
-	
-	public static void deserializeContact()
-	{
-		try 
-		{
-			FileInputStream fichier = new FileInputStream("C:\\Users\\Aurélie\\Desktop\\Contacts.ser");
-			ObjectInputStream input = new ObjectInputStream(fichier);
-			Contact c = (Contact) input.readObject();
-		}
-		
-		catch (java.io.IOException e) {
-			e.printStackTrace();
-		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	//Getters and Setters
 	public String getName()
 	{
