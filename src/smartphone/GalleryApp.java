@@ -1,10 +1,12 @@
 package smartphone;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.LinearGradientPaint;
 import java.awt.image.BufferedImage;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -27,6 +30,7 @@ public class GalleryApp extends AbstractApp
 	private int thumbMargin;
 	private int thumbWidth;
 	private int thumbHeight;
+	private int scrollBarWidth;
 	
 	// Filtre permettant de sélectionner les noms de fichiers ayant une extension prise en charge par ImageIO
 	private static final FileNameExtensionFilter extFilter = new FileNameExtensionFilter(
@@ -55,9 +59,12 @@ public class GalleryApp extends AbstractApp
 		this.imageButtons = new ArrayList<ImageButton>();
 		
 		thumbMargin = 20;
-		thumbWidth = (int) Math.round( (this.phone.getScreenSize().getWidth() - 4 * thumbMargin) / 3 );
+		scrollBarWidth = 20;
+		
+		thumbWidth = (int) Math.round( (this.phone.getScreenSize().getWidth()-scrollBarWidth - 4 * thumbMargin) / 3 );
 		thumbHeight = thumbWidth;
 		
+		System.out.println( "Computed thumb size: " + thumbWidth + " x " + thumbHeight );
 		
 		
 		File[] foundImageFiles = this.folder.listFiles( GalleryApp.imageFilter );
@@ -80,19 +87,54 @@ public class GalleryApp extends AbstractApp
 			}
 		}
 		
-		this.panel.setLayout( new FlowLayout( FlowLayout.CENTER, this.thumbMargin, this.thumbMargin ) );
 		
-		for (ImageButton imgBtn : this.imageButtons )
+		
+		this.panel.setLayout( new FlowLayout( FlowLayout.CENTER, this.thumbMargin, this.thumbMargin ));
+		
+		for (ImageButton imgBtn : this.imageButtons)
 		{
 			this.panel.add( imgBtn );
 		}
+		
+		setPreferredGallerySize();
+		
+		//this.panel.setLayout( new GridLayout(this.imageButtons.size() / 3 + 1, 3, this.thumbMargin, this.thumbMargin ) );
+		
+		
+		
+		/*
+		this.panel.setLayout( new BoxLayout( this.panel, BoxLayout.PAGE_AXIS ) );
+		ImageButton imgBtn;
+		JPanel row;
+		
+		
+		for (int i = 0; i < this.imageButtons.size(); i+=3) //ImageButton imgBtn : this.imageButtons )
+		{
+			row = new JPanel();
+			row.setBackground( new Color( (float) Math.random(), (float) Math.random(), (float) Math.random(), 1.0f) );
+			row.setLayout( new FlowLayout(FlowLayout.CENTER, this.thumbMargin, this.thumbMargin) );
+			
+			for (int k = i; k < (i+3) && k < this.imageButtons.size(); k++)
+				row.add( this.imageButtons.get(k) );
+			
+			this.panel.add(row);
+		}*/
+	}
+	
+	private void setPreferredGallerySize()
+	{
+		int thumbsPerRow = (int) this.phone.getScreenSize().getWidth() / this.thumbWidth;
+		
+		this.panel.setPreferredSize( new Dimension(
+			(int) this.phone.getScreenSize().getWidth()-scrollBarWidth,
+			(this.imageButtons.size() / thumbsPerRow + 1) * (this.thumbHeight+2 + this.thumbMargin) + this.thumbMargin
+		));
 	}
 	
 	private class GalleryPanel extends JPanel
 	{
 		public GalleryPanel()
 		{
-			this.setPreferredSize( new Dimension(300, 4000) );
 		}
 		
 		public Dimension getPreferredSize()
@@ -121,7 +163,11 @@ public class GalleryApp extends AbstractApp
 		
 		public void paintComponent( Graphics g )
 		{
-			System.out.println( ">> " + this.getSize() );
+			//System.out.println( ">> " + this.getSize() );
+			
+			GalleryApp.this.setPreferredGallerySize();
+			
+			
 			if (g instanceof Graphics2D)
 			{
 				Graphics2D g2d = (Graphics2D) g;
