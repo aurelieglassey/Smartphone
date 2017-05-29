@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class Contact implements Serializable 
 {
 
+	
 	//private Photo photocontact;
 	private String name;
 	private String firstname;
@@ -30,7 +31,7 @@ public class Contact implements Serializable
 	{
 		try 
 		{
-			FileInputStream fichier = new FileInputStream("C:\\Temp\\tests.ser");
+			FileInputStream fichier = new FileInputStream("C:\\Users\\Aurélie\\Desktop\\Contacts.ser");
 			ObjectInputStream input = new ObjectInputStream(fichier);
 			Contact c = (Contact) input.readObject();
 		}
@@ -97,6 +98,10 @@ public class Contact implements Serializable
 	private String mail;
 	
 	
+	public String toString ()
+	{
+		return this.name + this.firstname +this.email + this.phone;
+	}
 	
 	
 	
