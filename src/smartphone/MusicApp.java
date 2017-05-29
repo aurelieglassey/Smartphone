@@ -6,6 +6,7 @@ import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 
 public class MusicApp extends AbstractApp
 {
@@ -37,5 +38,10 @@ public class MusicApp extends AbstractApp
 				 System.out.println("Nom fichier : " +file.getName());
 			 }
 		}
+	}
+
+	public JPanel getAppPanel()
+	{
+		return new JPanel();
 	}
 }

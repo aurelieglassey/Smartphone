@@ -40,6 +40,8 @@ public class Smartphone extends JFrame implements ActionListener
 	private JPanel panelsouth = new JPanel();
 	private JPanel homescreen = new JPanel();
 	
+	private Dimension screenSize = new Dimension( 480, 800 );
+	
 	private JButton btnApps = new JButton ("Apps");
 	private JButton btnHome = new JButton ("Home");
 	private JButton btnReturn = new JButton ("Return");
@@ -59,6 +61,10 @@ public class Smartphone extends JFrame implements ActionListener
 			this.imageFolder = new File( this.rootFolder, "images");
 			this.soundFolder = new File( this.rootFolder, "sounds");
 
+			System.out.println( this.rootFolder.exists() );
+			System.out.println( this.imageFolder.exists() );
+			System.out.println( this.soundFolder.exists() );
+			
 			if ( ! this.imageFolder.exists() ) this.imageFolder.mkdir();
 			if ( ! this.soundFolder.exists() ) this.soundFolder.mkdir();
 		}
@@ -71,7 +77,7 @@ public class Smartphone extends JFrame implements ActionListener
 		}
 		
 		//Panel du centre avec dimensions
-		panelcenter.setPreferredSize(new Dimension(480, 800));
+		panelcenter.setPreferredSize( this.screenSize );
 		panelcenter.setLayout( new CardLayout() );
 		
 		homescreen.setName( "Homescreen" );
@@ -82,7 +88,7 @@ public class Smartphone extends JFrame implements ActionListener
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Smartphone");
-		this.setResizable(false); //désactiver les boutons de redimensionnement de la fenêtre
+		//this.setResizable(false); //désactiver les boutons de redimensionnement de la fenêtre
 		
 		
 		
@@ -117,18 +123,21 @@ public class Smartphone extends JFrame implements ActionListener
 	
 	private void addApp( AbstractApp app )
 	{
+		// Ajout de l'application à la liste des apps installées
 		this.apps.add( app );
-		panelcenter.add( app.getPanel(), app.getName() );
 		
+		// Ajout du composant chargé du rendu de l'application aux cartes (CardLayout)
+		panelcenter.add( app.getScrollPane(), app.getName() );
+		
+		// Récupération du bouton de l'application
 		JButton appButton = app.getButton();
-		
 		appButton.addActionListener( this );
 		this.appButtons.add( appButton );
 	}
 
 	private void showAppButtons()
 	{
-		this.homescreen.setLayout( new FlowLayout() );
+		this.homescreen.setLayout( new FlowLayout(FlowLayout.LEFT, 70, 70) );
 		
 		for ( JButton appButton : this.appButtons )
 			this.homescreen.add( appButton );
@@ -167,5 +176,15 @@ public class Smartphone extends JFrame implements ActionListener
 	public File getSoundFolder()
 	{
 		return this.soundFolder;
+	}
+	
+	public Dimension getScreenSize()
+	{
+		return this.screenSize;
+	}
+	
+	protected JPanel getNewPanel()
+	{
+		return null;
 	}
 }
