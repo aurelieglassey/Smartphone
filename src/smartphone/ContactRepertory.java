@@ -24,7 +24,8 @@ public class ContactRepertory
 	static Contact newcontact;
 	
 	
-	
+	/*************************** Méthodes de ContactRepertory ***************************/
+
 	public static void addContact(String name, String fristname, String mail, String phone) 
 	//ajout du contact dans l'arraylist et sauvegarde de l'arraylist ou le contact à été ajouté
 	{
@@ -33,13 +34,31 @@ public class ContactRepertory
 		serializeContact(); //sérialization de l'arraylist entière avec le nouveau contact
 	}
 	
+	
+	public static void removeContact(Contact contactSelected)
+	{
+		contactlist.remove(contactSelected);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*************************** Sérialization et déserialization de l'arraylist ***************************/
+
 	public static void serializeContact() //en paramètre ArrayList<Contact> contactlist
 	{
 		addContact("Essai", "dans", "méthode", "de/serializeContact");
 		addContact("Essai", "dans", "méthode", "de/serializeContact");
 		try
 		{
-			System.out.println("je suis dans la méthode sérializeConact - j'écris le contact");
+			System.out.println("je suis dans la méthode sérializeConact - j'écris la liste");
 			FileOutputStream fos = new FileOutputStream("Contactlist.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(contactlist);
@@ -56,7 +75,7 @@ public class ContactRepertory
 	{
 		try
 		{
-			System.out.println("je suis dans la méthode deserializeConact - je lis le contact");
+			System.out.println("je suis dans la méthode deserializeConact - je lis la liste");
 			FileInputStream fis = new FileInputStream("Contactlist.ser");
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			ArrayList <Contact> contaclist= (ArrayList <Contact>)ois.readObject();
@@ -71,22 +90,7 @@ public class ContactRepertory
 		{
 			e.printStackTrace();
 		}
-		
 	} 
 	
-	
-	
-	
-	
-	
 }
-
-
-
-	
-	
-
-
-
-
 

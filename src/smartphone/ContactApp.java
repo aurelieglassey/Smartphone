@@ -23,6 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
@@ -38,6 +39,7 @@ public class ContactApp extends AbstractApp
 	JButton bSaveContact = new JButton ("Save");
 	JButton bCancel = new JButton ("Cancel"); 
 	JButton bRemove = new JButton ("Remove contact");
+	JButton bModify = new JButton ("Modify contact");
 	
 	JPanel panelnorth = new JPanel();
 	JPanel panellist = new JPanel();
@@ -47,13 +49,14 @@ public class ContactApp extends AbstractApp
 	JLabel lFirstname = new JLabel("Firstname");
 	JLabel lemail = new JLabel("email");
 	JLabel lPhoneNumber = new JLabel("Phone number");
-		
+	JLabel ltitreaAdd = new JLabel ("Add a Contact");
+	
 	JTextField textname = new JTextField();
 	JTextField textfirstname = new JTextField();
 	JTextField textemail = new JTextField();
 	JTextField textphonenumber = new JTextField();
 	
-	
+	Contact contactSelected ;
 	
 	
 	
@@ -75,7 +78,8 @@ public class ContactApp extends AbstractApp
 	
 	GridLayout gridlayout;
 	
-	
+	/*************************** Constructeur ContactApp ***************************/
+
 	public ContactApp()
 	{
 		super("Contact app");
@@ -85,6 +89,7 @@ public class ContactApp extends AbstractApp
 		this.panel.add(temporaire);
 		temporaire.addActionListener(new ListenerContact());
 		
+		//Ajour temporaire de contact dans l'arraylist
 		Contact c = new Contact("Glassey ", "Aurélie ", "@@@", "079");
 		Contact c1 = new Contact("Ducrey ", "Cécile ", "@@@", "070");
 		ContactRepertory.contactlist.add(c);
@@ -98,6 +103,9 @@ public class ContactApp extends AbstractApp
 		
 	}
 	
+	
+	/*************************** Fenêtre de l'application temporaire Contact avec la liste et le bouton d'ajout ***************************/
+
 	public class FrameTempContact extends JFrame
 	{
 		public FrameTempContact ()
@@ -105,6 +113,8 @@ public class ContactApp extends AbstractApp
 			setVisible(true);
 			setPreferredSize(new Dimension(480, 800));
 			setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			
+			ContactRepertory.deserializeContact();
 			
 			panellist.setBackground(Color.GREEN);
 			panellist.add(list);
@@ -125,6 +135,12 @@ public class ContactApp extends AbstractApp
 	}
 
 	
+	
+	
+	
+	/*************************** Listener des boutons ***************************/
+	
+	
 	class ListenerContact implements ActionListener //création d'une fenêtre temporaire après contactApp
 	{
 
@@ -141,44 +157,68 @@ public class ContactApp extends AbstractApp
 			
 			if(e.getSource()==bAddContact)
 			{
+				
 				//appel d'un nouveau panel avec la méthode à fab
 				//panelfab
 				JPanel panelfab = new JPanel();
 				panelfab.setLayout(new BorderLayout());
-				panelfab.setBackground(Color.black);
-				add(panelfab);
+				//add(panelfab);
 				
-				//pour les boutons cancel et save
-				JPanel panelnorth = new JPanel(); 
-				panelnorth.setPreferredSize(new Dimension(480, 50));
-				panelnorth.setLayout(new GridLayout(1, 2));
-				panelnorth.add(bCancel);
-				panelnorth.add(bSaveContact);
+				JPanel panelTitre = new JPanel();
+				panelTitre.add(ltitreaAdd);
 				
-				//Pour les données à remplir d'un contact
-				JPanel panelBox = new JPanel (); 
+				JPanel panelBox = new JPanel (); //Pour les données à remplir d'un contact
 				panelBox.setPreferredSize(new Dimension(480, 400));
 				
-				panelBox.setBackground(Color.red);
+				
 				panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.Y_AXIS));
 
 				panelBox.add(lname);
 				panelBox.add(textname);
-				
+			
 				panelBox.add(lFirstname);
 				panelBox.add(textfirstname);
-
+				
 				panelBox.add(lemail);
 				panelBox.add(textemail);
 				
 				panelBox.add(lPhoneNumber);
 				panelBox.add(textphonenumber);
 				
-				panelfab.add(panelnorth, BorderLayout.NORTH);
-				panelfab.add(panelBox, BorderLayout.CENTER);		
+				
+				JPanel panelSouthButton = new JPanel(); //pour les boutons cancel et save
+				panelSouthButton.setPreferredSize(new Dimension(480, 50));
+				panelSouthButton.setLayout(new GridLayout(1, 2));
+				panelSouthButton.add(bCancel);
+				panelSouthButton.add(bSaveContact);
+				
+				
+				panelfab.add(panelTitre, BorderLayout.NORTH);
+				panelfab.add(panelBox, BorderLayout.CENTER);
+				panelfab.add(panelSouthButton, BorderLayout.SOUTH);				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				if (e.getSource()==bModify){
+					
+					
+				}
+				
+				
+				
 				
 				//pack();
 				
+				
+								
 			}
 			
 			
@@ -190,110 +230,103 @@ public class ContactApp extends AbstractApp
 			
 			if (e.getSource()==bSaveContact)
 			{
-				//est ce que fabien veut une "erreur" si deux fois le même prénom entré ?
+				
 				ContactRepertory.addContact(textname.getText(), textfirstname.getText(), textemail.getText(), textphonenumber.getText());
-				//JLabel l = new JLabel("Contact enregistré");//ajout d'un label contact enregistré 
+				
 			}
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
 			
 			
 			
 			if (e.getSource()==list.getSelectedValue())
 			{
-				modifyContact(newcontact);
+				contactSelected = (Contact) list.getSelectedValue();
+				ModifyContact m = new ModifyContact (contactSelected);
+				
+				
 			}
 			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
 			if (e.getSource()==bRemove)
 			{
-				//remove(newcontact);
+				ContactRepertory.removeContact(contactSelected);
+
 			}
 			
 			
-		}
-		
-	}
-	
-
-	public static void removeContact(Contact c)
-	{
-		contactlist.remove(c);
-	}
-	
-	
-	private void modifyContact(Contact c)
-	{
-		//this.contactlist.deserialize
-		textname.getText();
-		textfirstname.getText();
-		textemail.getText();
-		textphonenumber.getText();
-		
-		//removeContact(c);
-		//on appuie sur Save : sauvegarde 
-		
-	}
-
-	
-	
-	
-	/*private void refreshlist(ArrayList<Contact> contactlist)
-	{
-		//trier par ordre alphabétique
-		Collections.sort(this.contactlist, new Comparator<Contact>());
-		
-	}
-	
-	*/
-	
-	
-	
-	
-	
-	public static void serializeContact(ArrayList<Contact> contactlist) throws IOException{ 
-		
-		
-		FileOutputStream fichier = new FileOutputStream ("C:\\Users\\Aurélie\\Desktop\\Contacts.ser");
-		ObjectOutputStream output = new ObjectOutputStream(fichier);
-		output.writeObject(contactlist);
-		output.close();
+			
+			
+			
+			
+			
+			if (e.getSource()==bModifyContact)
+			{
+				ContactRepertory.removeContact(contactSelected);
+				ContactRepertory.addContact(textname.getText(), textfirstname.getText(), textemail.getText(), textphonenumber.getText());
+				
+			}
+			
 			
 		
+			
+			
+			
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*************************** Mon petit bordel à ranger ***************************/
+
+	
+	
+	
+	
+	
+	
+}
 }
