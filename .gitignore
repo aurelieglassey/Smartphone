@@ -50,3 +50,7 @@ Temporary Items
 /MainFrameSmartphone$AppMusic.class
 /MainFrameSmartphone$MusicList.class
 /MainFrameSmartphone.class
+
+# Répertoire bin d'Eclipse et tous les fichiers .class
+bin/
+**/*.class
