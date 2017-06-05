@@ -266,22 +266,6 @@ public class ContactApp extends AbstractApp
 			
 			
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
 
 			if (e.getSource()==bRemove)
 			{
@@ -308,23 +292,6 @@ public class ContactApp extends AbstractApp
 			
 			
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/*************************** Mon petit bordel à ranger ***************************/
-
-	
-	
-	
 	
 	
 	

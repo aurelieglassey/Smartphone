@@ -18,10 +18,10 @@ import javax.swing.JLabel;
 public class ContactRepertory
 {
 
-	static ArrayList<Contact> contactlist = new ArrayList<Contact>();
+	protected static ArrayList<Contact> contactlist = new ArrayList<Contact>();
 	
 		
-	static Contact newcontact;
+	protected static Contact newcontact;
 	
 	
 	/*************************** Méthodes de ContactRepertory ***************************/
@@ -52,14 +52,14 @@ public class ContactRepertory
 	
 	/*************************** Sérialization et déserialization de l'arraylist ***************************/
 
-	public static void serializeContact() //en paramètre ArrayList<Contact> contactlist
+	public static void serializeContact(File f) //en paramètre ArrayList<Contact> contactlist
 	{
 		addContact("Essai", "dans", "méthode", "de/serializeContact");
 		addContact("Essai", "dans", "méthode", "de/serializeContact");
 		try
 		{
 			System.out.println("je suis dans la méthode sérializeConact - j'écris la liste");
-			FileOutputStream fos = new FileOutputStream("Contactlist.ser");
+			FileOutputStream fos = new FileOutputStream(f);
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(contactlist);
 			oos.close(); 
