@@ -37,8 +37,6 @@ import javax.swing.event.ListSelectionListener;
 //ajouter dans ma fenêtre mes fichiers de son
 //double cliquer et démarrer la lecture de d'un son
 
-
-
 public class MusicApp extends AbstractApp
 {
 	private JFileChooser chooser = new JFileChooser();
@@ -55,10 +53,11 @@ public class MusicApp extends AbstractApp
 	private JList <File>jlist ;
 	
 	
-	public MusicApp()
+	public MusicApp( Smartphone phone )
 	{
-		super("Music app");
-		this.panel.setLayout(new BorderLayout());
+		super( phone, "Music app", "music" );
+		
+		this.mainPanel.setLayout(new BorderLayout());
 	
 		File dossierMusic = new File ("C:\\Users\\Aurélie\\Desktop\\MusicSmartphone");
 		
@@ -72,9 +71,9 @@ public class MusicApp extends AbstractApp
 		jlist= new JList(musiclist.toArray());
 		
 		
-		this.panel.add(panelButton, BorderLayout.SOUTH);
-		this.panel.add(jlist);
-		this.panel.add(ltitre, BorderLayout.NORTH);
+		this.mainPanel.add(panelButton, BorderLayout.SOUTH);
+		this.mainPanel.add(jlist);
+		this.mainPanel.add(ltitre, BorderLayout.NORTH);
 		
 		panelButton.setLayout(new FlowLayout());	
 		panelButton.add(bsearchMusic);
@@ -84,7 +83,6 @@ public class MusicApp extends AbstractApp
 		bsearchMusic.addActionListener( new Listener() );
 		jlist.getSelectionModel();
 		jlist.addListSelectionListener( new JlistListener());
-		
 	}
 	
 
@@ -103,32 +101,6 @@ public class MusicApp extends AbstractApp
 		
 		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	aa
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	public class Listener implements ActionListener
 	{
@@ -154,30 +126,13 @@ public class MusicApp extends AbstractApp
 			}	 
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+	public JPanel generateMainPanel()
+	{
+		return new JPanel();
+	}
 	
 	//soundfolder
-	
 	public void lectureFile (){
 		
 		File f = new File ("C:\\Users\\Aurélie\\Desktop\\MusicSmartphone");
@@ -219,8 +174,4 @@ public class MusicApp extends AbstractApp
 			e.printStackTrace();
 		} 
 	}
-	
-	
-	
-	
 }

@@ -80,9 +80,9 @@ public class ContactApp extends AbstractApp
 	
 	/*************************** Constructeur ContactApp ***************************/
 
-	public ContactApp()
+	public ContactApp( Smartphone phone )
 	{
-		super("Contact app");
+		super( phone, "Contact app", "contact" );
 		
 		this.panel.setLayout(new BorderLayout());
 		
@@ -98,11 +98,12 @@ public class ContactApp extends AbstractApp
 		list = new JList(ContactRepertory.contactlist.toArray());
 		
 		
-		
-		
-		
 	}
 	
+	public JPanel generateMainPanel()
+	{
+		return new JPanel();
+	}
 	
 	/*************************** Fenêtre de l'application temporaire Contact avec la liste et le bouton d'ajout ***************************/
 
