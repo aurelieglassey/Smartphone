@@ -84,6 +84,7 @@ public class ContactApp extends AbstractApp
 	{
 		super( phone, "Contact app", "contact" );
 		
+		// TODO réparer ceci !
 		this.panel.setLayout(new BorderLayout());
 		
 		this.panel.add(temporaire);
