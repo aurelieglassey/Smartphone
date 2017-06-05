@@ -22,6 +22,13 @@ public class DummyApp extends AbstractApp implements ActionListener
 		super( phone, "Dummy app", "dummy" );
 	}
 	
+	public void returnPressed()
+	{
+		JPanel removed = popPanel();
+		
+		panels.remove( removed );
+	}
+	
 	private JPanel makePanel()
 	{
 		JPanel p = new JPanel();
@@ -60,12 +67,6 @@ public class DummyApp extends AbstractApp implements ActionListener
 	public void pushPanel( JPanel p )
 	{
 		panels.add( p );
-		super.pushPanel( p );
-	}
-	
-	public void popPanel()
-	{
-		JPanel p = panels.remove( panels.size()-1 );
 		super.pushPanel( p );
 	}
 

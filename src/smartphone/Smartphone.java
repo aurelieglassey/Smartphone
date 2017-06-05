@@ -251,15 +251,17 @@ public class Smartphone extends JFrame implements ActionListener
 		showCard( c );
 	}
 	
-	public void popAppPanel( AbstractApp app )
+	public JPanel popAppPanel( AbstractApp app )
 	{
 		if ( app == null )
 		{
 			System.err.println( "popAppPanel appelé sans application !" );
-			return;
+			return null;
 		}
 		
 		ArrayList<Card> panels = appPanels.get(app);
+		
+		if ( panels.size() <= 1 ) return null;
 		
 		// Récupération du dernier panel ajouté dans la liste des panels de l'app
 		Card removed = panels.remove( panels.size()-1 );
@@ -272,10 +274,7 @@ public class Smartphone extends JFrame implements ActionListener
 			showCard( panels.get( panels.size()-1 ) );
 		}
 		
-		else
-		{
-			showHome();
-		}
+		return removed.panel;
 	}
 	
 
@@ -364,10 +363,15 @@ public class Smartphone extends JFrame implements ActionListener
 		
 		else if ( e.getSource() == this.btnReturn )
 		{
-			if ( appPanels.get( currentCard.app ).size() > 1 )
-				popAppPanel( currentCard.app );
-			else
-				showHome();
+			if ( currentCard.type == Card.CARD_TYPE_APP && currentCard.app != null )
+			{
+				if ( appPanels.get( currentCard.app ).size() > 1 )
+				{
+					currentCard.app.returnPressed();
+				}
+				else
+					showHome();
+			}
 		}
 		
 		else

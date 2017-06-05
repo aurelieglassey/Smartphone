@@ -44,6 +44,12 @@ public abstract class AbstractApp implements Serializable
 	 */
 	public abstract JPanel generateMainPanel();
 	
+	public void returnPressed()
+	{
+		// Cette méthode ne fait rien pour faciliter la création d'applications
+		// n'utilisant qu'un seul JPanel
+	}
+	
 	public JPanel getMainPanel()
 	{
 		return this.mainPanel;
@@ -70,11 +76,11 @@ public abstract class AbstractApp implements Serializable
 		pushPanel( this.getMainPanel() );
 	}
 	
-	public void stopApp()
+	/*public void stopApp()
 	{
 		started = false;
 		popPanel();
-	}
+	}*/
 	
 	// Ajoute et affiche un nouveau panel
 	public void pushPanel( JPanel panel )
@@ -83,8 +89,8 @@ public abstract class AbstractApp implements Serializable
 	}
 	
 	// Masque et retire le panel existant
-	public void popPanel()
+	public JPanel popPanel()
 	{
-		this.phone.popAppPanel( this );
+		return this.phone.popAppPanel( this );
 	}
 }
