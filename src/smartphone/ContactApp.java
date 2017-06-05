@@ -6,10 +6,10 @@ public class ContactApp extends AbstractApp
 {
 	public ContactApp( Smartphone phone )
 	{
-		super( phone, "Contact app" );
+		super( phone, "Contact app", "contact" );
 	}
 	
-	public JPanel getAppPanel()
+	public JPanel generateMainPanel()
 	{
 		return new JPanel();
 	}

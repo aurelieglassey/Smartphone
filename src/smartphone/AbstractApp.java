@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -14,30 +15,24 @@ public abstract class AbstractApp implements Serializable
 {
 	protected Smartphone phone;
 	protected String name;
-	protected JPanel panel;
-	protected JScrollPane scrollPane;
+	protected String label;
+	protected JPanel mainPanel;
 	protected JButton button;
+	protected boolean started = false;
 	
-	public AbstractApp( Smartphone phone, String appName )
+	public AbstractApp( Smartphone phone, String appName, String appLabel )
 	{
 		this.phone = phone;
 		this.name = appName;
+		this.label = appLabel;
 		
-		this.panel = getAppPanel();
-		this.panel.setName( this.name );
-		//this.panel.setBackground( new Color(255,0,0,50) );
-		
+		this.mainPanel = generateMainPanel();
 		
 		
-		this.scrollPane = new JScrollPane( this.panel );
 		
-		
-		//this.scrollPane.setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS );
-		//this.scrollPane.setVerticalScrollBarPolicy( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS );
-		//this.scrollPane.setPreferredSize( new Dimension(200, 200) );
+		//this.mainScrollPane = new JScrollPane( this.mainPanel );
+		//this.mainScrollPane.getVerticalScrollBar().setPreferredSize( new Dimension(this.phone.getScrollBarWidth(), 0) );
 		//this.scrollPane.setBorder( null );
-		
-		//this.panel.setPreferredSize( this.phone.getScreenSize() );
 		
 		this.button = new JButton( this.name );
 	}
@@ -47,25 +42,49 @@ public abstract class AbstractApp implements Serializable
 	 * pour lui permettre d'avoir un contrôle sur le processus de painting.
 	 * @return Un objet de classe JPanel ou d'une classe étendant JPanel
 	 */
-	public abstract JPanel getAppPanel();
-
-	public JScrollPane getScrollPane()
-	{
-		return this.scrollPane;
-	}
+	public abstract JPanel generateMainPanel();
 	
-	public JPanel getPanel()
+	public JPanel getMainPanel()
 	{
-		return this.panel;
+		return this.mainPanel;
 	}
 	
 	public JButton getButton()
 	{
 		return this.button;
 	}
-	
+
 	public String getName()
 	{
 		return this.name;
+	}
+	
+	public String getLabel()
+	{
+		return this.label;
+	}
+
+	public void startApp()
+	{
+		started = true;
+		pushPanel( this.getMainPanel() );
+	}
+	
+	public void stopApp()
+	{
+		started = false;
+		popPanel();
+	}
+	
+	// Ajoute et affiche un nouveau panel
+	public void pushPanel( JPanel panel )
+	{
+		this.phone.pushAppPanel( this, panel );
+	}
+	
+	// Masque et retire le panel existant
+	public void popPanel()
+	{
+		this.phone.popAppPanel( this );
 	}
 }

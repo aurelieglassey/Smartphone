@@ -15,10 +15,10 @@ public class MusicApp extends AbstractApp
 	
 	public MusicApp( Smartphone phone )
 	{
-		super( phone, "Music app" );
+		super( phone, "Music app", "music" );
 		
 		open.addActionListener( new Listener() );
-		this.panel.add(open);
+		this.mainPanel.add(open);
 	}
 
 	class Listener implements ActionListener
@@ -40,7 +40,7 @@ public class MusicApp extends AbstractApp
 		}
 	}
 
-	public JPanel getAppPanel()
+	public JPanel generateMainPanel()
 	{
 		return new JPanel();
 	}

@@ -51,15 +51,15 @@ public class GalleryApp extends AbstractApp
 	
 	public GalleryApp( Smartphone phone )
 	{
-		super( phone, "Gallery app" );
+		super( phone, "Gallery app", "gallery" );
 		
-		this.panel.setBackground( new Color(40, 40, 40, 255) );
+		this.mainPanel.setBackground( new Color(40, 40, 40, 255) );
 		
 		this.folder = this.phone.getImageFolder();
 		this.imageButtons = new ArrayList<ImageButton>();
 		
 		thumbMargin = 20;
-		scrollBarWidth = 20;
+		scrollBarWidth = this.phone.getScrollBarWidth();
 		
 		thumbWidth = (int) Math.round( (this.phone.getScreenSize().getWidth()-scrollBarWidth - 4 * thumbMargin) / 3 );
 		thumbHeight = thumbWidth;
@@ -89,11 +89,11 @@ public class GalleryApp extends AbstractApp
 		
 		
 		
-		this.panel.setLayout( new FlowLayout( FlowLayout.CENTER, this.thumbMargin, this.thumbMargin ));
+		this.mainPanel.setLayout( new FlowLayout( FlowLayout.CENTER, this.thumbMargin, this.thumbMargin ));
 		
 		for (ImageButton imgBtn : this.imageButtons)
 		{
-			this.panel.add( imgBtn );
+			this.mainPanel.add( imgBtn );
 		}
 		
 		setPreferredGallerySize();
@@ -125,7 +125,7 @@ public class GalleryApp extends AbstractApp
 	{
 		int thumbsPerRow = (int) this.phone.getScreenSize().getWidth() / this.thumbWidth;
 		
-		this.panel.setPreferredSize( new Dimension(
+		this.mainPanel.setPreferredSize( new Dimension(
 			(int) this.phone.getScreenSize().getWidth()-scrollBarWidth,
 			(this.imageButtons.size() / thumbsPerRow + 1) * (this.thumbHeight+2 + this.thumbMargin) + this.thumbMargin
 		));
@@ -186,7 +186,7 @@ public class GalleryApp extends AbstractApp
 		}
 	}
 	
-	public JPanel getAppPanel()
+	public JPanel generateMainPanel()
 	{
 		return new GalleryPanel();
 	}
