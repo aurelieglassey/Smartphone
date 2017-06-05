@@ -6,11 +6,13 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -88,6 +90,10 @@ public class ContactApp extends AbstractApp
 		
 		this.panel.add(temporaire);
 		temporaire.addActionListener(new ListenerContact());
+		
+		
+		
+		
 		
 		//Ajour temporaire de contact dans l'arraylist
 		Contact c = new Contact("Glassey ", "Aurélie ", "@@@", "079");
@@ -239,6 +245,7 @@ public class ContactApp extends AbstractApp
 			
 			if (e.getSource()==list.getSelectedValue())
 			{
+				System.out.println("a");
 				contactSelected = (Contact) list.getSelectedValue();
 				ModifyContact m = new ModifyContact (contactSelected);
 				

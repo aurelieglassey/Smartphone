@@ -61,8 +61,6 @@ public class MusicApp extends AbstractApp
 		this.panel.setLayout(new BorderLayout());
 	
 		File dossierMusic = new File ("C:\\Users\\Aurélie\\Desktop\\MusicSmartphone");
-		
-		//insertion des fichiers dans un tableau
 		File[] listofMusic = dossierMusic.listFiles();
 
 		
@@ -82,7 +80,7 @@ public class MusicApp extends AbstractApp
 		panelButton.add(bremovePlaylist);
 		
 		bsearchMusic.addActionListener( new Listener() );
-		jlist.getSelectionModel();
+		
 		jlist.addListSelectionListener( new JlistListener());
 		
 	}
@@ -93,43 +91,23 @@ public class MusicApp extends AbstractApp
 
 		public void valueChanged(ListSelectionEvent e)
 		{
-			if(!jlist.getValueIsAdjusting()){
-				System.out.println("Click sur la Jlist");
-				
+			if(e.getSource()==jlist)
+			{
+				if(!jlist.getValueIsAdjusting()){
+					System.out.println("Click sur la Jlist");
+					jlist.getSelectedValue();
+					
+					System.out.println(jlist.getSelectedValue());
+					
+				}
+			
 			}
-			
-			
 		}
 		
 		
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	aa
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 	public class Listener implements ActionListener
 	{
 		public void actionPerformed(ActionEvent e) {
@@ -157,30 +135,9 @@ public class MusicApp extends AbstractApp
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//soundfolder
-	
-	public void lectureFile (){
+	public void lectureFile (File f){
 		
-		File f = new File ("C:\\Users\\Aurélie\\Desktop\\MusicSmartphone");
+		//File f = new File ("C:\\Users\\Aurélie\\Desktop\\MusicSmartphone");
 		
 		try {
 			//lecture d'un son .waw
