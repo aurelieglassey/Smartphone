@@ -27,11 +27,11 @@ public class ContactRepertory
 	/*************************** Méthodes de ContactRepertory ***************************/
 
 	public static void addContact(String name, String fristname, String mail, String phone) 
-	//ajout du contact dans l'arraylist et sauvegarde de l'arraylist ou le contact à été ajouté
+	//ajout du contact dans l'arraylist et sauvegarde de l'arraylist ou le contact a été ajouté
 	{
 		newcontact = new Contact (name, fristname, mail, phone);
 		contactlist.add(newcontact);
-		serializeContact(); //sérialization de l'arraylist entière avec le nouveau contact
+		//serializeContact(); //sérialization de l'arraylist entière avec le nouveau contact
 	}
 	
 	
@@ -93,4 +93,3 @@ public class ContactRepertory
 	} 
 	
 }
-
