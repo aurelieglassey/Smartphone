@@ -23,8 +23,10 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -37,6 +39,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.event.ListSelectionEvent;
 
 
 public class Smartphone extends JFrame implements ActionListener
@@ -46,6 +49,9 @@ public class Smartphone extends JFrame implements ActionListener
 	 */
 	private Card homeCard;
 	
+	/**
+	 * Nom de la carte affichée
+	 */
 	private Card currentCard;
 	
 	/**
@@ -58,6 +64,9 @@ public class Smartphone extends JFrame implements ActionListener
 	 */
 	private HashMap< AbstractApp, ArrayList<Card> > appPanels = new HashMap<>();
 	
+	/**
+	 * Liste de toutes les cartes affichables
+	 */
 	private ArrayList<Card> cards = new ArrayList<>();
 	
 	/**
@@ -94,8 +103,6 @@ public class Smartphone extends JFrame implements ActionListener
 	
 	public Smartphone ()
 	{
-		homeCard = new Card( Card.CARD_TYPE_HOME, "homescreen", 0, new JPanel() );
-		
 		try
 		{
 			this.rootFolder = (new File(".\\smartphone_root\\")).getCanonicalFile();
@@ -122,7 +129,22 @@ public class Smartphone extends JFrame implements ActionListener
 		panelcenter.setLayout( cLayout );
 		
 		// Ajout des applications au téléphone
-		this.prepareApps();
+		this.registerApps();
+		
+		
+		Set<AbstractApp> apps = appPanels.keySet();
+		ArrayList<JButton> appButtons = new ArrayList<>();
+		JButton[] btnArray = new JButton[0];
+		
+		for (AbstractApp app : apps)
+			appButtons.add( app.getButton() );
+				
+		homeCard = new Card(
+			Card.CARD_TYPE_HOME,
+			"homescreen",
+			0,
+			new HomePanel( this, appButtons.toArray( btnArray ) )
+		);
 		
 		// Affichage des boutons des apps
 		this.showAppButtons();
@@ -295,50 +317,19 @@ public class Smartphone extends JFrame implements ActionListener
 		return this.scrollBarWidth;
 	}
 	
-	private void prepareApps()
+	private void registerApps()
 	{
-		addApp( new MusicApp( this ) );
-		addApp( new ContactApp( this ) );
-		addApp( new GalleryApp( this ) );
-		addApp( new DummyApp( this ) );
-	}
-
-	/*private static String generateCardName( String cardType, String name )
-	{
-		return generateCardName( cardType, name, -1 );
+		registerApp( new MusicApp( this ) );
+		//registerApp( new ContactApp( this ) );
+		registerApp( new GalleryApp( this ) );
+		registerApp( new DummyApp( this ) );
 	}
 	
-	private static String generateCardName( String cardType, String name, int index )
+	private void registerApp( AbstractApp app )
 	{
-		String newName = cardType + "_" + name;
-		
-		if (index >= 0) newName += "_" + index;
-		
-		return newName;
-	}*/
-	
-	private void addApp( AbstractApp app )
-	{
-		// Ajout de l'application à la liste des apps installées
-		//this.apps.add( app );
-		
+		// Création d'une pile de cartes que l'application va pouvoir utiliser
 		ArrayList<Card> panels = new ArrayList<Card>();
-
 		this.appPanels.put(app, panels);
-		
-		
-		//JPanel mainPanel = app.getMainPanel();
-		
-		
-		// Ajout du composant chargé du rendu de l'application aux cartes (CardLayout)
-		//addCard(
-		//	app.getMainPanel(),
-		//	generateCardName( CARD_TYPE_APP, app.getName(), 0 )
-		//);
-		
-		//panels.add( mainPanel );
-		
-		
 		
 		// Récupération du bouton de l'application
 		JButton appButton = app.getButton();

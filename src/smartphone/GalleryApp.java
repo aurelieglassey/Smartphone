@@ -64,9 +64,6 @@ public class GalleryApp extends AbstractApp
 		thumbWidth = (int) Math.round( (this.phone.getScreenSize().getWidth()-scrollBarWidth - 4 * thumbMargin) / 3 );
 		thumbHeight = thumbWidth;
 		
-		System.out.println( "Computed thumb size: " + thumbWidth + " x " + thumbHeight );
-		
-		
 		File[] foundImageFiles = this.folder.listFiles( GalleryApp.imageFilter );
 		
 		for ( File galleryFile : foundImageFiles )
