@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 public class Contact implements Serializable 
 {
-
+	private static final long serialVersionUID = 1L;
 	
 	//private Photo photocontact;
 	private String name;
@@ -15,7 +15,7 @@ public class Contact implements Serializable
 	private String email;
 	private String phone;
 	
-	Contact (String name, String firstname, String email, String phone){
+	public Contact (String name, String firstname, String email, String phone){
 		this.name = name; 
 		this.firstname=firstname;
 		this.email = email;
@@ -69,7 +69,7 @@ public class Contact implements Serializable
 	
 	public String toString ()
 	{
-		return this.name + this.firstname +this.email + this.phone;
+		return this.name + " " + this.firstname + " " +this.email + " " + this.phone;
 	}
 	
 	

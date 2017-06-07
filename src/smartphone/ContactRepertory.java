@@ -19,78 +19,29 @@ public class ContactRepertory
 {
 
 	protected static ArrayList<Contact> contactlist = new ArrayList<Contact>();
-	
-		
-	protected static Contact newcontact;
+	private static Contact newcontact;
 	
 	
 	/*************************** Méthodes de ContactRepertory ***************************/
 
+	//Méthode qui ajoute un contact
 	public static void addContact(String name, String fristname, String mail, String phone) 
-	//ajout du contact dans l'arraylist et sauvegarde de l'arraylist ou le contact à été ajouté
 	{
 		newcontact = new Contact (name, fristname, mail, phone);
 		contactlist.add(newcontact);
-		serializeContact(); //sérialization de l'arraylist entière avec le nouveau contact
+		System.out.println(newcontact);
+		Utils.serializeObjects(new File (".\\Contactlist.ser"), contactlist);
 	}
 	
 	
 	public static void removeContact(Contact contactSelected)
 	{
 		contactlist.remove(contactSelected);
+		Utils.serializeObjects(new File (".\\Contactlist.ser"), contactlist);
+		
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/*************************** Sérialization et déserialization de l'arraylist ***************************/
-
-	public static void serializeContact(File f) //en paramètre ArrayList<Contact> contactlist
-	{
-		addContact("Essai", "dans", "méthode", "de/serializeContact");
-		addContact("Essai", "dans", "méthode", "de/serializeContact");
-		try
-		{
-			System.out.println("je suis dans la méthode sérializeConact - j'écris la liste");
-			FileOutputStream fos = new FileOutputStream(f);
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(contactlist);
-			oos.close(); 
-		} 
-		
-		catch (IOException e) //si fichier inaccessible, on lève l'exception
-		{
-			e.printStackTrace();
-		}
-	} 
-	
-	public static void deserializeContact() //en paramètre ArrayList<Contact> contactlist
-	{
-		try
-		{
-			System.out.println("je suis dans la méthode deserializeConact - je lis la liste");
-			FileInputStream fis = new FileInputStream("Contactlist.ser");
-			ObjectInputStream ois = new ObjectInputStream(fis);
-			ArrayList <Contact> contaclist= (ArrayList <Contact>)ois.readObject();
-			System.out.println(contaclist);
-		} 
-		
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (ClassNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-	} 
 	
 }
 
