@@ -37,7 +37,9 @@ import javax.swing.event.ListSelectionListener;
 //commentaires
 //refresh ne marche pas
 //méthode de sérialization
-
+//les 3 boutons apps, home, return ne marchent pas
+//email ne marche pas
+//commenter le code avec /** + enter
 
 public class ContactApp extends AbstractApp
 {
@@ -183,6 +185,7 @@ public class ContactApp extends AbstractApp
 				System.out.println("Ajout contact");
 				panelAddContact = generatepanel( textname, textfirstname, textemail, textphonenumber, true, bCancel, bSaveContact, ltitreaAdd );
 				pushPanel(panelAddContact);
+				refreshlist();
 			}
 
 			if (e.getSource()==bCancel)
@@ -190,6 +193,7 @@ public class ContactApp extends AbstractApp
 				System.out.println("cancel");
 				panelAddContact = null;
 				popPanel();
+				
 			}
 
 			if (e.getSource()==bSaveContact)
@@ -198,6 +202,7 @@ public class ContactApp extends AbstractApp
 				ContactRepertory.addContact(textname.getText(), textfirstname.getText(), textemail.getText(), textphonenumber.getText());
 				panelAddContact = null;
 				popPanel();
+				refreshlist();
 			}
 			
 			if (e.getSource()==bRemove)
@@ -205,6 +210,8 @@ public class ContactApp extends AbstractApp
 				ContactRepertory.removeContact(jlist.getSelectedValue());
 				panelModifyContact = null;
 				popPanel();
+				
+				refreshlist();
 			}
 			
 			if (e.getSource()==bModify)
@@ -214,6 +221,8 @@ public class ContactApp extends AbstractApp
 				ContactRepertory.addContact(textname.getText(), textfirstname.getText(), textemail.getText(), textphonenumber.getText());
 				panelModifyContact = null;
 				popPanel();
+				refreshlist();
+				
 			}
 		}	
 	}
@@ -227,28 +236,30 @@ public class ContactApp extends AbstractApp
 				if(!jlist.getValueIsAdjusting()){
 					jlist.getSelectedValue();
 					contactSelected = (Contact) jlist.getSelectedValue();
-					//Contact c = new Contact(contactSelected.getName(), contactSelected.getFirstname(), contactSelected.getMail(), contactSelected.getPhone());
 					
-					System.out.println("Contact selectionné :" +contactSelected);
-					
-					textname.setText(contactSelected.getName());
-					textfirstname.setText(contactSelected.getFirstname());
-					textemail.setText(contactSelected.getMail());
-					textphonenumber.setText(contactSelected.getPhone());
-					
-					panelModifyContact = generatepanel( textname, textfirstname, textemail, textphonenumber, false, bRemove, bModify, ltitreModif );
-					pushPanel(panelModifyContact);
+					if ( contactSelected != null )
+					{
+						System.out.println("Contact selectionné :" +contactSelected);
+						
+						textname.setText(contactSelected.getName());
+						textfirstname.setText(contactSelected.getFirstname());
+						textemail.setText(contactSelected.getMail());
+						textphonenumber.setText(contactSelected.getPhone());
+						
+						panelModifyContact = generatepanel(textname, textfirstname, textemail, textphonenumber, false, bRemove, bModify, ltitreModif );
+						pushPanel(panelModifyContact);
+					}
 				}
 			}
 		}
 	}
 	
-	public void refreshPanel(JPanel p)
+	private void refreshlist()
 	{
-		p.revalidate();
-		p.repaint();
+		Contact[] tmp = new Contact[0];
+		tmp = ContactRepertory.contactlist.toArray(tmp);
+		jlist.setListData( tmp );
 	}
-	
 }
 
 	
