@@ -6,9 +6,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -23,9 +27,12 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -38,6 +45,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.border.Border;
 
 
@@ -48,6 +56,9 @@ public class Smartphone extends JFrame implements ActionListener
 	 */
 	private Card homeCard;
 	
+	/**
+	 * Nom de la carte affichée
+	 */
 	private Card currentCard;
 	
 	/**
@@ -60,6 +71,9 @@ public class Smartphone extends JFrame implements ActionListener
 	 */
 	private HashMap< AbstractApp, ArrayList<Card> > appPanels = new HashMap<>();
 	
+	/**
+	 * Liste de toutes les cartes affichables
+	 */
 	private ArrayList<Card> cards = new ArrayList<>();
 	
 	/**
@@ -77,42 +91,73 @@ public class Smartphone extends JFrame implements ActionListener
 	 * Dimensions de l'écran du smartphone en pixels
 	 */
 	private Dimension screenSize = new Dimension( 480, 800 );
+	private Dimension appButtonSize = new Dimension( 100, 100 );
+	
+	private static final Color bgColor = new Color(30,30,30,255);
+	private static final Font smallFont = new Font( "Raleway", Font.PLAIN, 16 );
+	private static final Font mediumFont = new Font( "Raleway", Font.PLAIN, 24 );
+	private static final Font largeFont = new Font( "Raleway", Font.PLAIN, 32 );
 	
 	private JButton btnApps = new JButton (new ImageIcon("smartphone_root/sys/apps.png")); //Apps
 	private JButton btnHome = new JButton (new ImageIcon("smartphone_root/sys/home.PNG")); //Home
 	private JButton btnReturn = new JButton (new ImageIcon("smartphone_root/sys/return.PNG")); //Return
 	
 	private File rootFolder;
+	private File sysFolder;
+	private File appsFolder;
+	private File storageFolder;
 	private File imageFolder;
 	private File soundFolder;
+	private File contactFile;
 	
 	/**
 	 * Largeur des scrollbars verticales du smartphone en pixels
 	 */
-	private int scrollBarWidth = 20;
+	private int scrollBarWidth = 30;
 	
 	// TODO retirer ceci...
-	private ArrayList<JButton> appButtons = new ArrayList<>();
+	//private ArrayList<JButton> appButtons = new ArrayList<>();
 	
 	public Smartphone ()
 	{
-		homeCard = new Card( Card.CARD_TYPE_HOME, "homescreen", 0, new JPanel() );
-		
 		try
 		{
-			this.rootFolder = (new File(".\\smartphone_root\\")).getCanonicalFile();
-			this.imageFolder = new File( this.rootFolder, "images");
-			this.soundFolder = new File( this.rootFolder, "sounds");
-
-			System.out.println( this.rootFolder.exists() );
-			System.out.println( this.imageFolder.exists() );
-			System.out.println( this.soundFolder.exists() );
+			this.rootFolder = (new File(".", "smartphone_root")).getCanonicalFile();
+			this.sysFolder = new File( this.rootFolder, "sys" );
+			this.appsFolder = new File( this.rootFolder, "apps" );
+			this.storageFolder = new File( this.rootFolder, "storage" );
+			this.imageFolder = new File( this.storageFolder, "images" );
+			this.soundFolder = new File( this.storageFolder, "sounds" );
 			
-			if ( ! this.imageFolder.exists() ) this.imageFolder.mkdir();
-			if ( ! this.soundFolder.exists() ) this.soundFolder.mkdir();
+			this.contactFile = new File( this.storageFolder, "contactlist.ser" );
+
+			File[] folders = {
+				this.rootFolder,
+				this.storageFolder,
+				this.imageFolder,
+				this.soundFolder
+			};
+			
+			File[] files = {
+					this.contactFile
+				};
+			
+			// Création des répertoires nécessaires au smartphone s'ils n'existent pas
+			for (File folder : folders)
+			{
+				if ( !folder.exists() ) folder.mkdirs();
+			}
+			
+			// Création des fichiers nécessaires au smartphone s'ils n'existent pas
+			for (File file : files)
+			{
+				if ( !file.exists() ) file.createNewFile();
+			}
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
+			
 			JOptionPane.showMessageDialog(
 				null,
 				"Impossible d'accéder au dossier racine du smartphone. Le programme va s'arrêter."
@@ -124,10 +169,23 @@ public class Smartphone extends JFrame implements ActionListener
 		panelcenter.setLayout( cLayout );
 		
 		// Ajout des applications au téléphone
-		this.prepareApps();
+		this.registerApps();
+		
+		
+		Set<AbstractApp> keys = appPanels.keySet();
+		AbstractApp[] apps = new AbstractApp[0];
+		
+		apps = keys.toArray( apps );
+				
+		homeCard = new Card(
+			Card.CARD_TYPE_HOME,
+			"homescreen",
+			0,
+			new HomePanel( this, apps )
+		);
 		
 		// Affichage des boutons des apps
-		this.showAppButtons();
+		//this.showAppButtons();
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Smartphone");
@@ -159,6 +217,7 @@ public class Smartphone extends JFrame implements ActionListener
 		this.add(panelsouth, BorderLayout.SOUTH);
 		
 		this.pack();
+		this.setLocationRelativeTo( null );
 	}
 	
 	private int getCardPosition( Card card )
@@ -300,65 +359,85 @@ public class Smartphone extends JFrame implements ActionListener
 	{
 		return this.scrollBarWidth;
 	}
-	
-	private void prepareApps()
-	{
-		addApp( new MusicApp( this ) );
-		addApp( new ContactApp( this ) );
-		addApp( new GalleryApp( this ) );
-		addApp( new DummyApp( this ) );
-	}
 
-	/*private static String generateCardName( String cardType, String name )
+	public static Color getBackgroundColor()
 	{
-		return generateCardName( cardType, name, -1 );
+		return bgColor;
 	}
 	
-	private static String generateCardName( String cardType, String name, int index )
+	public static Font getSmartFont( String fontType )
 	{
-		String newName = cardType + "_" + name;
+		Font f = null;
 		
-		if (index >= 0) newName += "_" + index;
+		switch ( fontType )
+		{
+			case "small": f = smallFont; break;
+			case "medium": f = mediumFont; break;
+			case "large": f = largeFont; break;
+			default: f = mediumFont;
+		}
 		
-		return newName;
-	}*/
+		return f;
+	}
 	
-	private void addApp( AbstractApp app )
+	private void registerApps()
 	{
-		// Ajout de l'application à la liste des apps installées
-		//this.apps.add( app );
-		
+		registerApp( new MusicApp( this ) );
+		//registerApp( new ContactApp( this ) );
+		registerApp( new GalleryApp( this ) );
+		registerApp( new DummyApp( this ) );
+	}
+	
+	private void registerApp( AbstractApp app )
+	{
+		// Création d'une pile de cartes que l'application va pouvoir utiliser
 		ArrayList<Card> panels = new ArrayList<Card>();
-
 		this.appPanels.put(app, panels);
-		
-		
-		//JPanel mainPanel = app.getMainPanel();
-		
-		
-		// Ajout du composant chargé du rendu de l'application aux cartes (CardLayout)
-		//addCard(
-		//	app.getMainPanel(),
-		//	generateCardName( CARD_TYPE_APP, app.getName(), 0 )
-		//);
-		
-		//panels.add( mainPanel );
-		
-		
 		
 		// Récupération du bouton de l'application
 		JButton appButton = app.getButton();
 		appButton.addActionListener( this );
-		this.appButtons.add( appButton );
+		//this.appButtons.add( appButton );
+	}
+	
+	public Image getAppImage( AbstractApp app )
+	{
+		Image img = null;
+		
+		try
+		{
+			File appImage = new File( getAppsFolder(), app.getLabel() + ".png" );
+
+			System.out.println( "Fetching " + appImage + "..." );
+			System.out.println( "exists? " + appImage.exists() );
+			System.out.println( "can read? " + appImage.canRead() );
+			
+			img = ImageIO.read( appImage );
+			
+			if ( img.getWidth(null) != 100 || img.getHeight(null) != 100 )
+			{
+				img = img.getScaledInstance(100, 100, Image.SCALE_FAST);
+			}
+		}
+		catch (Exception e)
+		{
+			img = new BufferedImage( 100, 100, BufferedImage.TYPE_INT_ARGB );
+			Graphics g = img.getGraphics();
+			g.setColor( Color.WHITE );
+			g.drawLine(0, 0, img.getWidth(null), img.getHeight(null));
+			g.drawLine(0, img.getHeight(null), img.getWidth(null), 0);
+		}
+		
+		return img;
 	}
 
-	private void showAppButtons()
+	/*private void showAppButtons()
 	{
 		homeCard.panel.setLayout( new FlowLayout(FlowLayout.LEFT, 70, 70) );
 		
 		for ( JButton appButton : this.appButtons )
 			homeCard.panel.add( appButton );
-	}
+	}*/
 	
 	public void actionPerformed(ActionEvent e)
 	{
@@ -401,25 +480,50 @@ public class Smartphone extends JFrame implements ActionListener
 			}
 		}
 	}
-
+	
+	public File getBackgroundFile()
+	{
+		return new File( this.sysFolder, "background.png" );
+	}
+	
 	public File getRootFolder()
 	{
 		return this.rootFolder;
+	}
+	
+	public File getSysFolder()
+	{
+		return this.sysFolder;
+	}
+	
+	public File getAppsFolder()
+	{
+		return this.appsFolder;
 	}
 
 	public File getImageFolder()
 	{
 		return this.imageFolder;
 	}
-	
+
 	public File getSoundFolder()
 	{
 		return this.soundFolder;
 	}
 	
+	public File getContactFile()
+	{
+		return this.contactFile;
+	}
+
 	public Dimension getScreenSize()
 	{
-		return this.screenSize;
+		return ((Dimension) this.screenSize.clone());
+	}
+	
+	public Dimension getAppButtonSize()
+	{
+		return ((Dimension) this.appButtonSize.clone());
 	}
 	
 	private class Card

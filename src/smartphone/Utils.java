@@ -60,6 +60,14 @@ public class Utils
 		return Toolkit.getDefaultToolkit().createImage( fis );
 	}
 	
+	public static Image applyImageFilter( Image img, ImageFilter filter )
+	{
+		FilteredImageSource fis = new FilteredImageSource( img.getSource(), filter );
+		
+		// Retour de l'image rognée et redimensionnée
+		return Toolkit.getDefaultToolkit().createImage( fis );
+	}
+	
 	public static void serializeObjects(File f, Object... objects )
 	{
 		try
@@ -106,6 +114,5 @@ public class Utils
 			e.printStackTrace();
 		}
 		return arraylist.toArray();
-	} 
-	
+	}
 }

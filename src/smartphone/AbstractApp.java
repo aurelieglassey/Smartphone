@@ -2,6 +2,7 @@ package smartphone;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.Serializable;
@@ -34,7 +35,9 @@ public abstract class AbstractApp implements Serializable
 		//this.mainScrollPane.getVerticalScrollBar().setPreferredSize( new Dimension(this.phone.getScrollBarWidth(), 0) );
 		//this.scrollPane.setBorder( null );
 		
-		this.button = new JButton( this.name );
+		Image appImage = this.phone.getAppImage( this );
+		
+		this.button = new ImageButton( appImage, 100, 100 );
 	}
 	
 	/**
@@ -44,11 +47,7 @@ public abstract class AbstractApp implements Serializable
 	 */
 	public abstract JPanel generateMainPanel();
 	
-	public void returnPressed()
-	{
-		// Cette méthode ne fait rien pour faciliter la création d'applications
-		// n'utilisant qu'un seul JPanel
-	}
+	public abstract void returnPressed();
 	
 	public JPanel getMainPanel()
 	{

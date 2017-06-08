@@ -24,9 +24,10 @@ public class ContactRepertory
 	//Méthode qui ajoute un contact dans l'arraylist et sérialize l'object
 	public static void addContact(String name, String fristname, String mail, String phone) 
 	{
+		//ajout du contact dans l'arraylist et sauvegarde de l'arraylist ou le contact a été ajouté
 		newcontact = new Contact (name, fristname, mail, phone);
 		contactlist.add(newcontact);
-		System.out.println(newcontact);
+		
 		Utils.serializeObjects(new File (".\\Contactlist.ser"), contactlist);
 	}
 	
@@ -54,4 +55,3 @@ public class ContactRepertory
 	
 	
 }
-

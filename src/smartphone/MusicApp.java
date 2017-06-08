@@ -59,7 +59,7 @@ public class MusicApp extends AbstractApp
 		
 		this.mainPanel.setLayout(new BorderLayout());
 	
-		File dossierMusic = new File ("C:\\Users\\Aurélie\\Desktop\\MusicSmartphone");
+		File dossierMusic = this.phone.getSoundFolder();
 		
 		//insertion des fichiers dans un tableau
 		File[] listofMusic = dossierMusic.listFiles();
@@ -173,5 +173,10 @@ public class MusicApp extends AbstractApp
 		{
 			e.printStackTrace();
 		} 
+	}
+
+	public void returnPressed()
+	{
+		
 	}
 }

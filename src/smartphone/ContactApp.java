@@ -41,7 +41,6 @@ import sun.font.CreatedFontTracker;
 
 public class ContactApp extends AbstractApp
 {
-	
 	private Contact[] listContact;
 	private JList<Contact> jlist;
 
@@ -179,9 +178,9 @@ public class ContactApp extends AbstractApp
 	 */
 	class ListenerContact implements ActionListener 
 	{
-
 		public void actionPerformed(ActionEvent e)
 		{
+
 
 			if(e.getSource()==bAddContact)
 			{
@@ -190,7 +189,7 @@ public class ContactApp extends AbstractApp
 				pushPanel(panelAddContact);
 				refreshlist();
 			}
-
+			
 			if (e.getSource()==bCancel)
 			{
 				System.out.println("cancel");
@@ -219,7 +218,6 @@ public class ContactApp extends AbstractApp
 			
 			if (e.getSource()==bModify)
 			{
-
 				//suppression du contact sélectionner et ajout du contact modifier
 				ContactRepertory.removeContact(jlist.getSelectedValue());
 				ContactRepertory.addContact(tname.getText(), tfirstname.getText(), temail.getText(), tphonenumber.getText());
@@ -290,9 +288,5 @@ public class ContactApp extends AbstractApp
 			panelModifyContact.remove(removed);
 			panelModifyContact=null;
 		}
-		
 	}
 }
-
-	
-	
