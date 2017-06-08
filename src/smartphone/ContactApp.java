@@ -6,11 +6,13 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.io.ObjectOutputStream;
 import javafx.scene.shape.Box;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,276 +29,270 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-//regarder comment récupérer le clique sur la bonne colonne de l'arraylist getselectedrow ou je sais plus
+import sun.font.CreatedFontTracker;
+
+//Manque image du contact
+//méthode de sérialization
+
 public class ContactApp extends AbstractApp
 {
+	
 	private Contact[] listContact;
-	protected JList<Contact> list;
-	
-	JButton temporaire = new JButton ("Frame temporaire");
-	JButton bAddContact = new JButton ("Add contact");
-	JButton bSaveContact = new JButton ("Save");
-	JButton bCancel = new JButton ("Cancel"); 
-	JButton bRemove = new JButton ("Remove contact");
-	JButton bModify = new JButton ("Modify contact");
-	
-	JPanel panelnorth = new JPanel();
-	JPanel panellist = new JPanel();
-	JPanel panelAddContact;
-	
-	JLabel lname = new JLabel("Name");
-	JLabel lFirstname = new JLabel("Firstname");
-	JLabel lemail = new JLabel("email");
-	JLabel lPhoneNumber = new JLabel("Phone number");
-	JLabel ltitreaAdd = new JLabel ("Add a Contact");
-	
-	JTextField textname = new JTextField();
-	JTextField textfirstname = new JTextField();
-	JTextField textemail = new JTextField();
-	JTextField textphonenumber = new JTextField();
-	
-	Contact contactSelected ;
-	
-	
-	
-	
-	
-	
-	
-	
-	Contact newcontact;
-	
-	JButton bModifyContact = new JButton ("Modifiy contact");
-	
-	
-	
-	
-	
-	JPanel panelAddContactCenter;
-	
-	
-	GridLayout gridlayout;
-	
-	/*************************** Constructeur ContactApp ***************************/
+	private JList<Contact> jlist;
 
+	private JButton bAddContact = new SmartButton ( new ImageIcon("smartphone_root/sys/addContact.png"));
+	private JButton bSaveContact = new SmartButton ("Save");
+	private JButton bCancel = new SmartButton ("Cancel"); 
+	private JButton bRemove = new SmartButton ("Remove contact");
+	private JButton bModify = new SmartButton ("Modify contact");
+
+	private JPanel panelnorth = new JPanel();
+	private JPanel panellist = new JPanel();
+	private JPanel panelAddContact = null;
+	private JPanel panelModifyContact = null;
+
+	private JLabel lname = new JLabel("Name");
+	private JLabel lFirstname = new JLabel("Firstname");
+	private JLabel lemail = new JLabel("email");
+	private JLabel lPhoneNumber = new JLabel("Phone number");
+	private JLabel ltitreaAdd = new JLabel ("Add a Contact");
+	private JLabel ltitreModif = new JLabel ("Modify a Contact");
+
+	private JTextField tname = new JTextField();
+	private JTextField tfirstname = new JTextField();
+	private JTextField temail = new JTextField();
+	private JTextField tphonenumber = new JTextField();
+
+	private Contact contactSelected ;
+
+	/**
+	 * Constructeur de l'application de contact. On y trouve une Jlist ainsi qu'un bouton d'ajout (pour un contact)
+	 * @param phone
+	 */
 	public ContactApp( Smartphone phone )
 	{
 		super( phone, "Contact app", "contact" );
+
+		this.mainPanel.setLayout(new BorderLayout());
 		
-		// TODO réparer ceci !
-		this.panel.setLayout(new BorderLayout());
+		File contactSer = new File(".\\Contactlist.ser");
+		try
+		{
+			contactSer.createNewFile();
+		} 
+		catch (IOException e)
+		{
+			System.err.println( "Impossible de créer " + contactSer );
+		}
 		
-		this.panel.add(temporaire);
-		temporaire.addActionListener(new ListenerContact());
+		Object[] obj = Utils.deserializeObject( contactSer );
 		
-		//Ajour temporaire de contact dans l'arraylist
-		Contact c = new Contact("Glassey ", "Aurélie ", "@@@", "079");
-		Contact c1 = new Contact("Ducrey ", "Cécile ", "@@@", "070");
-		ContactRepertory.contactlist.add(c);
-		ContactRepertory.contactlist.add(c1);
+		// if ( obj[0] instanceof ArrayList<Contact> )
+		ContactRepertory.setContactlist( ((ArrayList<Contact>) obj[0]) );
 		
-		list = new JList(ContactRepertory.contactlist.toArray());
+		jlist = new JList(ContactRepertory.getContactlist().toArray());
+		jlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		jlist.addListSelectionListener(new SelectionListener());
+
+		panellist.setBackground( new Color(40, 40, 40, 255) );
+
+		panellist.add(jlist);
 		
+		panelnorth.add(bAddContact);
+		this.mainPanel.add(panellist, BorderLayout.CENTER);
+		this.mainPanel.add(panelnorth, BorderLayout.NORTH);
+
+		
+		bAddContact.addActionListener(new ListenerContact());
+		bSaveContact.addActionListener(new ListenerContact());
+		bCancel.addActionListener(new ListenerContact());
+		bRemove.addActionListener(new ListenerContact());
+		bModify.addActionListener(new ListenerContact());
 		
 	}
-	
+
 	public JPanel generateMainPanel()
 	{
 		return new JPanel();
 	}
 	
-	/*************************** Fenêtre de l'application temporaire Contact avec la liste et le bouton d'ajout ***************************/
-
-	public class FrameTempContact extends JFrame
+	
+	private JPanel generatepanel( JTextField name, JTextField firstName, JTextField email, JTextField phone, boolean flushFields, JButton left, JButton right, JLabel titre )
 	{
-		public FrameTempContact ()
-		{
-			setVisible(true);
-			setPreferredSize(new Dimension(480, 800));
-			setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-			
-			ContactRepertory.deserializeContact();
-			
-			panellist.setBackground(Color.GREEN);
-			panellist.add(list);
-			
-			panelnorth.add(bAddContact);
-			add(panellist, BorderLayout.CENTER);
-			add(panelnorth, BorderLayout.NORTH);
-			
-			bAddContact.addActionListener(new ListenerContact());
-			bSaveContact.addActionListener(new ListenerContact());
-			bCancel.addActionListener(new ListenerContact());
-			bRemove.addActionListener(new ListenerContact());
-			
-					
-			pack();
+		//Générer les panels d'ajout et de modification
 		
+		if ( flushFields )
+		{
+			name.setText("");
+			firstName.setText("");
+			email.setText("");
+			phone.setText("");
 		}
-	}
+		
+		JPanel p = new JPanel();
+		
+		p.setLayout(new BorderLayout());
+		
+		JPanel panelTitre = new JPanel();
+		panelTitre.add(titre);
 
+		JPanel panelBox = new JPanel (); //Pour les données à remplir d'un contact
+		panelBox.setPreferredSize(new Dimension(480, 400));
+
+		panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.Y_AXIS));
+
+		panelBox.add(lname);
+		panelBox.add(name);
+
+		panelBox.add(lFirstname);
+		panelBox.add(firstName);
+
+		panelBox.add(lemail);
+		panelBox.add(email);
+
+		panelBox.add(lPhoneNumber);
+		panelBox.add(phone);
+
+		JPanel panelSouthButton = new JPanel(); //pour les boutons cancel et save
+		panelSouthButton.setPreferredSize(new Dimension(480, 50));
+		panelSouthButton.setLayout(new GridLayout(1, 2));
+		panelSouthButton.add(left);
+		panelSouthButton.add(right);
+
+		p.add(panelTitre, BorderLayout.NORTH);
+		p.add(panelBox, BorderLayout.CENTER);
+		p.add(panelSouthButton, BorderLayout.SOUTH);
+		
+		return p;
+	}
 	
 	
-	
-	
-	/*************************** Listener des boutons ***************************/
-	
-	
-	class ListenerContact implements ActionListener //création d'une fenêtre temporaire après contactApp
+	/**
+	 * Cette classe contient tous les ActionListener des boutons de l'application Contact
+	 * @author Aurélie
+	 *
+	 */
+	class ListenerContact implements ActionListener 
 	{
 
 		public void actionPerformed(ActionEvent e)
 		{
-			
-			if(e.getSource()==temporaire){
-				FrameTempContact f= new FrameTempContact();
-				f.setVisible(true);
-				
-			}
-			
-			
-			
+
 			if(e.getSource()==bAddContact)
 			{
-				
-				//appel d'un nouveau panel avec la méthode à fab
-				//panelfab
-				JPanel panelfab = new JPanel();
-				panelfab.setLayout(new BorderLayout());
-				//add(panelfab);
-				
-				JPanel panelTitre = new JPanel();
-				panelTitre.add(ltitreaAdd);
-				
-				JPanel panelBox = new JPanel (); //Pour les données à remplir d'un contact
-				panelBox.setPreferredSize(new Dimension(480, 400));
-				
-				
-				panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.Y_AXIS));
-
-				panelBox.add(lname);
-				panelBox.add(textname);
-			
-				panelBox.add(lFirstname);
-				panelBox.add(textfirstname);
-				
-				panelBox.add(lemail);
-				panelBox.add(textemail);
-				
-				panelBox.add(lPhoneNumber);
-				panelBox.add(textphonenumber);
-				
-				
-				JPanel panelSouthButton = new JPanel(); //pour les boutons cancel et save
-				panelSouthButton.setPreferredSize(new Dimension(480, 50));
-				panelSouthButton.setLayout(new GridLayout(1, 2));
-				panelSouthButton.add(bCancel);
-				panelSouthButton.add(bSaveContact);
-				
-				
-				panelfab.add(panelTitre, BorderLayout.NORTH);
-				panelfab.add(panelBox, BorderLayout.CENTER);
-				panelfab.add(panelSouthButton, BorderLayout.SOUTH);				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				if (e.getSource()==bModify){
-					
-					
-				}
-				
-				
-				
-				
-				//pack();
-				
-				
-								
+				System.out.println("Ajout contact");
+				panelAddContact = generatepanel( tname, tfirstname, temail, tphonenumber, true, bCancel, bSaveContact, ltitreaAdd );
+				pushPanel(panelAddContact);
+				refreshlist();
 			}
-			
-			
+
 			if (e.getSource()==bCancel)
 			{
-				//retour au panel précédent avec AddContact
+				System.out.println("cancel");
+				panelAddContact = null;
+				popPanel();
+				
 			}
-			
-			
+
 			if (e.getSource()==bSaveContact)
 			{
-				
-				ContactRepertory.addContact(textname.getText(), textfirstname.getText(), textemail.getText(), textphonenumber.getText());
-				
+				System.out.println("Save");
+				ContactRepertory.addContact(tname.getText(), tfirstname.getText(), temail.getText(), tphonenumber.getText());
+				panelAddContact = null;
+				popPanel();
+				refreshlist();
 			}
 			
-			
-			
-			if (e.getSource()==list.getSelectedValue())
-			{
-				contactSelected = (Contact) list.getSelectedValue();
-				ModifyContact m = new ModifyContact (contactSelected);
-				
-				
-			}
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-
 			if (e.getSource()==bRemove)
 			{
-				ContactRepertory.removeContact(contactSelected);
-
+				ContactRepertory.removeContact(jlist.getSelectedValue());
+				panelModifyContact = null;
+				popPanel();
+				
+				refreshlist();
 			}
 			
-			
-			
-			
-			
-			
-			
-			if (e.getSource()==bModifyContact)
+			if (e.getSource()==bModify)
 			{
-				ContactRepertory.removeContact(contactSelected);
-				ContactRepertory.addContact(textname.getText(), textfirstname.getText(), textemail.getText(), textphonenumber.getText());
+
+				//suppression du contact sélectionner et ajout du contact modifier
+				ContactRepertory.removeContact(jlist.getSelectedValue());
+				ContactRepertory.addContact(tname.getText(), tfirstname.getText(), temail.getText(), tphonenumber.getText());
+				panelModifyContact = null;
+				popPanel();
+				refreshlist();
 				
 			}
 			
-			
-		
-			
-			
-			
+		}	
 	}
 	
+	/**
+	 * Cette classe est nécessaire pour la selection d'un objet dans la JList
+	 * @author Aurélie
+	 *
+	 */
+	public class SelectionListener implements ListSelectionListener
+	{
+		public void valueChanged(ListSelectionEvent e)
+		{
+			if(e.getSource()==jlist)
+			{
+				if(!jlist.getValueIsAdjusting()){
+					jlist.getSelectedValue();
+					contactSelected = (Contact) jlist.getSelectedValue();
+					
+					if ( contactSelected != null ) //si la selection a bien eu lieu dans notre Jlist
+					{
+						System.out.println("Contact selectionné :" +contactSelected);
+						
+						tname.setText(contactSelected.getName());
+						tfirstname.setText(contactSelected.getFirstname());
+						temail.setText(contactSelected.getemail());
+						tphonenumber.setText(contactSelected.getPhone());
+						
+						//Nouveau Panel de modification
+						panelModifyContact = generatepanel(tname, tfirstname, temail, tphonenumber, false, bRemove, bModify, ltitreModif );
+						pushPanel(panelModifyContact);
+					}
+				}
+			}
+		}
+	}
+	
+	private void refreshlist() //méthode de rafraîchissement de la liste lors d'un ajout, modification ou suppression d'un contact.
+	{
+		Contact[] tmp = new Contact[0];
+		tmp = ContactRepertory.getContactlist().toArray(tmp);
+		jlist.setListData( tmp );
+	}
+	
+	/**
+	 * Méthode pour le bouton du retour
+	 */
+	public void returnPressed()
+	{
+		JPanel removed = popPanel();
+		
+		if(panelAddContact!=null)
+		{
+			panelAddContact.remove(removed);
+			panelAddContact = null;
+		}
+		
+		if(panelModifyContact!=null)
+		{
+			panelModifyContact.remove(removed);
+			panelModifyContact=null;
+		}
+		
+	}
+}
+
 	
 	
-}
-}
