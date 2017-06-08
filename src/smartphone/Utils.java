@@ -64,7 +64,7 @@ public class Utils
 	{
 		try
 		{
-			System.out.println("je suis dans la méthode serializeObjects - j'écris la liste");
+			System.out.println("Méthode serializeObjects");
 			FileOutputStream fos = new FileOutputStream(f);
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			
@@ -87,7 +87,7 @@ public class Utils
 		ArrayList <Object> arraylist= new ArrayList<>();
 		try
 		{
-			System.out.println("je suis dans la méthode deserializeConact - je lis la liste");
+			System.out.println("Méthode déserializeObject");
 			FileInputStream fis = new FileInputStream("Contactlist.ser");
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			while (true)

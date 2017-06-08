@@ -21,6 +21,7 @@ import java.io.ObjectOutputStream;
 import javafx.scene.shape.Box;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -33,24 +34,22 @@ import javax.swing.SpringLayout;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import sun.font.CreatedFontTracker;
+
 //Manque image du contact
-//commentaires
-//refresh ne marche pas
 //méthode de sérialization
-//les 3 boutons apps, home, return ne marchent pas
-//email ne marche pas
-//commenter le code avec /** + enter
 
 public class ContactApp extends AbstractApp
 {
+	
 	private Contact[] listContact;
-	protected JList<Contact> jlist;
+	private JList<Contact> jlist;
 
-	private JButton bAddContact = new JButton ("Add contact");
-	private JButton bSaveContact = new JButton ("Save");
-	private JButton bCancel = new JButton ("Cancel"); 
-	private JButton bRemove = new JButton ("Remove contact");
-	private JButton bModify = new JButton ("Modify contact");
+	private JButton bAddContact = new SmartButton ( new ImageIcon("smartphone_root/sys/addContact.png"));
+	private JButton bSaveContact = new SmartButton ("Save");
+	private JButton bCancel = new SmartButton ("Cancel"); 
+	private JButton bRemove = new SmartButton ("Remove contact");
+	private JButton bModify = new SmartButton ("Modify contact");
 
 	private JPanel panelnorth = new JPanel();
 	private JPanel panellist = new JPanel();
@@ -64,18 +63,17 @@ public class ContactApp extends AbstractApp
 	private JLabel ltitreaAdd = new JLabel ("Add a Contact");
 	private JLabel ltitreModif = new JLabel ("Modify a Contact");
 
-	private JTextField textname = new JTextField();
-	private JTextField textfirstname = new JTextField();
-	private JTextField textemail = new JTextField();
-	private JTextField textphonenumber = new JTextField();
+	private JTextField tname = new JTextField();
+	private JTextField tfirstname = new JTextField();
+	private JTextField temail = new JTextField();
+	private JTextField tphonenumber = new JTextField();
 
-	Contact contactSelected ;
+	private Contact contactSelected ;
 
-	
-
-
-	/*************************** Constructeur ContactApp ***************************/
-
+	/**
+	 * Constructeur de l'application de contact. On y trouve une Jlist ainsi qu'un bouton d'ajout (pour un contact)
+	 * @param phone
+	 */
 	public ContactApp( Smartphone phone )
 	{
 		super( phone, "Contact app", "contact" );
@@ -93,15 +91,15 @@ public class ContactApp extends AbstractApp
 		}
 		
 		Object[] obj = Utils.deserializeObject( contactSer );
-		System.out.println( obj.length );
-		System.out.println( "Arraylist? " + (obj[0] instanceof ArrayList) );
 		
+		// if ( obj[0] instanceof ArrayList<Contact> )
+		ContactRepertory.setContactlist( ((ArrayList<Contact>) obj[0]) );
 		
-		ContactRepertory.contactlist = ((ArrayList<Contact>) obj[0]);
-
-		jlist = new JList(ContactRepertory.contactlist.toArray());
+		jlist = new JList(ContactRepertory.getContactlist().toArray());
 		jlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jlist.addListSelectionListener(new SelectionListener());
+
+		panellist.setBackground( new Color(40, 40, 40, 255) );
 
 		panellist.add(jlist);
 		
@@ -109,6 +107,7 @@ public class ContactApp extends AbstractApp
 		this.mainPanel.add(panellist, BorderLayout.CENTER);
 		this.mainPanel.add(panelnorth, BorderLayout.NORTH);
 
+		
 		bAddContact.addActionListener(new ListenerContact());
 		bSaveContact.addActionListener(new ListenerContact());
 		bCancel.addActionListener(new ListenerContact());
@@ -173,7 +172,11 @@ public class ContactApp extends AbstractApp
 	}
 	
 	
-	/*************************** Listener des boutons ***************************/
+	/**
+	 * Cette classe contient tous les ActionListener des boutons de l'application Contact
+	 * @author Aurélie
+	 *
+	 */
 	class ListenerContact implements ActionListener 
 	{
 
@@ -183,7 +186,7 @@ public class ContactApp extends AbstractApp
 			if(e.getSource()==bAddContact)
 			{
 				System.out.println("Ajout contact");
-				panelAddContact = generatepanel( textname, textfirstname, textemail, textphonenumber, true, bCancel, bSaveContact, ltitreaAdd );
+				panelAddContact = generatepanel( tname, tfirstname, temail, tphonenumber, true, bCancel, bSaveContact, ltitreaAdd );
 				pushPanel(panelAddContact);
 				refreshlist();
 			}
@@ -199,7 +202,7 @@ public class ContactApp extends AbstractApp
 			if (e.getSource()==bSaveContact)
 			{
 				System.out.println("Save");
-				ContactRepertory.addContact(textname.getText(), textfirstname.getText(), textemail.getText(), textphonenumber.getText());
+				ContactRepertory.addContact(tname.getText(), tfirstname.getText(), temail.getText(), tphonenumber.getText());
 				panelAddContact = null;
 				popPanel();
 				refreshlist();
@@ -216,17 +219,24 @@ public class ContactApp extends AbstractApp
 			
 			if (e.getSource()==bModify)
 			{
+
 				//suppression du contact sélectionner et ajout du contact modifier
 				ContactRepertory.removeContact(jlist.getSelectedValue());
-				ContactRepertory.addContact(textname.getText(), textfirstname.getText(), textemail.getText(), textphonenumber.getText());
+				ContactRepertory.addContact(tname.getText(), tfirstname.getText(), temail.getText(), tphonenumber.getText());
 				panelModifyContact = null;
 				popPanel();
 				refreshlist();
 				
 			}
+			
 		}	
 	}
 	
+	/**
+	 * Cette classe est nécessaire pour la selection d'un objet dans la JList
+	 * @author Aurélie
+	 *
+	 */
 	public class SelectionListener implements ListSelectionListener
 	{
 		public void valueChanged(ListSelectionEvent e)
@@ -237,16 +247,17 @@ public class ContactApp extends AbstractApp
 					jlist.getSelectedValue();
 					contactSelected = (Contact) jlist.getSelectedValue();
 					
-					if ( contactSelected != null )
+					if ( contactSelected != null ) //si la selection a bien eu lieu dans notre Jlist
 					{
 						System.out.println("Contact selectionné :" +contactSelected);
 						
-						textname.setText(contactSelected.getName());
-						textfirstname.setText(contactSelected.getFirstname());
-						textemail.setText(contactSelected.getMail());
-						textphonenumber.setText(contactSelected.getPhone());
+						tname.setText(contactSelected.getName());
+						tfirstname.setText(contactSelected.getFirstname());
+						temail.setText(contactSelected.getemail());
+						tphonenumber.setText(contactSelected.getPhone());
 						
-						panelModifyContact = generatepanel(textname, textfirstname, textemail, textphonenumber, false, bRemove, bModify, ltitreModif );
+						//Nouveau Panel de modification
+						panelModifyContact = generatepanel(tname, tfirstname, temail, tphonenumber, false, bRemove, bModify, ltitreModif );
 						pushPanel(panelModifyContact);
 					}
 				}
@@ -254,11 +265,32 @@ public class ContactApp extends AbstractApp
 		}
 	}
 	
-	private void refreshlist()
+	private void refreshlist() //méthode de rafraîchissement de la liste lors d'un ajout, modification ou suppression d'un contact.
 	{
 		Contact[] tmp = new Contact[0];
-		tmp = ContactRepertory.contactlist.toArray(tmp);
+		tmp = ContactRepertory.getContactlist().toArray(tmp);
 		jlist.setListData( tmp );
+	}
+	
+	/**
+	 * Méthode pour le bouton du retour
+	 */
+	public void returnPressed()
+	{
+		JPanel removed = popPanel();
+		
+		if(panelAddContact!=null)
+		{
+			panelAddContact.remove(removed);
+			panelAddContact = null;
+		}
+		
+		if(panelModifyContact!=null)
+		{
+			panelModifyContact.remove(removed);
+			panelModifyContact=null;
+		}
+		
 	}
 }
 

@@ -15,6 +15,13 @@ public class Contact implements Serializable
 	private String email;
 	private String phone;
 	
+	/**
+	 * Constructeur de la classe Contact avec en paramètre le nom, prénom, email et téléphone
+	 * @param name
+	 * @param firstname
+	 * @param email
+	 * @param phone
+	 */
 	public Contact (String name, String firstname, String email, String phone){
 		this.name = name; 
 		this.firstname=firstname;
@@ -22,8 +29,10 @@ public class Contact implements Serializable
 		this.phone = phone;
 	}
 	
-	
-	//Getters and Setters
+	/**
+	 * Getters et setters des variables de la classe Contact
+	 * @return
+	 */
 	public String getName()
 	{
 		return name;
@@ -56,23 +65,10 @@ public class Contact implements Serializable
 	{
 		this.phone = phone;
 	}
-	public String getMail()
-	{
-		return mail;
-	}
-	public void setMail(String mail)
-	{
-		this.mail = mail;
-	}
-	private String mail;
-	
-	
+		
 	public String toString ()
 	{
 		return this.name + " " + this.firstname + " " +this.email + " " + this.phone;
 	}
-	
-	
-	
 	
 }

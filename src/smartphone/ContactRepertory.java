@@ -18,13 +18,10 @@ import javax.swing.JLabel;
 public class ContactRepertory
 {
 
-	protected static ArrayList<Contact> contactlist = new ArrayList<Contact>();
+	private static ArrayList<Contact> contactlist = new ArrayList<Contact>();
 	private static Contact newcontact;
 	
-	
-	/*************************** Méthodes de ContactRepertory ***************************/
-
-	//Méthode qui ajoute un contact
+	//Méthode qui ajoute un contact dans l'arraylist et sérialize l'object
 	public static void addContact(String name, String fristname, String mail, String phone) 
 	{
 		newcontact = new Contact (name, fristname, mail, phone);
@@ -33,7 +30,7 @@ public class ContactRepertory
 		Utils.serializeObjects(new File (".\\Contactlist.ser"), contactlist);
 	}
 	
-	
+	//Méthode qui efface un contact
 	public static void removeContact(Contact contactSelected)
 	{
 		contactlist.remove(contactSelected);
@@ -41,6 +38,19 @@ public class ContactRepertory
 		
 	}
 	
+	/**
+	 * Getters et setters de l'ArrayList
+	 * @return
+	 */
+	public static ArrayList<Contact> getContactlist()
+	{
+		return contactlist;
+	}
+
+	public static void setContactlist(ArrayList<Contact> contactlist)
+	{
+		ContactRepertory.contactlist = contactlist;
+	}
 	
 	
 }
