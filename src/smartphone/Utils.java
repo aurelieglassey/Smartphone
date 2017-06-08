@@ -8,7 +8,12 @@ import java.awt.image.CropImageFilter;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageFilter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -61,5 +66,53 @@ public class Utils
 		
 		// Retour de l'image rognée et redimensionnée
 		return Toolkit.getDefaultToolkit().createImage( fis );
+	}
+	
+	public static void serializeObjects(File f, Object... objects )
+	{
+		try
+		{
+			System.out.println("Méthode serializeObjects");
+			FileOutputStream fos = new FileOutputStream(f);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			
+			for (Object o : objects)
+			{
+				oos.writeObject(o);
+			}
+			
+			oos.close(); 
+		} 
+		
+		catch (IOException e) //si fichier inaccessible, on lève l'exception
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public static Object[] deserializeObject(File f)
+	{
+		ArrayList <Object> arraylist= new ArrayList<>();
+		try
+		{
+			System.out.println("Méthode déserializeObject");
+			FileInputStream fis = new FileInputStream("Contactlist.ser");
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			while (true)
+			{
+				arraylist.add(ois.readObject());
+			}
+			
+		} 
+		
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (ClassNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		return arraylist.toArray();
 	}
 }

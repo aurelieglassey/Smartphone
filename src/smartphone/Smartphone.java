@@ -39,12 +39,14 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.border.Border;
 
 
 public class Smartphone extends JFrame implements ActionListener
@@ -96,10 +98,10 @@ public class Smartphone extends JFrame implements ActionListener
 	private static final Font mediumFont = new Font( "Raleway", Font.PLAIN, 24 );
 	private static final Font largeFont = new Font( "Raleway", Font.PLAIN, 32 );
 	
-	private JButton btnApps = new JButton ("Apps");
-	private JButton btnHome = new JButton ("Home");
-	private JButton btnReturn = new JButton ("Return");
-
+	private JButton btnApps = new JButton (new ImageIcon("smartphone_root/sys/apps.png")); //Apps
+	private JButton btnHome = new JButton (new ImageIcon("smartphone_root/sys/home.PNG")); //Home
+	private JButton btnReturn = new JButton (new ImageIcon("smartphone_root/sys/return.PNG")); //Return
+	
 	private File rootFolder;
 	private File sysFolder;
 	private File appsFolder;
@@ -201,6 +203,10 @@ public class Smartphone extends JFrame implements ActionListener
 		btnApps.addActionListener( this );
 		btnHome.addActionListener( this );
 		btnReturn.addActionListener( this );
+		
+		btnApps.setBackground(new Color(40, 40, 40, 255));
+		btnHome.setBackground(new Color(40, 40, 40, 255));
+		btnReturn.setBackground(new Color(40, 40, 40, 255));
 		
 		panelsouth.add(btnApps);
 		panelsouth.add(btnHome);
