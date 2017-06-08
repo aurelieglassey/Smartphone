@@ -174,4 +174,9 @@ public class MusicApp extends AbstractApp
 			e.printStackTrace();
 		} 
 	}
+
+	public void returnPressed()
+	{
+		
+	}
 }

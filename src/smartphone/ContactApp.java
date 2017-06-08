@@ -57,25 +57,9 @@ public class ContactApp extends AbstractApp
 	JTextField textphonenumber = new JTextField();
 	
 	Contact contactSelected ;
-	
-	
-	
-	
-	
-	
-	
-	
 	Contact newcontact;
-	
 	JButton bModifyContact = new JButton ("Modifiy contact");
-	
-	
-	
-	
-	
 	JPanel panelAddContactCenter;
-	
-	
 	GridLayout gridlayout;
 	
 	/*************************** Constructeur ContactApp ***************************/
@@ -129,36 +113,27 @@ public class ContactApp extends AbstractApp
 			bCancel.addActionListener(new ListenerContact());
 			bRemove.addActionListener(new ListenerContact());
 			
-					
+			
 			pack();
-		
 		}
 	}
-
-	
 	
 	
 	
 	/*************************** Listener des boutons ***************************/
 	
-	
 	class ListenerContact implements ActionListener //création d'une fenêtre temporaire après contactApp
 	{
-
 		public void actionPerformed(ActionEvent e)
 		{
-			
 			if(e.getSource()==temporaire){
 				FrameTempContact f= new FrameTempContact();
 				f.setVisible(true);
 				
 			}
 			
-			
-			
 			if(e.getSource()==bAddContact)
 			{
-				
 				//appel d'un nouveau panel avec la méthode à fab
 				//panelfab
 				JPanel panelfab = new JPanel();
@@ -198,45 +173,21 @@ public class ContactApp extends AbstractApp
 				panelfab.add(panelBox, BorderLayout.CENTER);
 				panelfab.add(panelSouthButton, BorderLayout.SOUTH);				
 				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
 				if (e.getSource()==bModify){
-					
-					
 				}
-				
-				
-				
-				
-				//pack();
-				
-				
-								
+				//pack();				
 			}
-			
 			
 			if (e.getSource()==bCancel)
 			{
 				//retour au panel précédent avec AddContact
 			}
 			
-			
 			if (e.getSource()==bSaveContact)
 			{
 				
 				ContactRepertory.addContact(textname.getText(), textfirstname.getText(), textemail.getText(), textphonenumber.getText());
-				
 			}
-			
-			
 			
 			if (e.getSource()==list.getSelectedValue())
 			{
@@ -245,28 +196,6 @@ public class ContactApp extends AbstractApp
 				
 				
 			}
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
 
 			if (e.getSource()==bRemove)
 			{
@@ -274,27 +203,17 @@ public class ContactApp extends AbstractApp
 
 			}
 			
-			
-			
-			
-			
-			
-			
 			if (e.getSource()==bModifyContact)
 			{
 				ContactRepertory.removeContact(contactSelected);
 				ContactRepertory.addContact(textname.getText(), textfirstname.getText(), textemail.getText(), textphonenumber.getText());
-				
 			}
-			
-			
-		
-			
-			
-			
+		}
 	}
-	
-	
-	
-}
+
+	public void returnPressed()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }

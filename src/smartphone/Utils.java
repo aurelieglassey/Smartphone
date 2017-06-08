@@ -54,4 +54,12 @@ public class Utils
 		// Retour de l'image rognée et redimensionnée
 		return Toolkit.getDefaultToolkit().createImage( fis );
 	}
+	
+	public static Image applyImageFilter( Image img, ImageFilter filter )
+	{
+		FilteredImageSource fis = new FilteredImageSource( img.getSource(), filter );
+		
+		// Retour de l'image rognée et redimensionnée
+		return Toolkit.getDefaultToolkit().createImage( fis );
+	}
 }

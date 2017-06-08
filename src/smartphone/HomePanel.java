@@ -2,11 +2,16 @@ package smartphone;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.LinearGradientPaint;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -15,40 +20,61 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+/**
+ * HomePanel est un JPanel représentant l'écran d'accueil du smartphone. Il affiche une horloge
+ * ainsi que les boutons des applications.
+ * @author Fabien Terrani
+ */
 public class HomePanel extends JPanel
 {
 	private Smartphone phone;
-	private ArrayList<JButton> appButtons = new ArrayList<>();
+	private AbstractApp[] apps = new AbstractApp[0];
 	
 	private JLabel clock;
 	private Timer t;
 	private TimerTask refreshClock;
 	
-	private JPanel appPanel;
+	private JPanel appPanel = null;
 	
-	public HomePanel( Smartphone phone, JButton[] appButtons )
+	public HomePanel( Smartphone phone, AbstractApp[] appButtons )
 	{
 		this.phone = phone;
 		
-		if (appButtons != null)
-		{
-			this.appButtons.addAll( Arrays.asList(appButtons) );
-		}
-		
+		setBackground( Color.PINK );
 		setLayout( new BorderLayout() );
-		setBackground( Color.BLACK );
+		setPreferredSize( this.phone.getScreenSize() );
 		
 		initClock();
-		add( clock, BorderLayout.NORTH );
+
+		Dimension appButtonSize = this.phone.getAppButtonSize();
+		Dimension screenSize = this.phone.getScreenSize();
+		int spaceWidth = (screenSize.width - (3*appButtonSize.width)) / 4;
 		
 		appPanel = new JPanel();
-		appPanel.setLayout( new FlowLayout( FlowLayout.LEFT, 50, 50) );
+		appPanel.setOpaque( false );
+		appPanel.setBackground( new Color(0,0,0,0) );
+		appPanel.setLayout( new FlowLayout( FlowLayout.LEFT, spaceWidth, spaceWidth) );
+		
+		
+		setAppButtons( appButtons );
+		
+		
+		add( clock, BorderLayout.NORTH );
 		add( appPanel, BorderLayout.CENTER );
+	}
+	
+	public void setAppButtons( AbstractApp[] appButtons )
+	{
+		if (appButtons != null)
+		{
+			apps = Arrays.copyOf( appButtons, appButtons.length );
+		}
 		
 		refreshApps();
 	}
@@ -57,7 +83,11 @@ public class HomePanel extends JPanel
 	{
 		appPanel.removeAll();
 		
-		for ( JButton appButton : appButtons ) add( appButton );
+		for ( AbstractApp app : apps )
+		{
+			JButton btn = app.getButton();
+			appPanel.add( btn );
+		}
 	}
 
 	private void initClock()
@@ -72,7 +102,7 @@ public class HomePanel extends JPanel
 			public void run()
 			{
 				clock.setText(
-					LocalTime.now().format( DateTimeFormatter.ofPattern("HH:mm:ss"))
+					LocalTime.now().format( DateTimeFormatter.ofPattern("HH:mm"))
 				);
 			}
 		};
@@ -81,17 +111,24 @@ public class HomePanel extends JPanel
 		t.schedule( refreshClock, 0, 1000 );
 	}
 	
-	public void addAppButton( JButton appButton )
-	{
-		if ( appButton == null ) return;
-		
-		appButtons.add( appButton );
-		refreshApps();
-	}
-	
 	public void paintComponent( Graphics g )
 	{
-		if (g instanceof Graphics2D)
+		Dimension screen = this.phone.getScreenSize();
+		File bg = this.phone.getBackgroundFile();
+		Image img = null;
+		
+		try
+		{
+			img = Utils.resizeImage( ImageIO.read( bg ), screen.width, screen.height );
+		}
+		catch (Exception e) {}
+		
+		if ( img != null )
+		{
+			g.drawImage(img, 0, 0, null);
+		}
+		
+		else if (g instanceof Graphics2D)
 		{
 			Graphics2D g2d = (Graphics2D) g;
 			
