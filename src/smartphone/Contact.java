@@ -9,25 +9,57 @@ public class Contact implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 	
-	//private Photo photocontact;
+	//imageFile file;
 	private String name;
 	private String firstname;
 	private String email;
 	private String phone;
-	
+
 	/**
-	 * Constructeur de la classe Contact avec en paramètre le nom, prénom, email et téléphone
-	 * @param name
+	 * Constructeur de la classe Contact 
 	 * @param firstname
-	 * @param email
 	 * @param phone
 	 */
-	public Contact (String name, String firstname, String email, String phone){
+	public Contact (String phone, String firstname)
+	{
+		this( "", firstname, "", phone );
+	}
+	
+	/**
+	 * 
+	 * @param name
+	 * @param firstname
+	 * @param phone
+	 */
+	public Contact ( String phone, String firstname, String name )
+	{
+		this( name, firstname, "", phone );
+	}
+
+	/**
+	 * Création du contact
+	 * @param name //nom du contact
+	 * @param firstname //prénom du contact
+	 * @param email //email du contact
+	 * @param phone //numéro de téléphone
+	 */
+	public Contact (String phone, String firstname, String name, String email )
+	{
+		
+		if((name.equals("") && firstname.equals("")) || phone.equals(""))
+		{
+			throw new IllegalArgumentException("Données insuffisantes (au moins un numéro et un nom/prénom requis)");
+		}
+
+
+		
 		this.name = name; 
 		this.firstname=firstname;
 		this.email = email;
 		this.phone = phone;
 	}
+	
+
 	
 	/**
 	 * Getters et setters des variables de la classe Contact

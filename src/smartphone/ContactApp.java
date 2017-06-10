@@ -2,49 +2,51 @@ package smartphone;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-
-import javafx.scene.shape.Box;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.SpringLayout;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import sun.font.CreatedFontTracker;
-
 //Manque image du contact
 //méthode de sérialization
+//commenter le code avec /**
+//Ecriture du smartphone : Railway
+//Design
+
+//Junit trouver 1 méthode dont on peut savoir le résultat
+
+
+
+//renomer les varaible avec de majuscules
+//réordrer tout le code avec l'ordre de fabien
+//deux méthode : récupérer la liste de contact 
+	//+ associer une photo à un contact (File, contact)
+
+
 
 public class ContactApp extends AbstractApp
 {
 	private Contact[] listContact;
 	private JList<Contact> jlist;
 
-	private JButton bAddContact = new SmartButton ( new ImageIcon("smartphone_root/sys/addContact.png"));
+	private JButton bAddContact = new SmartButton ( new ImageIcon("smartphone_root/sys/addContact.jpg"));
 	private JButton bSaveContact = new SmartButton ("Save");
 	private JButton bCancel = new SmartButton ("Cancel"); 
 	private JButton bRemove = new SmartButton ("Remove contact");
@@ -55,17 +57,19 @@ public class ContactApp extends AbstractApp
 	private JPanel panelAddContact = null;
 	private JPanel panelModifyContact = null;
 
-	private JLabel lname = new JLabel("Name");
-	private JLabel lFirstname = new JLabel("Firstname");
-	private JLabel lemail = new JLabel("email");
-	private JLabel lPhoneNumber = new JLabel("Phone number");
-	private JLabel ltitreaAdd = new JLabel ("Add a Contact");
-	private JLabel ltitreModif = new JLabel ("Modify a Contact");
+	private JLabel lname = new SmartLabel("Name");
+	private JLabel lFirstname = new SmartLabel("Firstname");
+	private JLabel lemail = new SmartLabel("email (facultatif)");
+	private JLabel lPhoneNumber = new SmartLabel("Phone number");
+	private JLabel ltitreaAdd = new SmartLabel ("Add a Contact");
+	private JLabel ltitreModif = new SmartLabel ("Modify a Contact");
+	
+	private JButton bphoto = new JButton (new ImageIcon("smartphone_root/sys/return.PNG"));
 
-	private JTextField tname = new JTextField();
-	private JTextField tfirstname = new JTextField();
-	private JTextField temail = new JTextField();
-	private JTextField tphonenumber = new JTextField();
+	private JTextField tname = new SmartTextField();
+	private JTextField tfirstname = new SmartTextField();
+	private JTextField temail = new SmartTextField();
+	private JTextField tphonenumber = new SmartTextField();
 
 	private Contact contactSelected ;
 
@@ -78,6 +82,7 @@ public class ContactApp extends AbstractApp
 		super( phone, "Contact app", "contact" );
 
 		this.mainPanel.setLayout(new BorderLayout());
+		this.mainPanel.setBackground(new Color(40, 40, 40, 255));
 		
 		File contactSer = new File(".\\Contactlist.ser");
 		try
@@ -99,13 +104,14 @@ public class ContactApp extends AbstractApp
 		jlist.addListSelectionListener(new SelectionListener());
 
 		panellist.setBackground( new Color(40, 40, 40, 255) );
-
 		panellist.add(jlist);
 		
-		panelnorth.add(bAddContact);
+		panelnorth.setBackground(new Color(40, 40, 40, 255));
+		panelnorth.setLayout(new BorderLayout());
+		panelnorth.add(bAddContact, BorderLayout.EAST);
+		
 		this.mainPanel.add(panellist, BorderLayout.CENTER);
-		this.mainPanel.add(panelnorth, BorderLayout.NORTH);
-
+		this.mainPanel.add(panelnorth, BorderLayout.NORTH);	
 		
 		bAddContact.addActionListener(new ListenerContact());
 		bSaveContact.addActionListener(new ListenerContact());
@@ -115,6 +121,8 @@ public class ContactApp extends AbstractApp
 		
 	}
 
+	
+	
 	public JPanel generateMainPanel()
 	{
 		return new JPanel();
@@ -134,17 +142,24 @@ public class ContactApp extends AbstractApp
 		}
 		
 		JPanel p = new JPanel();
-		
 		p.setLayout(new BorderLayout());
 		
 		JPanel panelTitre = new JPanel();
+		panelTitre.setBackground(new Color(250, 250, 250));
 		panelTitre.add(titre);
 
 		JPanel panelBox = new JPanel (); //Pour les données à remplir d'un contact
-		panelBox.setPreferredSize(new Dimension(480, 400));
-
+		panelBox.setBackground(new Color(250, 250, 250));
+		
 		panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.Y_AXIS));
-
+		
+		bphoto.setPreferredSize(new Dimension(400, 200));
+		bphoto.setOpaque(true);
+		bphoto.setBackground(new Color(250, 250, 250));
+		bphoto.setBorder(null);
+		
+		panelBox.add(bphoto);
+		
 		panelBox.add(lname);
 		panelBox.add(name);
 
@@ -156,6 +171,7 @@ public class ContactApp extends AbstractApp
 
 		panelBox.add(lPhoneNumber);
 		panelBox.add(phone);
+		
 
 		JPanel panelSouthButton = new JPanel(); //pour les boutons cancel et save
 		panelSouthButton.setPreferredSize(new Dimension(480, 50));
@@ -200,11 +216,19 @@ public class ContactApp extends AbstractApp
 
 			if (e.getSource()==bSaveContact)
 			{
-				System.out.println("Save");
-				ContactRepertory.addContact(tname.getText(), tfirstname.getText(), temail.getText(), tphonenumber.getText());
-				panelAddContact = null;
-				popPanel();
-				refreshlist();
+				//vérification que le nom, prénom et le téléphone ne manquent pas
+				if(tname.getText().equals("") || tfirstname.getText().equals("") || tphonenumber.getText().equals(""))
+				{
+					System.out.println("Manque name, firstname ou phone");
+				}
+				else {
+					System.out.println("Save");
+					ContactRepertory.addContact(tname.getText(), tfirstname.getText(), temail.getText(), tphonenumber.getText());
+					panelAddContact = null;
+					popPanel();
+					refreshlist();
+				}
+				
 			}
 			
 			if (e.getSource()==bRemove)
@@ -218,12 +242,18 @@ public class ContactApp extends AbstractApp
 			
 			if (e.getSource()==bModify)
 			{
-				//suppression du contact sélectionner et ajout du contact modifier
-				ContactRepertory.removeContact(jlist.getSelectedValue());
-				ContactRepertory.addContact(tname.getText(), tfirstname.getText(), temail.getText(), tphonenumber.getText());
-				panelModifyContact = null;
-				popPanel();
-				refreshlist();
+				if(tname.getText().equals("") || tfirstname.getText().equals("") || tphonenumber.getText().equals(""))
+				{
+					System.out.println("Manque name, firstname ou phone");
+				}
+				else {
+					//suppression du contact sélectionner et ajout du contact modifier
+					ContactRepertory.removeContact(jlist.getSelectedValue());
+					ContactRepertory.addContact(tname.getText(), tfirstname.getText(), temail.getText(), tphonenumber.getText());
+					panelModifyContact = null;
+					popPanel();
+					refreshlist();
+				}
 				
 			}
 			
@@ -289,4 +319,14 @@ public class ContactApp extends AbstractApp
 			panelModifyContact=null;
 		}
 	}
+	
+	public void associate (File f, Contact c)
+	{
+		//chercher le contact c dans ma liste (contains(c), retourn un boolean)
+		//si pas trouver rien ne se passe
+		//si trouvé, stocker ImageFile dans contact
+		//sérialisation
+	}
+	
+	
 }
