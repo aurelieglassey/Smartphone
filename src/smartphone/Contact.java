@@ -16,7 +16,7 @@ public class Contact implements Serializable
 	private String phone;
 
 	/**
-	 * Constructeur de la classe Contact 
+	 * Création du contact avec les 2 paramètres minimums
 	 * @param firstname
 	 * @param phone
 	 */
@@ -26,7 +26,7 @@ public class Contact implements Serializable
 	}
 	
 	/**
-	 * 
+	 * Création du contact avec 3 paramètres 
 	 * @param name
 	 * @param firstname
 	 * @param phone
@@ -51,15 +51,11 @@ public class Contact implements Serializable
 			throw new IllegalArgumentException("Données insuffisantes (au moins un numéro et un nom/prénom requis)");
 		}
 
-
-		
 		this.name = name; 
 		this.firstname=firstname;
 		this.email = email;
 		this.phone = phone;
 	}
-	
-
 	
 	/**
 	 * Getters et setters des variables de la classe Contact
@@ -81,11 +77,11 @@ public class Contact implements Serializable
 	{
 		this.firstname = firstname;
 	}
-	public String getemail()
+	public String getEmail()
 	{
 		return email;
 	}
-	public void setemail(String address)
+	public void setEmail(String address)
 	{
 		this.email = email;
 	}
@@ -97,7 +93,10 @@ public class Contact implements Serializable
 	{
 		this.phone = phone;
 	}
-		
+	
+	/**
+	 * Affichage des données d'un contact
+	 */
 	public String toString ()
 	{
 		return this.name + " " + this.firstname + " " +this.email + " " + this.phone;

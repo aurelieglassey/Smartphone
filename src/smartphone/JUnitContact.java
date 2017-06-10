@@ -4,10 +4,14 @@ import static org.junit.Assert.*;
 
 import org.junit.Assert;
 import org.junit.Test;
+//Insipiré de : http://www.java2s.com/Code/JavaAPI/junit.framework/AssertassertEqualsStringexpectedStringactual.htm
 
 public class JUnitContact
 {
 
+	/**
+	 * Méthdes de test avec JUnit pour tester les paramètres d'entrées d'un Contact
+	 */
 	@Test
 	public void nullConstructor()
 	{		
