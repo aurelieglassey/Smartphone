@@ -31,6 +31,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -40,13 +41,15 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 
-public class MusicApp extends AbstractApp implements ActionListener, ChangeListener
+public class MusicApp extends AbstractApp implements ActionListener, ChangeListener, LineListener
 {
 	private JLabel appTitle;
-	
+
+	private JScrollPane musicPane;
 	private JList <MusicFile> musicList;
 	private DefaultListModel<MusicFile> listModel;
-	
+
+	private JPanel centerPanel;
 	private JPanel bottomPanel;
 	
 	private MusicFile currentTrack;
@@ -56,14 +59,13 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 	private Clip clip;
 	
 	private volatile boolean ignoreChanges = false;
-	private volatile boolean movingSlider = false;
-	
 	
 	private JLabel currentTrackInfo;
 	private JLabel currentTime;
 	private JLabel totalTime;
 	private JButton stop;
 	private JButton play;
+	private JButton visButton;
 	private ImageIcon playIcon;
 	private ImageIcon pauseIcon;
 	private ImageIcon stopIcon;
@@ -71,6 +73,9 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 	
 	Timer t;
   	TimerTask moveSlider = null;
+  	
+  	private AudioVisualization visualization;
+  	private boolean showingWave = false;
 	
 	public MusicApp( Smartphone phone )
 	{
@@ -78,14 +83,14 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		
 		t = new Timer();
 		
-		this.mainPanel.setBackground( this.phone.getBackgroundColor() );
+		this.mainPanel.setBackground( Smartphone.getBackgroundColor() );
 		this.mainPanel.setLayout(new BorderLayout());
 		
 		// Création du titre de l'application
 		appTitle = new JLabel("My music");
 		appTitle.setBorder( BorderFactory.createEmptyBorder(5,5,5,5) );
 		appTitle.setForeground( Color.WHITE );
-		appTitle.setFont( this.phone.getSmartFont("large") );
+		appTitle.setFont( Smartphone.getSmartFont("large") );
 		appTitle.setHorizontalAlignment( SwingConstants.CENTER );
 		this.mainPanel.add(appTitle, BorderLayout.NORTH);
 		
@@ -109,60 +114,71 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		}
 		
 		musicList = new SmartList<MusicFile>( listModel );
+		musicList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 		musicList.setCellRenderer( new ContactListCellRenderer() );
+		musicPane = new SmartScrollPane( musicList );
 		
-		this.mainPanel.add(musicList, BorderLayout.CENTER);
+		centerPanel = new JPanel();
+		centerPanel.setLayout( new GridLayout(1,1));
+		centerPanel.setBackground( Smartphone.getBackgroundColor() );
+		centerPanel.setBackground( Color.RED );
+		centerPanel.add( musicPane, BorderLayout.CENTER );
+		
 		
 		bottomPanel = new JPanel();
-		bottomPanel.setBackground( this.phone.getBackgroundColor() );
+		bottomPanel.setBackground( Smartphone.getBackgroundColor() );
 		bottomPanel.setLayout( new GridLayout( 3, 1, 5, 5) );
 		bottomPanel.setBorder( BorderFactory.createEmptyBorder(20, 20, 20, 20) );
 		
 		currentTrackInfo = new JLabel("");
-		currentTrackInfo.setFont( this.phone.getSmartFont("medium") );
+		currentTrackInfo.setFont( Smartphone.getSmartFont("medium") );
 		currentTrackInfo.setForeground( Color.WHITE );
 		currentTrackInfo.setHorizontalAlignment( SwingConstants.CENTER );
 		bottomPanel.add( currentTrackInfo );
 		
 		slider = new JSlider( 0, 0, 0 );
 		slider.setForeground( Color.WHITE );
-		slider.setBackground( this.phone.getBackgroundColor() );
+		slider.setBackground( Smartphone.getBackgroundColor() );
 		slider.addChangeListener( this );
 		bottomPanel.add( slider );
 		
 		JPanel buttonArea = new JPanel();
 		buttonArea.setLayout( new FlowLayout( FlowLayout.LEFT, 5, 5) );
-		buttonArea.setBackground( this.phone.getBackgroundColor() );
+		buttonArea.setBackground( Smartphone.getBackgroundColor() );
 
 		playIcon = new ImageIcon( new File(this.phone.getSysFolder(), "pictogram_play.png").toString() );
 		pauseIcon = new ImageIcon( new File(this.phone.getSysFolder(), "pictogram_pause.png").toString() );
 		stopIcon = new ImageIcon( new File(this.phone.getSysFolder(), "pictogram_stop.png").toString() );
 		
 		currentTime = new JLabel( clipPosition( null ) );
-		currentTime.setFont( this.phone.getSmartFont("medium") );
+		currentTime.setFont( Smartphone.getSmartFont("medium") );
 		currentTime.setForeground( Color.WHITE );
 		
 		JLabel separator = new JLabel("/");
-		separator.setFont( this.phone.getSmartFont("medium") );
+		separator.setFont( Smartphone.getSmartFont("medium") );
 		separator.setForeground( Color.WHITE );
 		
 		totalTime = new JLabel( clipDuration( null ) );
-		totalTime.setFont( this.phone.getSmartFont("medium") );
+		totalTime.setFont( Smartphone.getSmartFont("medium") );
 		totalTime.setForeground( Color.WHITE );
 		play = new SmartButton( playIcon );
 		stop = new SmartButton( stopIcon );
+		visButton = new SmartButton( "Toggle wave" );
 		
 		play.addActionListener( this );
 		stop.addActionListener( this );
+		visButton.addActionListener( this );
 		
-		buttonArea.add( play );
 		buttonArea.add( stop );
+		buttonArea.add( play );
+		buttonArea.add( visButton );
 		buttonArea.add( currentTime );
 		buttonArea.add( separator );
 		buttonArea.add( totalTime );
 		bottomPanel.add( buttonArea );
 		
-		this.mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+		this.mainPanel.add( centerPanel, BorderLayout.CENTER );
+		this.mainPanel.add( bottomPanel, BorderLayout.SOUTH );
 		
 		musicList.addMouseListener( new MouseAdapter()
 		{
@@ -174,6 +190,8 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 				}
 			}
 		});
+		
+		visualization = new AudioVisualization();
 	}
 	
 	public void stateChanged( ChangeEvent e )
@@ -185,6 +203,46 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 			long newPosition = slider.getValue() * 1000000;
 			clip.setMicrosecondPosition( newPosition );
 		}
+		
+		updateUIFromClip();
+	}
+	
+	private void updateUIFromClip()
+	{
+		if (clip != null && clip.isActive() )
+		{
+			play.setIcon( pauseIcon );
+			
+			currentTime.setText( clipPosition(clip) );
+			totalTime.setText( clipDuration(clip) );
+			slider.setMaximum( (int)(clip.getMicrosecondLength() / 1000000) );
+			slider.setValue( (int)(clip.getMicrosecondPosition() / 1000000) );
+			startMovingSlider();
+			
+			
+			float currentProgress = ((float)clip.getMicrosecondPosition()) / clip.getMicrosecondLength();
+			
+			visualization.resumeAnimation();
+			visualization.setProgress( currentProgress );
+		}
+		
+		else
+		{
+			play.setIcon( playIcon );
+			
+			currentTime.setText( clipPosition(clip) );
+			totalTime.setText( clipDuration(clip) );
+			
+			if (clip != null)
+			{
+				slider.setMaximum( (int)(clip.getMicrosecondLength() / 1000000) );
+				slider.setValue( (int)(clip.getMicrosecondPosition() / 1000000) );
+			}
+			
+			stopMovingSlider();
+			
+			visualization.pauseAnimation();
+		}
 	}
 
 	public void actionPerformed( ActionEvent e )
@@ -192,23 +250,48 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		if ( e.getSource() == stop )
 		{
 			stop();
+			updateUIFromClip();
 		}
-		
+
 		else if (e.getSource() == play )
 		{
-			if (clip != null)
-			{
-				if ( clip.isActive() )
-					pause();
-				else
-					play();
-			}
+			if ( clip != null && clip.isActive() )
+				pause();
+			else
+				play();
+		}
+
+		else if (e.getSource() == visButton )
+		{
+			if (!showingWave)
+				showVisualization();
+			else
+				showMusicList();
 		}
 	}
 
+	private void showVisualization()
+	{
+		centerPanel.remove( musicPane );
+		centerPanel.add( visualization );
+		showingWave = true;
+	}
+	
+	private void showMusicList()
+	{
+		centerPanel.remove( visualization );
+		centerPanel.add( musicPane );
+		showingWave = false;
+	}
+	
 	public JPanel generateMainPanel()
 	{
 		return new JPanel();
+	}
+	
+	public void returnPressed()
+	{
+		
 	}
 	
 	private void stop()
@@ -216,10 +299,10 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		if ( clip != null )
 			clip.close();
 		
-		currentTime.setText( clipPosition(null) );
-		slider.setValue(0);
+		updateUIFromClip();
 		
-		stopMovingSlider();
+		//currentTime.setText( clipPosition(null) );
+		//slider.setValue(0);
 	}
 
 	private void pause()
@@ -227,12 +310,17 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		if ( clip != null && clip.isActive() )
 			clip.stop();
 		
-		stopMovingSlider();
+		updateUIFromClip();
 	}
 	
 	private void play()
 	{
-		if (currentTrack != null)
+		if ( currentTrack == null && !musicList.isSelectionEmpty() )
+		{
+			setCurrentTrack( musicList.getSelectedValue() );
+		}
+		
+		if (clip != null)
 		{
 			try
 			{
@@ -243,7 +331,6 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 				}
 				
 				clip.start();
-				startMovingSlider();
 			}
 			
 			catch( Exception ex )
@@ -251,12 +338,12 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 				System.err.println( "Ligne indisponible !" );
 			}
 		}
+		
+		updateUIFromClip();
 	}
 	
 	private void startMovingSlider()
 	{
-		if (movingSlider) return;
-		
 		moveSlider = new TimerTask()
      	{
 			public void run()
@@ -267,8 +354,6 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		
 		// La position du curseur est mise à jour 20 fois par seconde
 		t.schedule( moveSlider, 0, 1000/20 );
-		
-		movingSlider = true;
 	}
 	
 	private void updateCursorPosition()
@@ -287,11 +372,10 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 	
 	private void stopMovingSlider()
 	{
-		if (!movingSlider) return;
+		if ( moveSlider != null )
+			moveSlider.cancel();
 		
-		moveSlider.cancel();
 		t.purge();
-		movingSlider = false;
 	}
 	
 	private void setCurrentTrack( MusicFile file )
@@ -303,21 +387,19 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		
 		try
 		{
+			visualization.fetchFileData( file );
+			
 			//lecture d'un son .wav
 		    audioFile = AudioSystem.getAudioFileFormat( file );
 	        format = audioFile.getFormat();
-	        ais = AudioSystem.getAudioInputStream( currentTrack );
+	        //ais = AudioSystem.getAudioInputStream( currentTrack );
 	      
 	        // On décrit un Clip (son chargé en mémoire) qui a le format du fichier à lire
 	        Line.Info dtli = new DataLine.Info( Clip.class, format );
 	      
 	        clip = (Clip) AudioSystem.getLine( dtli );
-	        clip.open( ais );
-	        
-	        totalTime.setText( clipDuration(clip) );
-	        currentTime.setText( clipPosition(null) );
-	        
-	        slider.setMaximum( (int)(clip.getMicrosecondLength() /1000000) ); 
+	        clip.addLineListener( this );
+	        //clip.open( ais );
 	        
 	        play();
 		}
@@ -370,8 +452,8 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		return usToMinSec( minSec );
 	}
 
-	public void returnPressed()
+	public void update(LineEvent e)
 	{
-		
+		updateUIFromClip();
 	}
 }

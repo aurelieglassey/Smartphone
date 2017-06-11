@@ -116,7 +116,7 @@ public class Smartphone extends JFrame implements ActionListener
 	/**
 	 * Largeur des scrollbars verticales du smartphone en pixels
 	 */
-	private int scrollBarWidth = 30;
+	private static int scrollBarWidth = 30;
 	
 	public Smartphone ()
 	{
@@ -367,9 +367,9 @@ public class Smartphone extends JFrame implements ActionListener
 		showCard( homeCard );
 	}
 	
-	public int getScrollBarWidth()
+	public static int getScrollBarWidth()
 	{
-		return this.scrollBarWidth;
+		return scrollBarWidth;
 	}
 
 	public static Color getBackgroundColor()

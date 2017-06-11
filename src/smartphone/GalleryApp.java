@@ -21,6 +21,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
@@ -31,6 +32,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class GalleryApp extends AbstractApp implements ActionListener
@@ -45,14 +48,26 @@ public class GalleryApp extends AbstractApp implements ActionListener
 	private int thumbHeight;
 	private int scrollBarWidth;
 
-	private JPanel zoomPanel = null;
-	private Image chosenImage = null;
-	private JButton modify = null;
+	private static final String PROP_IMAGEFILE = "imageFile";
+	private static final String ACTION_ZOOM_IMAGE = "zoomImage";
+	private static final String ACTION_ADD_TO_CONTACT = "addToContact";
+	private static final String ACTION_DELETE_IMAGE = "deleteImage";
+	private static final String ACTION_MODIFY_IMAGE = "modifyImage";
+	private static final String ACTION_APPLY_FILTER = "applyFilter";
+	private static final String ACTION_SAVE_IMAGE = "saveImage";
+	private static final String ACTION_CANCEL = "cancel";
 	
-	private JPanel modifyPanel = null;
-	private JLabel imgLabel = null;
-	private Image preview = null;
-	private HashMap<String,ImageFilter> imgFilters = new HashMap<>();
+	
+
+	private JPanel zoomPanel = null;
+	private File chosenImage = null;
+	
+	private JPanel modifyPanel;
+	private ImageButton chosenImageButton;
+	private JLabel zoomLabel;
+	private JLabel previewLabel;
+	private Image preview;
+	private HashMap<String,ImageFilter> imgFilters;
 	private JComboBox<String> filterBox;
 	
 	// Filtre permettant de sélectionner les noms de fichiers ayant une extension prise en charge par ImageIO
@@ -76,24 +91,59 @@ public class GalleryApp extends AbstractApp implements ActionListener
 	{
 		super( phone, "Gallery app", "gallery" );
 		
+		this.mainPanel.setBackground( Smartphone.getBackgroundColor() );
+		this.mainPanel.setLayout( new BorderLayout() );
+		
+		final JLabel loading = new JLabel("Loading gallery...");
+		loading.setFont( Smartphone.getSmartFont("large") );
+		loading.setForeground( Color.WHITE );
+		loading.setPreferredSize( this.phone.getScreenSize() );
+		loading.setHorizontalAlignment( SwingConstants.CENTER );
+		loading.setVerticalAlignment( SwingConstants.CENTER );
+		this.mainPanel.add( loading, BorderLayout.CENTER );
+		
+		Runnable loadGallery = new Runnable()
+		{
+			public void run()
+			{
+				System.out.println("Loading gallery...");
+				loadFromFiles();
+				GalleryApp.this.mainPanel.remove( loading );
+				GalleryApp.this.mainPanel.revalidate();
+				
+				System.out.println("Done! :)");
+			}
+		};
+		
+		Thread loadingThread = new Thread( loadGallery );
+		loadingThread.start();
+		
+		initImageFilters();
+	}
+
+	private void loadFromFiles()
+	{
 		this.folder = this.phone.getImageFolder();
 		this.imageButtons = new ArrayList<ImageButton>();
 		
 		thumbMargin = 20;
-		scrollBarWidth = this.phone.getScrollBarWidth();
+		scrollBarWidth = Smartphone.getScrollBarWidth();
 		
 		thumbWidth = (int) Math.round( (this.phone.getScreenSize().getWidth()-scrollBarWidth - 4 * thumbMargin) / 3 );
 		thumbHeight = thumbWidth;
 		
 		File[] foundImageFiles = this.folder.listFiles( GalleryApp.imageFilter );
+		BufferedImage bimg;
 		
 		for ( File galleryFile : foundImageFiles )
 		{
 			try
 			{
-				BufferedImage bimg = ImageIO.read( galleryFile );
+				bimg = ImageIO.read( galleryFile );
 				
 				ImageButton imgButton = new ImageButton( bimg, thumbWidth, thumbHeight );
+				imgButton.putClientProperty(PROP_IMAGEFILE, galleryFile );
+				imgButton.setActionCommand( ACTION_ZOOM_IMAGE );
 				imgButton.addActionListener( this );
 				this.imageButtons.add( imgButton );
 			}
@@ -105,7 +155,7 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			}
 		}
 		
-		imgPanel.setBackground( this.phone.getBackgroundColor() );
+		imgPanel.setBackground( Smartphone.getBackgroundColor() );
 		imgPanel.setLayout( new FlowLayout( FlowLayout.CENTER, this.thumbMargin, this.thumbMargin ));
 		
 		for (ImageButton imgBtn : this.imageButtons)
@@ -115,12 +165,14 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		
 		setPreferredGallerySize();
 		
-		JScrollPane pane = new JScrollPane( imgPanel );
-		pane.getVerticalScrollBar().setPreferredSize( new Dimension(this.phone.getScrollBarWidth(), 0) );
-		pane.setBackground( this.phone.getBackgroundColor() );
-		pane.setBorder( null );
+		JScrollPane pane = new SmartScrollPane( imgPanel );
 		pane.setPreferredSize( this.phone.getScreenSize() );
-		this.mainPanel.add( pane );
+		this.mainPanel.add( pane, BorderLayout.CENTER );
+	}
+	
+	private void initImageFilters()
+	{
+		imgFilters = new HashMap<String, ImageFilter>();
 		
 		imgFilters.put("Image originale", null);
 		imgFilters.put("Noir et blanc", new GrayFilter());
@@ -128,14 +180,24 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		imgFilters.put("Contraste", new ContrastFilter());
 		imgFilters.put("Saturation", new SaturateFilter());
 		
-		String[] keys = new String[0];
-		keys = imgFilters.keySet().toArray( keys );
+		ArrayList<String> a = new ArrayList<>( imgFilters.keySet() );
+		Comparator<String> sortFilters = new Comparator<String>()
+		{
+			public int compare(String a, String b)
+			{
+				if (a == "Image originale")
+					return -1;
+				
+				return 0;
+			}
+			
+		};
 		
+		a.sort( sortFilters );
 		
-		
-		for (String k : keys) System.out.println(k);
-		
-		filterBox = new JComboBox<>( keys );
+		filterBox = new JComboBox<>( a.toArray( new String[0] ) );
+		filterBox.setFont( Smartphone.getSmartFont("medium") );
+		filterBox.setActionCommand( ACTION_APPLY_FILTER );
 		filterBox.addActionListener( this );
 	}
 	
@@ -194,7 +256,9 @@ public class GalleryApp extends AbstractApp implements ActionListener
 
 	public void actionPerformed(ActionEvent e)
 	{
-		if ( e.getSource() == filterBox )
+		String command = e.getActionCommand();
+		
+		if ( command.equals(ACTION_APPLY_FILTER) )
 		{
 			String selectedFilter = filterBox.getItemAt( filterBox.getSelectedIndex() );
 			ImageFilter filter = imgFilters.get( selectedFilter );
@@ -203,45 +267,22 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			{
 				System.out.println( "Selected filter: " + filter.getClass().getSimpleName() );
 				Image modified = Utils.applyImageFilter( preview, filter );
-				imgLabel.setIcon( new ImageIcon(modified) );
+				previewLabel.setIcon( new ImageIcon(modified) );
 			}
 			
 			else
 			{
-				imgLabel.setIcon( new ImageIcon(preview) );
+				previewLabel.setIcon( new ImageIcon(preview) );
 			}
 		}
-		
-		else if ( e.getSource() == modify )
-		{
-			modifyPanel = new JPanel();
-			
-			preview = getModifyPreview( chosenImage );
-			
-			imgLabel = new JLabel( new ImageIcon( preview ) );
-			
-			modifyPanel.setLayout( new BoxLayout( modifyPanel, BoxLayout.Y_AXIS) );
-			
-			imgLabel.setAlignmentX( Component.CENTER_ALIGNMENT );
-			modifyPanel.add( imgLabel );
-			
-			JPanel p = new JPanel();
-			p.setLayout( new FlowLayout( FlowLayout.CENTER, 5, 5 ) );
-			p.add( filterBox );
-			
-			p.setAlignmentX( Component.CENTER_ALIGNMENT );
-			modifyPanel.add( p );
-			
-			pushPanel( modifyPanel );
-		}
-		
-		else
+
+		else if ( command.equals(ACTION_ZOOM_IMAGE) )
 		{
 			for ( ImageButton imgButton : this.imageButtons )
 			{
 				if ( e.getSource() == imgButton )
 				{
-					chosenImage = imgButton.getImage();
+					chosenImage = (File) imgButton.getClientProperty( PROP_IMAGEFILE );
 					break;
 				}
 			}
@@ -249,30 +290,144 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			if ( chosenImage != null )
 			{
 				zoomPanel = new JPanel();
-				zoomPanel.setBackground( this.phone.getBackgroundColor() );
+				zoomPanel.setLayout( new BorderLayout() );
+				zoomPanel.setBackground( Smartphone.getBackgroundColor() );
+				
+				ImageIcon icon = new ImageIcon( chosenImage.toString() );
+				zoomLabel  = new JLabel( icon );
 				
 				Dimension imgSize = new Dimension(
-					chosenImage.getWidth(null),
-					chosenImage.getHeight(null)
+					icon.getIconWidth(),
+					icon.getIconHeight()
 				);
+				zoomLabel.setPreferredSize( imgSize );
 				
-				JLabel imgLabel = new JLabel( new ImageIcon(chosenImage) );
-				imgLabel.setPreferredSize( imgSize );
-				
-				JScrollPane pane = new JScrollPane( imgLabel );
+				JScrollPane pane = new SmartScrollPane( zoomLabel );
 				pane.setBorder( null );
-				pane.setBackground( this.phone.getBackgroundColor() );
+				pane.setBackground( Smartphone.getBackgroundColor() );
 				
-				//pane.setPreferredSize( this.phone.getScreenSize() );
+				/*Dimension screenSize = this.phone.getScreenSize();
+				Dimension paneSize = new Dimension(200, 200);
+				pane.setPreferredSize( paneSize );
+				
+				JPanel p = new JPanel();
+				p.add( pane );*/
 				
 				zoomPanel.add( pane, BorderLayout.CENTER );
 				
-				modify = new SmartButton("Modify");
+				
+				
+				JButton modify = new SmartButton("Modify");
+				modify.setActionCommand( ACTION_MODIFY_IMAGE );
 				modify.addActionListener( this );
-				zoomPanel.add( modify, BorderLayout.NORTH );
+				
+				JButton imageToContact = new SmartButton("Add to contact...");
+				imageToContact.setActionCommand( ACTION_ADD_TO_CONTACT );
+				imageToContact.addActionListener( this );
+				
+				JPanel buttons = new JPanel();
+				buttons.setBackground( Smartphone.getBackgroundColor() );
+				buttons.setLayout( new FlowLayout( FlowLayout.CENTER, 10, 10) );
+				buttons.add( modify );
+				buttons.add( imageToContact );
+				
+				zoomPanel.add( buttons, BorderLayout.SOUTH );
 				
 				pushPanel( zoomPanel );
 			}
+		}
+		
+		else if ( command.equals(ACTION_MODIFY_IMAGE) )
+		{
+			try
+			{
+				preview = getModifyPreview( ImageIO.read( chosenImage ) );
+			}
+			catch( Exception ex )
+			{
+				preview = null;
+				return;
+			}
+			
+			modifyPanel = new JPanel();
+			modifyPanel.setLayout( new BorderLayout() );
+			modifyPanel.setBackground( Smartphone.getBackgroundColor() );
+			
+			previewLabel = new JLabel( new ImageIcon( preview ) );
+			
+			//modifyPanel.setLayout( new BoxLayout( modifyPanel, BoxLayout.Y_AXIS) );
+			
+			//imgLabel.setAlignmentX( Component.CENTER_ALIGNMENT );
+			modifyPanel.add( previewLabel, BorderLayout.CENTER );
+			
+			JButton save = new SmartButton("Save");
+			save.setActionCommand( ACTION_SAVE_IMAGE );
+			save.addActionListener( this );
+			
+			JButton cancel = new SmartButton("Cancel");
+			cancel.setActionCommand( ACTION_CANCEL );
+			cancel.addActionListener( this );
+			
+			JPanel p = new JPanel();
+			p.setBackground( Smartphone.getBackgroundColor() );
+			p.setLayout( new FlowLayout( FlowLayout.CENTER, 20, 100 ) );
+			p.add( filterBox );
+			p.add( cancel );
+			p.add( save );
+			
+			//p.setAlignmentX( Component.CENTER_ALIGNMENT );
+			modifyPanel.add( p, BorderLayout.SOUTH );
+			
+			pushPanel( modifyPanel );
+		}
+		
+		else if ( command.equals(ACTION_DELETE_IMAGE) )
+		{
+			// TODO
+		}
+		
+		else if ( command.equals(ACTION_SAVE_IMAGE) )
+		{
+			try
+			{
+				BufferedImage bimg = ImageIO.read( chosenImage );
+				
+				String selectedFilter = filterBox.getItemAt( filterBox.getSelectedIndex() );
+				ImageFilter filter = imgFilters.get( selectedFilter );
+				
+				Image modifiedImage = Utils.applyImageFilter( bimg, filter );
+				
+				bimg = new BufferedImage(
+					modifiedImage.getWidth(null),
+					modifiedImage.getHeight(null),
+					BufferedImage.TYPE_INT_ARGB
+				);
+				
+				bimg.getGraphics().drawImage(modifiedImage, 0, 0, null);
+				
+				ImageIO.write( bimg, "PNG", chosenImage );
+				
+				zoomLabel.setIcon( new ImageIcon(bimg) );
+				returnPressed();
+			}
+			
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+				return;
+			}
+			
+			returnPressed();
+		}
+
+		else if ( command.equals(ACTION_ADD_TO_CONTACT) )
+		{
+			// TODO
+		}
+		
+		else if ( command.equals(ACTION_CANCEL) )
+		{
+			returnPressed();
 		}
 	}
 	
