@@ -39,6 +39,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -46,6 +47,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
 
@@ -66,6 +68,7 @@ public class Smartphone extends JFrame implements ActionListener
 	 */
 	private CardLayout cLayout = new CardLayout();
 	
+	private ArrayList<AbstractApp> apps = new ArrayList<>();
 	/**
 	 * Ensemble des piles de JPanel associés aux apps
 	 */
@@ -98,9 +101,9 @@ public class Smartphone extends JFrame implements ActionListener
 	private static final Font mediumFont = new Font( "Raleway", Font.PLAIN, 24 );
 	private static final Font largeFont = new Font( "Raleway", Font.PLAIN, 32 );
 	
-	private JButton btnApps = new JButton (new ImageIcon("smartphone_root/sys/apps.png")); //Apps
-	private JButton btnHome = new JButton (new ImageIcon("smartphone_root/sys/home.PNG")); //Home
-	private JButton btnReturn = new JButton (new ImageIcon("smartphone_root/sys/return.PNG")); //Return
+	private JButton btnApps; //Apps
+	private JButton btnHome; //Home
+	private JButton btnReturn; //Return
 	
 	private File rootFolder;
 	private File sysFolder;
@@ -115,10 +118,71 @@ public class Smartphone extends JFrame implements ActionListener
 	 */
 	private int scrollBarWidth = 30;
 	
-	// TODO retirer ceci...
-	//private ArrayList<JButton> appButtons = new ArrayList<>();
-	
 	public Smartphone ()
+	{
+		prepareFolders();
+		
+		btnApps = new SmartButton(new ImageIcon( new File(sysFolder, "pictogram_apps.png").toString() )); //Apps
+		btnHome = new SmartButton(new ImageIcon( new File(sysFolder, "pictogram_home.png").toString() )); //Home
+		btnReturn = new SmartButton(new ImageIcon( new File(sysFolder, "pictogram_return.png").toString() )); //Return
+		
+		JButton[] btns = {btnApps, btnHome, btnReturn};
+		
+		for (JButton b : btns)
+		{
+			b.setBackground( bgColor );
+			b.setBorder( BorderFactory.createLineBorder(bgColor.brighter().brighter().brighter(), 1) );
+			b.addActionListener( this );
+		}
+		
+		//Panel du centre avec dimensions
+		panelcenter.setPreferredSize( this.screenSize );
+		panelcenter.setLayout( cLayout );
+		
+		// Ajout des applications au téléphone
+		this.registerApps();
+		
+		
+		Set<AbstractApp> keys = appPanels.keySet();
+		AbstractApp[] appsArray = new AbstractApp[0];
+		appsArray = apps.toArray( appsArray );
+				
+		homeCard = new Card(
+			Card.CARD_TYPE_HOME,
+			"homescreen",
+			0,
+			new HomePanel( this, appsArray )
+		);
+		
+		// Affichage des boutons des apps
+		//this.showAppButtons();
+		
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setTitle("Smartphone");
+		//this.setResizable(false); //désactiver les boutons de redimensionnement de la fenêtre
+		
+		
+		// On ajoute la carte du homescreen de base
+		addCard( homeCard );
+		showCard( homeCard );
+		
+		
+		//Panel sud avec 3 boutons 
+		panelsouth.setLayout( new GridLayout(1, 3) );
+		
+		panelsouth.add(btnApps);
+		panelsouth.add(btnHome);
+		panelsouth.add(btnReturn);
+		
+		// Ajout du panneau centrale au smartphone
+		this.add(panelcenter, BorderLayout.CENTER);
+		this.add(panelsouth, BorderLayout.SOUTH);
+		
+		this.pack();
+		this.setLocationRelativeTo( null );
+	}
+	
+	private void prepareFolders()
 	{
 		try
 		{
@@ -154,6 +218,7 @@ public class Smartphone extends JFrame implements ActionListener
 				if ( !file.exists() ) file.createNewFile();
 			}
 		}
+		
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -162,62 +227,9 @@ public class Smartphone extends JFrame implements ActionListener
 				null,
 				"Impossible d'accéder au dossier racine du smartphone. Le programme va s'arrêter."
 			);
+			
+			System.exit(0);
 		}
-		
-		//Panel du centre avec dimensions
-		panelcenter.setPreferredSize( this.screenSize );
-		panelcenter.setLayout( cLayout );
-		
-		// Ajout des applications au téléphone
-		this.registerApps();
-		
-		
-		Set<AbstractApp> keys = appPanels.keySet();
-		AbstractApp[] apps = new AbstractApp[0];
-		
-		apps = keys.toArray( apps );
-				
-		homeCard = new Card(
-			Card.CARD_TYPE_HOME,
-			"homescreen",
-			0,
-			new HomePanel( this, apps )
-		);
-		
-		// Affichage des boutons des apps
-		//this.showAppButtons();
-		
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle("Smartphone");
-		//this.setResizable(false); //désactiver les boutons de redimensionnement de la fenêtre
-		
-		
-		// On ajoute la carte du homescreen de base
-		addCard( homeCard );
-		showCard( homeCard );
-		
-		
-		//Panel sud avec 3 boutons 
-		panelsouth.setLayout( new GridLayout(1, 3) );
-
-		btnApps.addActionListener( this );
-		btnHome.addActionListener( this );
-		btnReturn.addActionListener( this );
-		
-		btnApps.setBackground(new Color(40, 40, 40, 255));
-		btnHome.setBackground(new Color(40, 40, 40, 255));
-		btnReturn.setBackground(new Color(40, 40, 40, 255));
-		
-		panelsouth.add(btnApps);
-		panelsouth.add(btnHome);
-		panelsouth.add(btnReturn);
-		
-		// Ajout du panneau centrale au smartphone
-		this.add(panelcenter, BorderLayout.CENTER);
-		this.add(panelsouth, BorderLayout.SOUTH);
-		
-		this.pack();
-		this.setLocationRelativeTo( null );
 	}
 	
 	private int getCardPosition( Card card )
@@ -382,14 +394,16 @@ public class Smartphone extends JFrame implements ActionListener
 	
 	private void registerApps()
 	{
-		registerApp( new MusicApp( this ) );
-		//registerApp( new ContactApp( this ) );
+		registerApp( new ContactApp( this ) );
 		registerApp( new GalleryApp( this ) );
+		registerApp( new MusicApp( this ) );
 		registerApp( new DummyApp( this ) );
 	}
 	
 	private void registerApp( AbstractApp app )
 	{
+		apps.add( app );
+		
 		// Création d'une pile de cartes que l'application va pouvoir utiliser
 		ArrayList<Card> panels = new ArrayList<Card>();
 		this.appPanels.put(app, panels);
@@ -407,10 +421,6 @@ public class Smartphone extends JFrame implements ActionListener
 		try
 		{
 			File appImage = new File( getAppsFolder(), app.getLabel() + ".png" );
-
-			System.out.println( "Fetching " + appImage + "..." );
-			System.out.println( "exists? " + appImage.exists() );
-			System.out.println( "can read? " + appImage.canRead() );
 			
 			img = ImageIO.read( appImage );
 			
@@ -461,7 +471,7 @@ public class Smartphone extends JFrame implements ActionListener
 		
 		else
 		{
-			for ( AbstractApp app : this.appPanels.keySet() )
+			for ( AbstractApp app : this.apps )
 			{
 				if ( e.getSource() == app.getButton() )
 				{

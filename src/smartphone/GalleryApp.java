@@ -122,13 +122,18 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		pane.setPreferredSize( this.phone.getScreenSize() );
 		this.mainPanel.add( pane );
 		
-		
+		imgFilters.put("Image originale", null);
 		imgFilters.put("Noir et blanc", new GrayFilter());
 		imgFilters.put("Sépia", new SepiaFilter());
 		imgFilters.put("Contraste", new ContrastFilter());
+		imgFilters.put("Saturation", new SaturateFilter());
 		
 		String[] keys = new String[0];
 		keys = imgFilters.keySet().toArray( keys );
+		
+		
+		
+		for (String k : keys) System.out.println(k);
 		
 		filterBox = new JComboBox<>( keys );
 		filterBox.addActionListener( this );
@@ -194,8 +199,17 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			String selectedFilter = filterBox.getItemAt( filterBox.getSelectedIndex() );
 			ImageFilter filter = imgFilters.get( selectedFilter );
 			
-			Image modified = Utils.applyImageFilter( preview, filter );
-			imgLabel.setIcon( new ImageIcon(modified) );
+			if (filter != null)
+			{
+				System.out.println( "Selected filter: " + filter.getClass().getSimpleName() );
+				Image modified = Utils.applyImageFilter( preview, filter );
+				imgLabel.setIcon( new ImageIcon(modified) );
+			}
+			
+			else
+			{
+				imgLabel.setIcon( new ImageIcon(preview) );
+			}
 		}
 		
 		else if ( e.getSource() == modify )
@@ -253,7 +267,7 @@ public class GalleryApp extends AbstractApp implements ActionListener
 				
 				zoomPanel.add( pane, BorderLayout.CENTER );
 				
-				modify = new JButton("Modify");
+				modify = new SmartButton("Modify");
 				modify.addActionListener( this );
 				zoomPanel.add( modify, BorderLayout.NORTH );
 				
@@ -298,28 +312,45 @@ public class GalleryApp extends AbstractApp implements ActionListener
         	return rgb;
         }
 	}
-	
-	private static class ContrastFilter extends GrayFilter
+
+	private static class ContrastFilter extends RGBImageFilter
 	{
 		public int filterRGB(int x, int y, int rgb)
         {
-        	rgb = super.filterRGB( x, y, rgb );
-        	
         	int a = ((rgb & 0xff000000) >> 24);
         	int r = ((rgb & 0xff0000) >> 16);
         	int g = ((rgb & 0xff00) >> 8);
         	int b = (rgb & 0xff);
         	
+
+        	r = (int)(linearToSinus(r/255.0) * 255);
+        	g = (int)(linearToSinus(g/255.0) * 255);
+        	b = (int)(linearToSinus(b/255.0) * 255);
         	
+        	rgb = ((a<<24) | (r<<16) | (g<<8) | b);
         	
-        	if ( r <= 127 ) r *= 0.2;
-        	else r += 0.2*(0xff-r);
+        	return rgb;
+        }
+		
+		private double linearToSinus( double value )
+		{
+			return ((Math.sin( value * Math.PI - (Math.PI/2.0) ) + 1.0) / 2.0);
+		}
+	}
+	
+	private static class SaturateFilter extends RGBImageFilter
+	{
+		public int filterRGB(int x, int y, int rgb)
+        {
+        	int a = ((rgb & 0xff000000) >> 24);
+        	int r = ((rgb & 0xff0000) >> 16);
+        	int g = ((rgb & 0xff00) >> 8);
+        	int b = (rgb & 0xff);
         	
-        	if ( g <= 127 ) g *= 0.2;
-        	else g += 0.2*(0xff-g);
-        	
-        	if ( b <= 127 ) b *= 0.2;
-        	else b += 0.2*(0xff-b);
+
+        	r = (r <= 127 ? 0 : 255);
+        	g = (g <= 127 ? 0 : 255);
+        	b = (b <= 127 ? 0 : 255);
         	
         	rgb = ((a<<24) | (r<<16) | (g<<8) | b);
         	

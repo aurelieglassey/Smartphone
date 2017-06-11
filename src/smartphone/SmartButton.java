@@ -9,6 +9,8 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 
 public class SmartButton extends JButton
 {
@@ -35,11 +37,13 @@ public class SmartButton extends JButton
 	
 	private void apparenceButton()
 	{
-		setBackground(new Color(30, 30, 30, 255));
-		setForeground(Color.WHITE);
+		setBackground( Smartphone.getBackgroundColor().brighter().brighter() );
+		setForeground( Color.WHITE );
+		setFont( Smartphone.getSmartFont("smart") );
 		
-		setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.WHITE, Color.GRAY));
-		setFont(new Font ("Raleway", Font.PLAIN, 24));
+		Border empty = BorderFactory.createEmptyBorder( 5, 15, 5, 15);
+		setBorder( empty );
+		setFocusPainted( false );
 	}
 	
 }
