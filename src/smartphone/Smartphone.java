@@ -59,18 +59,18 @@ public class Smartphone extends JFrame implements ActionListener
 	private Card homeCard;
 	
 	/**
-	 * Nom de la carte affichée
+	 * Nom de la carte affichÃ©e
 	 */
 	private Card currentCard;
 	
 	/**
-	 * CardLayout utilisé sur le panneau centrale
+	 * CardLayout utilisÃ© sur le panneau centrale
 	 */
 	private CardLayout cLayout = new CardLayout();
 	
 	private ArrayList<AbstractApp> apps = new ArrayList<>();
 	/**
-	 * Ensemble des piles de JPanel associés aux apps
+	 * Ensemble des piles de JPanel associÃ©s aux apps
 	 */
 	private HashMap< AbstractApp, ArrayList<Card> > appPanels = new HashMap<>();
 	
@@ -80,18 +80,18 @@ public class Smartphone extends JFrame implements ActionListener
 	private ArrayList<Card> cards = new ArrayList<>();
 	
 	/**
-	 * Panneau centrale (écran du smartphone)
+	 * Panneau centrale (Ã©cran du smartphone)
 	 */
 	private JPanel panelcenter = new JPanel();
 	
 	/**
-	 * Panneau sud (boutons de contrôle en-dessous de l'écran)
+	 * Panneau sud (boutons de contrÃ´le en-dessous de l'Ã©cran)
 	 */
 	private JPanel panelsouth = new JPanel();
 	
 	
 	/**
-	 * Dimensions de l'écran du smartphone en pixels
+	 * Dimensions de l'Ã©cran du smartphone en pixels
 	 */
 	private Dimension screenSize = new Dimension( 480, 800 );
 	private Dimension appButtonSize = new Dimension( 100, 100 );
@@ -139,7 +139,7 @@ public class Smartphone extends JFrame implements ActionListener
 		panelcenter.setPreferredSize( this.screenSize );
 		panelcenter.setLayout( cLayout );
 		
-		// Ajout des applications au téléphone
+		// Ajout des applications au tÃ©lÃ©phone
 		this.registerApps();
 		
 		
@@ -159,7 +159,7 @@ public class Smartphone extends JFrame implements ActionListener
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Smartphone");
-		//this.setResizable(false); //désactiver les boutons de redimensionnement de la fenêtre
+		//this.setResizable(false); //dÃ©sactiver les boutons de redimensionnement de la fenÃªtre
 		
 		
 		// On ajoute la carte du homescreen de base
@@ -206,13 +206,13 @@ public class Smartphone extends JFrame implements ActionListener
 					this.contactFile
 				};
 			
-			// Création des répertoires nécessaires au smartphone s'ils n'existent pas
+			// CrÃ©ation des rÃ©pertoires nÃ©cessaires au smartphone s'ils n'existent pas
 			for (File folder : folders)
 			{
 				if ( !folder.exists() ) folder.mkdirs();
 			}
 			
-			// Création des fichiers nécessaires au smartphone s'ils n'existent pas
+			// CrÃ©ation des fichiers nÃ©cessaires au smartphone s'ils n'existent pas
 			for (File file : files)
 			{
 				if ( !file.exists() ) file.createNewFile();
@@ -225,7 +225,7 @@ public class Smartphone extends JFrame implements ActionListener
 			
 			JOptionPane.showMessageDialog(
 				null,
-				"Impossible d'accéder au dossier racine du smartphone. Le programme va s'arrêter."
+				"Impossible d'accÃ©der au dossier racine du smartphone. Le programme va s'arrÃªter."
 			);
 			
 			System.exit(0);
@@ -243,7 +243,7 @@ public class Smartphone extends JFrame implements ActionListener
 	/**
 	 * Ajoute une nouvelle carte
 	 * @param panel Le JPanel qui fera office de carte
-	 * @param cardName Le nom de la carte à ajouter
+	 * @param cardName Le nom de la carte Ã  ajouter
 	 */
 	private void addCard( Card card, int insertPos )
 	{
@@ -254,7 +254,7 @@ public class Smartphone extends JFrame implements ActionListener
 	/**
 	 * Ajoute une nouvelle carte
 	 * @param panel Le JPanel qui fera office de carte
-	 * @param cardName Le nom de la carte à ajouter
+	 * @param cardName Le nom de la carte Ã  ajouter
 	 */
 	private void addCard( Card card )
 	{
@@ -277,8 +277,8 @@ public class Smartphone extends JFrame implements ActionListener
 	}
 	
 	/**
-	 * Retire la carte associée à panel
-	 * @param panelLe JPanel correspondant à la carte à retirer
+	 * Retire la carte associÃ©e Ã  panel
+	 * @param panelLe JPanel correspondant Ã  la carte Ã  retirer
 	 */
 	private void removeCard( Card card )
 	{
@@ -291,11 +291,11 @@ public class Smartphone extends JFrame implements ActionListener
 	
 	/**
 	 * Affiche la carte cardName
-	 * @param cardName Le nom de la carte à afficher
+	 * @param cardName Le nom de la carte Ã  afficher
 	 */
 	private void showCard( Card card )
 	{
-		// La méthode show() de CardLayout ne nous dit pas si une carte avec le nom correspondant a été trouvée ou non...
+		// La mÃ©thode show() de CardLayout ne nous dit pas si une carte avec le nom correspondant a Ã©tÃ© trouvÃ©e ou non...
 		cLayout.show( panelcenter, card.getCardName() );
 		
 		// La valeur de currentCard n'est donc pas 100% fiable...
@@ -303,7 +303,7 @@ public class Smartphone extends JFrame implements ActionListener
 	}
 	
 	/**
-	 * Ajoute le panel fourni en paramètre à la liste des panels de l'application app
+	 * Ajoute le panel fourni en paramÃ¨tre Ã  la liste des panels de l'application app
 	 * @param app
 	 * @param panel
 	 */
@@ -311,7 +311,7 @@ public class Smartphone extends JFrame implements ActionListener
 	{
 		if ( app == null )
 		{
-			System.err.println( "pushAppPanel appelé sans application !" );
+			System.err.println( "pushAppPanel appelÃ© sans application !" );
 			return;
 		}
 		
@@ -319,7 +319,7 @@ public class Smartphone extends JFrame implements ActionListener
 		
 		Card c = new Card( Card.CARD_TYPE_APP, app, panels.size(), panel );
 		
-		// Ajout à la liste des panels de l'app
+		// Ajout Ã  la liste des panels de l'app
 		panels.add( c );
 		
 		// Ajout du panel en tant que nouvelle carte
@@ -332,7 +332,7 @@ public class Smartphone extends JFrame implements ActionListener
 	{
 		if ( app == null )
 		{
-			System.err.println( "popAppPanel appelé sans application !" );
+			System.err.println( "popAppPanel appelÃ© sans application !" );
 			return null;
 		}
 		
@@ -340,7 +340,7 @@ public class Smartphone extends JFrame implements ActionListener
 		
 		if ( panels.size() <= 1 ) return null;
 		
-		// Récupération du dernier panel ajouté dans la liste des panels de l'app
+		// RÃ©cupÃ©ration du dernier panel ajoutÃ© dans la liste des panels de l'app
 		Card removed = panels.remove( panels.size()-1 );
 		
 		// Retrait de la carte correspondant au panel le plus haut
@@ -404,11 +404,11 @@ public class Smartphone extends JFrame implements ActionListener
 	{
 		apps.add( app );
 		
-		// Création d'une pile de cartes que l'application va pouvoir utiliser
+		// CrÃ©ation d'une pile de cartes que l'application va pouvoir utiliser
 		ArrayList<Card> panels = new ArrayList<Card>();
 		this.appPanels.put(app, panels);
 		
-		// Récupération du bouton de l'application
+		// RÃ©cupÃ©ration du bouton de l'application
 		JButton appButton = app.getButton();
 		appButton.addActionListener( this );
 		//this.appButtons.add( appButton );
@@ -538,7 +538,7 @@ public class Smartphone extends JFrame implements ActionListener
 	
 	private class Card
 	{
-		// Constantes pour identifier les types de cartes utilisés
+		// Constantes pour identifier les types de cartes utilisÃ©s
 		public static final String CARD_TYPE_UNKNOWN = "UNK";
 		public static final String CARD_TYPE_APP = "APP";
 		public static final String CARD_TYPE_HOME = "HOM";
