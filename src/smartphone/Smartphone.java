@@ -50,7 +50,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
-
+/**
+ * Cette classe représente un smartphone. Chaque instance de la classe contient
+ * un écran d'accueil et un ensemble d'applications.
+ * @author Fabien Terrani
+ */
 public class Smartphone extends JFrame implements ActionListener
 {
 	/**
@@ -64,7 +68,7 @@ public class Smartphone extends JFrame implements ActionListener
 	private Card currentCard;
 	
 	/**
-	 * CardLayout utilisé sur le panneau centrale
+	 * CardLayout utilisé sur le panneau central
 	 */
 	private CardLayout cLayout = new CardLayout();
 	
@@ -80,7 +84,7 @@ public class Smartphone extends JFrame implements ActionListener
 	private ArrayList<Card> cards = new ArrayList<>();
 	
 	/**
-	 * Panneau centrale (écran du smartphone)
+	 * panneau central (écran du smartphone)
 	 */
 	private JPanel panelcenter = new JPanel();
 	
@@ -94,30 +98,90 @@ public class Smartphone extends JFrame implements ActionListener
 	 * Dimensions de l'écran du smartphone en pixels
 	 */
 	private Dimension screenSize = new Dimension( 480, 800 );
+	
+	/**
+	 * Dimensions des boutons d'applications en pixels.
+	 */
 	private Dimension appButtonSize = new Dimension( 100, 100 );
 	
+	/**
+	 * Couleur d'arrière-plan du smartphone.
+	 */
 	private static final Color bgColor = new Color(30,30,30,255);
+	
+	/**
+	 * Police de caractère du smartphone (petite)
+	 */
 	private static final Font smallFont = new Font( "Raleway", Font.PLAIN, 16 );
+
+	/**
+	 * Police de caractère du smartphone (moyenne)
+	 */
 	private static final Font mediumFont = new Font( "Raleway", Font.PLAIN, 24 );
+
+	/**
+	 * Police de caractère du smartphone (grande)
+	 */
 	private static final Font largeFont = new Font( "Raleway", Font.PLAIN, 32 );
 	
-	private JButton btnApps; //Apps
-	private JButton btnHome; //Home
-	private JButton btnReturn; //Return
+	/**
+	 * Bouton d'affichage des apps actuellement démarrées (pas encore implémenté)
+	 */
+	private JButton btnApps;
 	
+	/**
+	 * Bouton Home permettant de revenir à l'écran d'accueil.
+	 */
+	private JButton btnHome;
+	
+	/**
+	 * Bouton Retour permettant de revenir en arrière dans les menus/écrans.
+	 */
+	private JButton btnReturn;
+	
+	/**
+	 * Répertoire racine du smartphone.
+	 */
 	private File rootFolder;
+	
+	/**
+	 * Répertoire des ressources système.
+	 */
 	private File sysFolder;
+	
+	/**
+	 * Répertoire des applications.
+	 */
 	private File appsFolder;
+	
+	/**
+	 * Répertoire de stockage des données utilisateur.
+	 */
 	private File storageFolder;
+	
+	/**
+	 * Répertoire des images de l'utilisateur.
+	 */
 	private File imageFolder;
+	
+	/**
+	 * Répertoire des sons de l'utilisateur.
+	 */
 	private File soundFolder;
+	
+	/**
+	 * Fichier contenant la liste des contacts de l'utilisateur.
+	 */
 	private File contactFile;
 	
 	/**
 	 * Largeur des scrollbars verticales du smartphone en pixels
 	 */
-	private static int scrollBarWidth = 30;
+	private static int scrollbarThickness = 30;
 	
+	/**
+	 * Crée un nouveau smartphone.
+	 */
 	public Smartphone ()
 	{
 		prepareFolders();
@@ -174,7 +238,7 @@ public class Smartphone extends JFrame implements ActionListener
 		panelsouth.add(btnHome);
 		panelsouth.add(btnReturn);
 		
-		// Ajout du panneau centrale au smartphone
+		// Ajout du panneau central au smartphone
 		this.add(panelcenter, BorderLayout.CENTER);
 		this.add(panelsouth, BorderLayout.SOUTH);
 		
@@ -182,6 +246,10 @@ public class Smartphone extends JFrame implements ActionListener
 		this.setLocationRelativeTo( null );
 	}
 	
+	/**
+	 * Prépare les répertoires nécessaires au smartphone pour fonctionner.
+	 * Arrête le programme si les répertoires n'ont pas pu être créés.
+	 */
 	private void prepareFolders()
 	{
 		try
@@ -232,6 +300,12 @@ public class Smartphone extends JFrame implements ActionListener
 		}
 	}
 	
+	/**
+	 * Retourne la position du composant de la carte passée en paramètre dans
+	 * le panneau central.
+	 * @param card la carte contenant le composant dont on recherche la position
+	 * @return L'index du composant
+	 */
 	private int getCardPosition( Card card )
 	{
 		Component[] c = panelcenter.getComponents();
@@ -242,8 +316,8 @@ public class Smartphone extends JFrame implements ActionListener
 	
 	/**
 	 * Ajoute une nouvelle carte
-	 * @param panel Le JPanel qui fera office de carte
-	 * @param cardName Le nom de la carte à ajouter
+	 * @param card La carte à ajouter
+	 * @param insertPos La position à laquelle ajouter le composant de la carte dans le panneau central
 	 */
 	private void addCard( Card card, int insertPos )
 	{
@@ -252,9 +326,8 @@ public class Smartphone extends JFrame implements ActionListener
 	}
 	
 	/**
-	 * Ajoute une nouvelle carte
-	 * @param panel Le JPanel qui fera office de carte
-	 * @param cardName Le nom de la carte à ajouter
+	 * Ajoute une nouvelle carte à la pile de cartes du panneau central.
+	 * @param card La carte à ajouter
 	 */
 	private void addCard( Card card )
 	{
@@ -277,8 +350,8 @@ public class Smartphone extends JFrame implements ActionListener
 	}
 	
 	/**
-	 * Retire la carte associée à panel
-	 * @param panelLe JPanel correspondant à la carte à retirer
+	 * Retire la carte passée en paramètre des cartes du panneau central.
+	 * @param card La carte à retirer
 	 */
 	private void removeCard( Card card )
 	{
@@ -290,8 +363,8 @@ public class Smartphone extends JFrame implements ActionListener
 	}
 	
 	/**
-	 * Affiche la carte cardName
-	 * @param cardName Le nom de la carte à afficher
+	 * Affiche la carte passée en paramètre.
+	 * @param cardName La carte à afficher
 	 */
 	private void showCard( Card card )
 	{
@@ -303,9 +376,10 @@ public class Smartphone extends JFrame implements ActionListener
 	}
 	
 	/**
-	 * Ajoute le panel fourni en paramètre à la liste des panels de l'application app
-	 * @param app
-	 * @param panel
+	 * Ajoute le panel fourni en paramètre à la liste des panels de l'application app.
+	 * Cette méthode crée une nouvelle carte, l'ajoute au panneau central et l'affiche.
+	 * @param app L'application pour laquelle on va ajouter le panel
+	 * @param panel Le panel à ajouter sur la pile
 	 */
 	public void pushAppPanel( AbstractApp app, JPanel panel )
 	{
@@ -328,6 +402,11 @@ public class Smartphone extends JFrame implements ActionListener
 		showCard( c );
 	}
 	
+	/**
+	 * Retire le panel au sommet de la pile de l'application app et le retourne.
+	 * @param app L'application dont on veut retirer le panel
+	 * @return Le panel retiré
+	 */
 	public JPanel popAppPanel( AbstractApp app )
 	{
 		if ( app == null )
@@ -354,7 +433,11 @@ public class Smartphone extends JFrame implements ActionListener
 		return removed.panel;
 	}
 	
-
+	/**
+	 * Affiche l'application passée en paramètre. (Recherche la carte au sommet
+	 * de la pile de cartes de l'application et l'affiche.)
+	 * @param app L'application à afficher
+	 */
 	public void showApp( AbstractApp app )
 	{
 		ArrayList<Card> panels = appPanels.get(app);
@@ -362,21 +445,38 @@ public class Smartphone extends JFrame implements ActionListener
 		showCard( panels.get( panels.size()-1 ) );
 	}
 	
+	/**
+	 * Affiche l'écran d'accueil
+	 */
 	private void showHome()
 	{
 		showCard( homeCard );
 	}
 	
-	public static int getScrollBarWidth()
+	/**
+	 * Retourne l'épaisseur des scrollbars du smartphone
+	 * @return L'épaisseur des scrollbars en pixels
+	 */
+	public static int getScrollbarThickness()
 	{
-		return scrollBarWidth;
+		return scrollbarThickness;
 	}
-
+	
+	/**
+	 * Retourne la couleur de fond du smartphone.
+	 * @return la couleur de fond du smartphone
+	 */
 	public static Color getBackgroundColor()
 	{
 		return bgColor;
 	}
 	
+	/**
+	 * Retourne une des polices utilisées dans le smartphone selon la taille
+	 * passée en paramètre.
+	 * @param fontType La taille de la police ("small", "medium", "large")
+	 * @return Un objet Font représentant la police demandée
+	 */
 	public static Font getSmartFont( String fontType )
 	{
 		Font f = null;
@@ -392,6 +492,10 @@ public class Smartphone extends JFrame implements ActionListener
 		return f;
 	}
 	
+	/**
+	 * Installe les applications contact, galerie, musique et dummy sur
+	 * le smartphone
+	 */
 	private void registerApps()
 	{
 		registerApp( new ContactApp( this ) );
@@ -400,6 +504,12 @@ public class Smartphone extends JFrame implements ActionListener
 		registerApp( new DummyApp( this ) );
 	}
 	
+	/**
+	 * Ajoute l'application app au smartphone. Enregistre l'application
+	 * dans la liste des apps, lui associe une pile de cartes et ajoute
+	 * un listener au bouton de l'application.
+	 * @param app L'application à installer
+	 */
 	private void registerApp( AbstractApp app )
 	{
 		apps.add( app );
@@ -414,6 +524,11 @@ public class Smartphone extends JFrame implements ActionListener
 		//this.appButtons.add( appButton );
 	}
 	
+	/**
+	 * Retourne l'icône associée à l'application passée en paramètre
+	 * @param app L'application dont on doit retourner l'icône
+	 * @return Un objet Image représentant l'icône de l'application
+	 */
 	public Image getAppImage( AbstractApp app )
 	{
 		Image img = null;
@@ -441,6 +556,11 @@ public class Smartphone extends JFrame implements ActionListener
 		return img;
 	}
 	
+	/**
+	 * Retourne l'instance d'application de la classe passée en paramètre
+	 * @param classObj La classe de l'application à retourner
+	 * @return L'instance de l'application demandée, en tant que AbstractApp
+	 */
 	public AbstractApp getAppInstance( Class classObj )
 	{
 		AbstractApp found = null;
@@ -456,15 +576,11 @@ public class Smartphone extends JFrame implements ActionListener
 		
 		return found;
 	}
-
-	/*private void showAppButtons()
-	{
-		homeCard.panel.setLayout( new FlowLayout(FlowLayout.LEFT, 70, 70) );
-		
-		for ( JButton appButton : this.appButtons )
-			homeCard.panel.add( appButton );
-	}*/
 	
+	/**
+	 * Gère l'interaction avec les trois boutons inférieurs du smartphone
+	 * (apps, home, return).
+	 */
 	public void actionPerformed(ActionEvent e)
 	{
 		if ( e.getSource() == this.btnHome )
@@ -507,51 +623,93 @@ public class Smartphone extends JFrame implements ActionListener
 		}
 	}
 	
+	/**
+	 * Retourne le fichier d'arrière-plan de l'écran d'accueil
+	 * @return Le fichier d'arrière-plan de l'écran d'accueil
+	 */
 	public File getBackgroundFile()
 	{
 		return new File( this.sysFolder, "background.png" );
 	}
 	
+	/**
+	 * Retourne le répertoire racine du smartphone
+	 * @return Le répertoire racine du smartphone
+	 */
 	public File getRootFolder()
 	{
 		return this.rootFolder;
 	}
 	
+	/**
+	 * Retourne le répertoire système.
+	 * @return Le répertoire système
+	 */
 	public File getSysFolder()
 	{
 		return this.sysFolder;
 	}
 	
+	/**
+	 * Retourne le répertoire des apps.
+	 * @return Le répertoire des apps
+	 */
 	public File getAppsFolder()
 	{
 		return this.appsFolder;
 	}
-
+	
+	/**
+	 * Retourne le répertoire des images.
+	 * @return Le répertoire des images
+	 */
 	public File getImageFolder()
 	{
 		return this.imageFolder;
 	}
-
+	
+	/**
+	 * Retourne le répertoire des sons.
+	 * @return Le répertoire des sons
+	 */
 	public File getSoundFolder()
 	{
 		return this.soundFolder;
 	}
 	
+	/**
+	 * Retourne le fichier stockant la liste des contacts.
+	 * @return Le fichier stockant la liste des contacts
+	 */
 	public File getContactFile()
 	{
 		return this.contactFile;
 	}
-
+	
+	/**
+	 * Retourne la dimension de l'écran du smartphone
+	 * @return Un objet Dimension contenant la largeur et la hauteur de l'écran en pixels
+	 */
 	public Dimension getScreenSize()
 	{
 		return ((Dimension) this.screenSize.clone());
 	}
 	
+	/**
+	 * Retourne la dimension des boutons d'application
+	 * @return Un objet Dimension contenant la largeur et la hauteur des boutons d'application
+	 * en pixels
+	 */
 	public Dimension getAppButtonSize()
 	{
 		return ((Dimension) this.appButtonSize.clone());
 	}
 	
+	/**
+	 * Cette classe regroupe différentes informations pour modéliser et organiser les cartes
+	 * de la classe Swing CardLayout.
+	 * @author Fabien Terrani
+	 */
 	private class Card
 	{
 		// Constantes pour identifier les types de cartes utilisés

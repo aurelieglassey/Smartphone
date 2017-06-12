@@ -1,10 +1,3 @@
-
-// Classe reprise du package com.sun.media.sound
-// Écrite par Karl Helgason
-// Le code n'a pas été modifié. Seuls des commentaires ont été ajoutés pour
-// mieux décrire le comportement de la classe
-
-
 /*
  * Copyright (c) 2007, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -36,12 +29,14 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-// Cette classe sert à lire un fichier structuré suivant le format RIFF (découpage du
-// fichier en chunks commençant par un nom de 4 caractèrse suivi de la longueur du
-// chunk codée sur 4 bytes en LITTLE ENDIAN)
 /**
- * Resource Interchange File Format (RIFF) stream decoder.
- *
+ * Décodeur de flux au format RIFF (Resource Interchange File Format).
+ * Cette classe sert à lire un flux structuré suivant le format RIFF (découpage du
+ * fichier en chunks commençant par un nom de 4 caractèrse suivi de la longueur du
+ * chunk codée sur 4 bytes en LITTLE ENDIAN).
+ * 
+ * Cette classe a été reprise du package com.sun.media.sound et son code n'a pas
+ * été modifié.
  * @author Karl Helgason
  */
 public final class RIFFReader extends InputStream {
@@ -55,7 +50,11 @@ public final class RIFFReader extends InputStream {
     private long avail = Integer.MAX_VALUE;
     private RIFFReader lastiterator = null;
 	
-	// Crée un nouveau RIFFReader à partir d'un InputStream
+	/**
+	 * Crée un nouveau RIFFReader à partir d'un InputStream
+	 * @param stream Le flux d'entrée
+	 * @throws IOException Exception rejetée en cas de problème de lecture
+	 */
     public RIFFReader(InputStream stream) throws IOException {
 
 		// Une instance RIFFReader peut être créée à partir d'une autre instance RIFFReader
@@ -108,20 +107,33 @@ public final class RIFFReader extends InputStream {
         }
     }
 	
-	// filepointer contient le nombre de caractères lu dans le fichier,
-	// indépendamment des instances créées pour lire les chunks
+    /**
+     * Retourne le nombre de caractères lu dans le fichier, indépendamment des instances
+     * créées pour lire les chunks.
+     * @return Le nomre de caractères lu dans le fichier
+     * @throws IOException Exception rejetée en cas de problème de lecture
+     */
     public long getFilePointer() throws IOException {
         return root.filepointer;
     }
 	
-	// Retourne TRUE s'il y a encore des caractères à lire dans le fichier, FALSE sinon
+	/**
+	 * Retourne un booléen permettant de savoir s'il reste un chunk dans le flux.
+	 * @return TRUE s'il y a encore des caractères à lire dans le fichier, FALSE sinon
+	 * @throws IOException Exception rejetée en cas de problème de lecture
+	 */
     public boolean hasNextChunk() throws IOException {
         if (lastiterator != null)
             lastiterator.finish();
         return avail != 0;
     }
 
-	// Retourne une instance RIFFReader pour lire le prochain chunk
+    /**
+     * Retourne une instance RIFFReader pour lire le prochain chunk.
+     * @return Une instance RIFFReader pour lire le prochain chunk. L'instance est liée
+     * à une instance parente.
+     * @throws IOException Exception rejetée en cas de problème de lecture
+     */
     public RIFFReader nextChunk() throws IOException {
         if (lastiterator != null)
             lastiterator.finish();

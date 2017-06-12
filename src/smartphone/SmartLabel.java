@@ -8,24 +8,21 @@ import javax.swing.JLabel;
 
 /**
  * Classe qui met en forme l'apparence d'un label dans l'application contact
- * @author Aurélie
- *
+ * @author Aurélie Glassey
  */
 public class SmartLabel extends JLabel
 {
 
 	/**
-	 * Constructeur de la classe SmartLabel
-	 * @param text
+	 * Crée un nouveau label.
+	 * @param text Le texte affiché par le label
 	 */
 	public SmartLabel(String text)
 	{
 		super(text);
 		setBorder(BorderFactory.createEmptyBorder(10, 10 , 10, 10));
-		setFont(new Font ("Raleway", Font.PLAIN, 24));
+		setFont( Smartphone.getSmartFont("medium") );
 		setBackground(new Color(250, 250, 250));
 		setOpaque(true);
-
 	}
-	
 }

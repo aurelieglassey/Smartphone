@@ -21,20 +21,41 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
+/**
+ * Renderer utilisé pour afficher les objets Contact dans une JList.
+ * @author Fabien Terrani
+ */
 public class ContactListCellRenderer extends SmartListCellRenderer
 {
+	/**
+	 * Largeur et hauteur des images des contacts en pixels.
+	 */
 	private int iconSize = 60;
-
+	
+	/**
+	 * Construit un nouveau renderer en utilisant la dimension passé
+	 * en paramètre.
+	 * @param size La largeur et la hauteur des images des contacts en pixels
+	 */
 	public ContactListCellRenderer( int size )
 	{
 		this();
 		iconSize = size;
 	}
+	
+	/**
+	 * Construit un nouveau renderer générant des images de 60 pixels de côté
+	 * par défaut.
+	 */
 	public ContactListCellRenderer()
 	{
 		setIconTextGap( 10 );
 	}
 	
+	/**
+	 * Méthode surchargée pour afficher les données des objets de type Contact.
+	 * Affiche l'image associée au contact, son prénom et son nom.
+	 */
 	public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 			boolean cellHasFocus)
 	{

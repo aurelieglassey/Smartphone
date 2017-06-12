@@ -15,15 +15,14 @@ import javax.swing.border.CompoundBorder;
 /**
  * Classe qui met en forme l'apparence d'un bouton dans l'application contact
  * Cette classe contient deux constructeurs, un avec un texte en paramètre et l'autre avec une image en paramètre
- * @author Aurélie
- *
+ * @author Aurélie Glassey
  */
 public class SmartButton extends JButton
 {
 
 	/**
-	 * Premier constructeur avec du text en paramètre.
-	 * @param text
+	 * Premier constructeur avec du texte en paramètre.
+	 * @param text Le texte à afficher dans le bouton
 	 */
 	public SmartButton (String text)
 	{
@@ -33,7 +32,7 @@ public class SmartButton extends JButton
 	
 	/**
 	 * Deuxième constructeur avec un image en paramètre 
-	 * @param icon
+	 * @param icon L'icône à afficher dans le bouton
 	 */
 	public SmartButton (Icon icon)
 	{
@@ -41,6 +40,9 @@ public class SmartButton extends JButton
 		apparenceButton();
 	}
 	
+	/**
+	 * Adapte l'apparence du bouton au smartphone.
+	 */
 	private void apparenceButton()
 	{
 		setBackground( Smartphone.getBackgroundColor().brighter().brighter() );

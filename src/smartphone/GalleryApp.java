@@ -40,73 +40,165 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+/**
+ * Cette classe représente une application galerie. Elle permet d'afficher
+ * un aperçu des images d'un répertoire, d'afficher une version agrandie
+ * des images, de les modifier, de les supprimer et de les lier à un contact.
+ * @author Fabien Terrani
+ */
 public class GalleryApp extends AbstractApp implements ActionListener
 {
-	File folder;
-	ArrayList<ImageButton> imageButtons;
+	/**
+	 * Le répertoire contenant les images.
+	 */
+	private File folder;
 	
+	/**
+	 * Les boutons affichant les miniatures des images de la galerie.
+	 */
+	private ArrayList<ImageButton> imageButtons;
+	
+	/**
+	 * Panel contenant l'ensemble des miniatures des images.
+	 */
 	JPanel imgPanel = new JPanel();
 	
+	/**
+	 * Espace de séparations entre les miniatures des images en pixels.
+	 */
 	private int thumbMargin;
+	
+	/**
+	 * Largeur des miniatures en pixels.
+	 */
 	private int thumbWidth;
+	
+	/**
+	 * Hauteur des miniatures en pixels.
+	 */
 	private int thumbHeight;
+	
+	/**
+	 * Largeur de la scrollbar verticale.
+	 */
 	private int scrollBarWidth;
-
+	
+	/**
+	 * Nom de la propriété des boutons contenant l'objet File associé à l'image.
+	 */
 	private static final String PROP_IMAGEFILE = "imageFile";
 	
+	/**
+	 * Affichage agrandi d'une image.
+	 */
 	private static final String ACTION_ZOOM_IMAGE = "zoomImage";
+	
+	/**
+	 * Affichage de la liste des contacts pour choisir le contact à associer à l'image.
+	 */
 	private static final String ACTION_ADD_TO_CONTACT = "addToContact";
+	
+	/**
+	 * Association de l'image en cours au contact choisi.
+	 */
 	private static final String ACTION_ASSOCIATE_TO_CONTACT = "associateToContact";
+	
+	/**
+	 * Suppression d'une image.
+	 */
 	private static final String ACTION_DELETE_IMAGE = "deleteImage";
+	
+	/**
+	 * Modification d'une image.
+	 */
 	private static final String ACTION_MODIFY_IMAGE = "modifyImage";
+	
+	/**
+	 * Application de filtre sur une image.
+	 */
 	private static final String ACTION_APPLY_FILTER = "applyFilter";
+	
+	/**
+	 * Enregistrement des modifications apportées à une image.
+	 */
 	private static final String ACTION_SAVE_IMAGE = "saveImage";
+	
+	/**
+	 * Retour en arrière. Équivalent à l'appui sur le bouton Retour.
+	 */
 	private static final String ACTION_RETURN = "return";
 	
-	
-
-	private JPanel zoomPanel = null;
+	/**
+	 * Dernière image sélectionnée pour modification, suppression ou association à un contact.
+	 */
 	private File chosenImage = null;
 	
-	private JPanel modifyPanel;
-	private ImageButton chosenImageButton;
-	private JLabel zoomLabel;
+	/**
+	 * Label utilisé pour afficher un aperçu de l'image modifiée.
+	 */
 	private JLabel previewLabel;
+	
+	/**
+	 * Label utilisé pour afficher un agrandissement de l'image modifiée.
+	 */
+	private JLabel zoomLabel;
+	
+	/**
+	 * Version miniature de l'image originale. Utilisée pour avoir un aperçu des filtres.
+	 */
 	private Image preview;
+	
+	/**
+	 * Ensemble des filtres d'image disponibles.
+	 */
 	private HashMap<String,ImageFilter> imgFilters;
+	
+	/**
+	 * Liste déroulante utilisée pour afficher les filtres d'images.
+	 */
 	private JComboBox<String> filterBox;
 	
-	// Filtre permettant de sélectionner les noms de fichiers ayant une extension prise en charge par ImageIO
+	/**
+	 * Filtre permettant de sélectionner les noms de fichiers ayant une extension prise
+	 * en charge par ImageIO.
+	 */
 	private static final FileNameExtensionFilter extFilter = new FileNameExtensionFilter(
 		"Fichiers image",
 		ImageIO.getReaderFileSuffixes()
 	);
 	
-	// Filtre permettant de sélectionner les fichiers compatibles avec ImageIO
+	/**
+	 * Filtre permettant de sélectionner les fichiers compatibles avec ImageIO.
+	 */
 	private static final FileFilter imageFilter = new FileFilter()
 	{
+		/**
+		 * Retourne TRUE si le fichier a une extension compatible, FALSE sinon.
+		 */
 		public boolean accept(File pathname)
 		{
 			return GalleryApp.extFilter.accept( pathname );
 		}
 	};
 	
-	
-	
+	/**
+	 * Crée une nouvelle application galerie.
+	 * @param phone Le smartphone sur lequel l'application est installée
+	 */
 	public GalleryApp( Smartphone phone )
 	{
 		super( phone, "Gallery app", "gallery" );
 		
-		this.mainPanel.setBackground( Smartphone.getBackgroundColor() );
-		this.mainPanel.setLayout( new BorderLayout() );
+		this.getMainPanel().setBackground( Smartphone.getBackgroundColor() );
+		this.getMainPanel().setLayout( new BorderLayout() );
 		
 		final JLabel loading = new JLabel("Loading gallery...");
 		loading.setFont( Smartphone.getSmartFont("large") );
 		loading.setForeground( Color.WHITE );
-		loading.setPreferredSize( this.phone.getScreenSize() );
+		loading.setPreferredSize( this.getPhone().getScreenSize() );
 		loading.setHorizontalAlignment( SwingConstants.CENTER );
 		loading.setVerticalAlignment( SwingConstants.CENTER );
-		this.mainPanel.add( loading, BorderLayout.CENTER );
+		this.getMainPanel().add( loading, BorderLayout.CENTER );
 		
 		Runnable loadGallery = new Runnable()
 		{
@@ -114,8 +206,8 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			{
 				System.out.println("Loading gallery...");
 				loadFromFiles();
-				GalleryApp.this.mainPanel.remove( loading );
-				GalleryApp.this.mainPanel.revalidate();
+				GalleryApp.this.getMainPanel().remove( loading );
+				GalleryApp.this.getMainPanel().revalidate();
 				
 				System.out.println("Done! :)");
 			}
@@ -126,16 +218,19 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		
 		initImageFilters();
 	}
-
+	
+	/**
+	 * Charge les miniatures des images du répertoire dans la galerie.
+	 */
 	private void loadFromFiles()
 	{
-		this.folder = this.phone.getImageFolder();
+		this.folder = this.getPhone().getImageFolder();
 		this.imageButtons = new ArrayList<ImageButton>();
 		
 		thumbMargin = 20;
-		scrollBarWidth = Smartphone.getScrollBarWidth();
+		scrollBarWidth = Smartphone.getScrollbarThickness();
 		
-		thumbWidth = (int) Math.round( (this.phone.getScreenSize().getWidth()-scrollBarWidth - 4 * thumbMargin) / 3 );
+		thumbWidth = (int) Math.round( (this.getPhone().getScreenSize().getWidth()-scrollBarWidth - 4 * thumbMargin) / 3 );
 		thumbHeight = thumbWidth;
 		
 		File[] foundImageFiles = this.folder.listFiles( GalleryApp.imageFilter );
@@ -172,10 +267,13 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		setPreferredGallerySize();
 		
 		JScrollPane pane = new SmartScrollPane( imgPanel );
-		pane.setPreferredSize( this.phone.getScreenSize() );
-		this.mainPanel.add( pane, BorderLayout.CENTER );
+		pane.setPreferredSize( this.getPhone().getScreenSize() );
+		this.getMainPanel().add( pane, BorderLayout.CENTER );
 	}
 	
+	/**
+	 * Ajoute les filtres d'images utilisables dans la galerie.
+	 */
 	private void initImageFilters()
 	{
 		imgFilters = new HashMap<String, ImageFilter>();
@@ -189,6 +287,9 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		ArrayList<String> a = new ArrayList<>( imgFilters.keySet() );
 		Comparator<String> sortFilters = new Comparator<String>()
 		{
+			/**
+			 * Trie les noms des filtres afin de placer "Image originale" en premier.
+			 */
 			public int compare(String a, String b)
 			{
 				if (a == "Image originale")
@@ -196,7 +297,6 @@ public class GalleryApp extends AbstractApp implements ActionListener
 				
 				return 0;
 			}
-			
 		};
 		
 		a.sort( sortFilters );
@@ -207,44 +307,40 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		filterBox.addActionListener( this );
 	}
 	
+	/**
+	 * Calcule la hauteur nécessaire pour afficher toutes les miniatures dans l'espace
+	 * d'affichage du smartphone.
+	 */
 	private void setPreferredGallerySize()
 	{
-		int thumbsPerRow = (int) this.phone.getScreenSize().getWidth() / this.thumbWidth;
+		int thumbsPerRow = (int) this.getPhone().getScreenSize().getWidth() / this.thumbWidth;
 		
 		this.imgPanel.setPreferredSize( new Dimension(
-			(int) this.phone.getScreenSize().getWidth()-scrollBarWidth,
+			(int) this.getPhone().getScreenSize().getWidth()-scrollBarWidth,
 			(this.imageButtons.size() / thumbsPerRow + 1) * (this.thumbHeight+2 + this.thumbMargin) + this.thumbMargin
 		));
 	}
 	
-	public JPanel generateMainPanel()
-	{
-		return new JPanel();
-	}
-	
+	/**
+	 * Gère l'appui sur le bouton Retour pour l'application galerie.
+	 */
 	public void returnPressed()
 	{
-		JPanel popped = popPanel();
-		
-		if ( popped == modifyPanel )
-		{
-			modifyPanel = null;
-		}
-		
-		else if ( popped == zoomPanel )
-		{
-			zoomPanel = null;
-			chosenImage = null;
-		}
+		popPanel();
 	}
 	
+	/**
+	 * Crée un objet Image réduit à la largeur disponible sur l'affichage du téléphone.
+	 * @param img L'image à réduire
+	 * @return Une version réduite de l'image passée en paramètre.
+	 */
 	private Image getModifyPreview( Image img )
 	{
 		float resizeFactor = 1.0f;
 
 		int w = img.getWidth( null );
 		int h = img.getHeight( null );
-		int modifyWidth = this.phone.getScreenSize().width - 20;
+		int modifyWidth = this.getPhone().getScreenSize().width - 20;
 		
 		if ( w > modifyWidth )
 		{
@@ -259,7 +355,10 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		
 		return preview;
 	}
-
+	
+	/**
+	 * Gère l'interaction avec les différents éléments de l'application galerie.
+	 */
 	public void actionPerformed( ActionEvent e )
 	{
 		String command = e.getActionCommand();
@@ -268,6 +367,7 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		{
 			String selectedFilter = filterBox.getItemAt( filterBox.getSelectedIndex() );
 			ImageFilter filter = imgFilters.get( selectedFilter );
+			
 			
 			if (filter != null)
 			{
@@ -295,14 +395,13 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			
 			if ( chosenImage != null )
 			{
-				zoomPanel = new JPanel();
+				JPanel zoomPanel = new JPanel();
 				zoomPanel.setLayout( new BorderLayout() );
 				zoomPanel.setBackground( Smartphone.getBackgroundColor() );
-				zoomPanel.setBackground( Color.RED );
 				
 				ImageIcon icon = new ImageIcon( chosenImage.toString() );
 				zoomLabel  = new JLabel( icon );
-				zoomLabel.setBackground( Color.GREEN );
+				zoomLabel.setBackground( Smartphone.getBackgroundColor() );
 				
 				Dimension imgSize = new Dimension(
 					icon.getIconWidth(),
@@ -313,9 +412,8 @@ public class GalleryApp extends AbstractApp implements ActionListener
 				JScrollPane pane = new SmartScrollPane( zoomLabel );
 				pane.setBorder( null );
 				pane.setBackground( Smartphone.getBackgroundColor() );
-				pane.setBackground( Color.BLUE );
 				
-				/*Dimension screenSize = this.phone.getScreenSize();
+				/*Dimension screenSize = this.getPhone().getScreenSize();
 				Dimension paneSize = new Dimension(200, 200);
 				pane.setPreferredSize( paneSize );
 				
@@ -358,7 +456,7 @@ public class GalleryApp extends AbstractApp implements ActionListener
 				return;
 			}
 			
-			modifyPanel = new JPanel();
+			JPanel modifyPanel = new JPanel();
 			modifyPanel.setLayout( new BorderLayout() );
 			modifyPanel.setBackground( Smartphone.getBackgroundColor() );
 			
@@ -433,7 +531,7 @@ public class GalleryApp extends AbstractApp implements ActionListener
 
 		else if ( command.equals(ACTION_ADD_TO_CONTACT) )
 		{
-			AbstractApp app = this.phone.getAppInstance( ContactApp.class );
+			AbstractApp app = this.getPhone().getAppInstance( ContactApp.class );
 			
 			if (app != null && app instanceof ContactApp)
 			{
@@ -484,7 +582,7 @@ public class GalleryApp extends AbstractApp implements ActionListener
 				JList<Contact> contactList = (JList<Contact>) e.getSource();
 				
 				Contact c = contactList.getSelectedValue();
-				AbstractApp app = this.phone.getAppInstance( ContactApp.class );
+				AbstractApp app = this.getPhone().getAppInstance( ContactApp.class );
 				
 				if (app != null && app instanceof ContactApp)
 				{
@@ -522,6 +620,10 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		}
 	}
 	
+	/**
+	 * Filtre permettant d'obtenir une version noir et blanc de l'image.
+	 * @author Fabien Terrani
+	 */
 	private static class GrayFilter extends RGBImageFilter
 	{
 		public int filterRGB(int x, int y, int rgb)
@@ -538,7 +640,11 @@ public class GalleryApp extends AbstractApp implements ActionListener
         	return rgb;
         }
 	}
-
+	
+	/**
+	 * Filtre permettant d'obtenir une version sépia de l'image.
+	 * @author Fabien Terrani
+	 */
 	private static class SepiaFilter extends GrayFilter
 	{
 		public int filterRGB(int x, int y, int rgb)
@@ -558,7 +664,11 @@ public class GalleryApp extends AbstractApp implements ActionListener
         	return rgb;
         }
 	}
-
+	
+	/**
+	 * Filtre permettant d'obtenir une version contrastée de l'image.
+	 * @author Fabien Terrani
+	 */
 	private static class ContrastFilter extends RGBImageFilter
 	{
 		public int filterRGB(int x, int y, int rgb)
@@ -583,7 +693,11 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			return ((Math.sin( value * Math.PI - (Math.PI/2.0) ) + 1.0) / 2.0);
 		}
 	}
-
+	
+	/**
+	 * Filtre permettant d'obtenir une version saturée de l'image.
+	 * @author Fabien Terrani
+	 */
 	private static class SaturateFilter extends RGBImageFilter
 	{
 		public int filterRGB(int x, int y, int rgb)

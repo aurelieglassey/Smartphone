@@ -78,11 +78,11 @@ public class ContactApp extends AbstractApp
 	{
 		super( phone, "Contact app", "contact" );
 
-		this.mainPanel.setLayout(new BorderLayout());
-		this.mainPanel.setBackground(new Color(40, 40, 40, 255));
+		this.getMainPanel().setLayout(new BorderLayout());
+		this.getMainPanel().setBackground(new Color(40, 40, 40, 255));
 		
 		
-		File contactSer = this.phone.getContactFile();
+		File contactSer = this.getPhone().getContactFile();
 		
 		Object[] obj = Utils.deserializeObject( contactSer );
 
@@ -112,8 +112,8 @@ public class ContactApp extends AbstractApp
 		panelNorth.setLayout(new BorderLayout());
 		panelNorth.add(bAddContact, BorderLayout.EAST);
 		
-		this.mainPanel.add(panelList, BorderLayout.CENTER);
-		this.mainPanel.add(panelNorth, BorderLayout.NORTH);	
+		this.getMainPanel().add(panelList, BorderLayout.CENTER);
+		this.getMainPanel().add(panelNorth, BorderLayout.NORTH);	
 		
 		bAddContact.addActionListener(new ListenerContact());
 		bSaveContact.addActionListener(new ListenerContact());
@@ -121,14 +121,6 @@ public class ContactApp extends AbstractApp
 		bRemove.addActionListener(new ListenerContact());
 		bModify.addActionListener(new ListenerContact());
 		bPhoto.addActionListener(new ListenerContact());
-	}
-	
-	/**
-	 * Nouveau Panel
-	 */
-	public JPanel generateMainPanel()
-	{
-		return new JPanel();
 	}
 	
 	/**
@@ -265,7 +257,7 @@ public class ContactApp extends AbstractApp
 			}
 			
 			// Sérialization
-			Utils.serializeObjects( this.phone.getContactFile(), contactListData);
+			Utils.serializeObjects( this.getPhone().getContactFile(), contactListData);
 		}
 	}
 	
@@ -280,7 +272,7 @@ public class ContactApp extends AbstractApp
 	{
 		Contact newContact = new Contact (phone, firstname, name, email);
 		contactListData.add(newContact);
-		Utils.serializeObjects( this.phone.getContactFile(), contactListData);
+		Utils.serializeObjects( this.getPhone().getContactFile(), contactListData);
 		
 	}
 	
@@ -290,7 +282,7 @@ public class ContactApp extends AbstractApp
 	private void removeContact(Contact contactSelected)
 	{
 		contactListData.remove(contactSelected);
-		Utils.serializeObjects( this.phone.getContactFile(), contactListData);
+		Utils.serializeObjects( this.getPhone().getContactFile(), contactListData);
 		
 	}
 	

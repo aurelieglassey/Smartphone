@@ -33,16 +33,42 @@ import javax.swing.SwingConstants;
  */
 public class HomePanel extends JPanel
 {
+	/**
+	 * Le smartphone associé à l'écran d'accueil.
+	 */
 	private Smartphone phone;
+	
+	/**
+	 * Les applications disponibles sur le smartphone.
+	 */
 	private AbstractApp[] apps = new AbstractApp[0];
 	
+	/**
+	 * Label utilisé pour afficher l'heure en format HH:mm
+	 */
 	private JLabel clock;
+	
+	/**
+	 * Timer utilisé pour rafraîchir le label de l'heure.
+	 */
 	private Timer t;
+	
+	/**
+	 * Tâche mettant à jour le label de l'heure.
+	 */
 	private TimerTask refreshClock;
 	
+	/**
+	 * Panel stockant les boutons des applications.
+	 */
 	private JPanel appPanel = null;
 	
-	public HomePanel( Smartphone phone, AbstractApp[] appButtons )
+	/**
+	 * Crée un nouvel écran d'accueil.
+	 * @param phone Le smartphone à associer à l'écran d'accueil
+	 * @param apps Les applications à afficher sur l'écran d'accueil
+	 */
+	public HomePanel( Smartphone phone, AbstractApp[] apps )
 	{
 		this.phone = phone;
 		
@@ -62,23 +88,32 @@ public class HomePanel extends JPanel
 		appPanel.setLayout( new FlowLayout( FlowLayout.LEFT, spaceWidth, spaceWidth) );
 		
 		
-		setAppButtons( appButtons );
+		setAppButtons( apps );
 		
 		
 		add( clock, BorderLayout.NORTH );
 		add( appPanel, BorderLayout.CENTER );
 	}
 	
-	public void setAppButtons( AbstractApp[] appButtons )
+	/**
+	 * Remplace les boutons d'applications par ceux des applications
+	 * du tableau passé en paramètre.
+	 * @param apps Les applications dont les boutons doivent être affichés
+	 */
+	public void setAppButtons( AbstractApp[] apps )
 	{
-		if (appButtons != null)
+		if (apps != null)
 		{
-			apps = Arrays.copyOf( appButtons, appButtons.length );
+			this.apps = Arrays.copyOf( apps, apps.length );
 		}
 		
 		refreshApps();
 	}
 	
+	/**
+	 * Retire les boutons d'applications affichés et les remplace par les boutons
+	 * des apps contenues dans la classe.
+	 */
 	private void refreshApps()
 	{
 		appPanel.removeAll();
@@ -89,7 +124,11 @@ public class HomePanel extends JPanel
 			appPanel.add( btn );
 		}
 	}
-
+	
+	/**
+	 * Prépare le label d'affichage de l'heure et démarre le rafraîchissement du label
+	 * toutes les secondes.
+	 */
 	private void initClock()
 	{
 		clock = new JLabel();
@@ -111,6 +150,9 @@ public class HomePanel extends JPanel
 		t.schedule( refreshClock, 0, 1000 );
 	}
 	
+	/**
+	 * Méthode surchargée pour dessiner l'arrière-plan du téléphone.
+	 */
 	public void paintComponent( Graphics g )
 	{
 		Dimension screen = this.phone.getScreenSize();

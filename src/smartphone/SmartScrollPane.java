@@ -22,11 +22,11 @@ public class SmartScrollPane extends JScrollPane
 	public void customizeScrollPane()
 	{
 		getVerticalScrollBar().setPreferredSize(
-			new Dimension( Smartphone.getScrollBarWidth(), 0 )
+			new Dimension( Smartphone.getScrollbarThickness(), 0 )
 		);
 		
 		getHorizontalScrollBar().setPreferredSize(
-			new Dimension( 0, Smartphone.getScrollBarWidth() )
+			new Dimension( 0, Smartphone.getScrollbarThickness() )
 		);
 		
 		setBackground( Smartphone.getBackgroundColor() );
