@@ -7,5 +7,6 @@ public class Main
 		Smartphone frame = new Smartphone();
 		
 		frame.setVisible( true );
+				
 	}
 }

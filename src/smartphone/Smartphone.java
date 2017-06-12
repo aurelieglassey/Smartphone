@@ -383,7 +383,7 @@ public class Smartphone extends JFrame implements ActionListener
 	private void registerApps()
 	{
 		registerApp( new MusicApp( this ) );
-		//registerApp( new ContactApp( this ) );
+		registerApp( new ContactApp( this ) );
 		registerApp( new GalleryApp( this ) );
 		registerApp( new DummyApp( this ) );
 	}

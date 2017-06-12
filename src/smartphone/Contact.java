@@ -1,28 +1,61 @@
 package smartphone;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
-
+/**
+ * Cette classe contient toutes les données nécessaires pour un contact
+ * @author Aurélie
+ *
+ */
 public class Contact implements Serializable 
 {
 	private static final long serialVersionUID = 1L;
 	
-	//private Photo photocontact;
+	private File imageFile;
 	private String name;
 	private String firstname;
 	private String email;
 	private String phone;
-	
+
 	/**
-	 * Constructeur de la classe Contact avec en paramètre le nom, prénom, email et téléphone
-	 * @param name
+	 * Création du contact avec les 2 paramètres minimums
 	 * @param firstname
-	 * @param email
 	 * @param phone
 	 */
-	public Contact (String name, String firstname, String email, String phone){
+	public Contact (String phone, String firstname)
+	{
+		this( "", firstname, "", phone );
+	}
+	
+	/**
+	 * Création du contact avec 3 paramètres 
+	 * @param name
+	 * @param firstname
+	 * @param phone
+	 */
+	public Contact ( String phone, String firstname, String name )
+	{
+		this( name, firstname, "", phone );
+	}
+
+	/**
+	 * Création du contact
+	 * @param name : nom du contact
+	 * @param firstname : prénom du contact
+	 * @param email : email du contact
+	 * @param phone : numéro de téléphone
+	 */
+	public Contact (String phone, String firstname, String name, String email )
+	{
+		
+		if((name.equals("") && firstname.equals("")) || phone.equals(""))
+		{
+			throw new IllegalArgumentException("Données insuffisantes (au moins un numéro et un nom/prénom requis)");
+		}
+
 		this.name = name; 
 		this.firstname=firstname;
 		this.email = email;
@@ -49,11 +82,11 @@ public class Contact implements Serializable
 	{
 		this.firstname = firstname;
 	}
-	public String getemail()
+	public String getEmail()
 	{
 		return email;
 	}
-	public void setemail(String address)
+	public void setEmail(String address)
 	{
 		this.email = email;
 	}
@@ -65,7 +98,20 @@ public class Contact implements Serializable
 	{
 		this.phone = phone;
 	}
-		
+	
+	public File getImageFile()
+	{
+		return imageFile;
+	}
+
+	public void setImageFile(File imageFile)
+	{
+		this.imageFile = imageFile;
+	}
+	
+	/**
+	 * Affichage des données d'un contact
+	 */
 	public String toString ()
 	{
 		return this.name + " " + this.firstname + " " +this.email + " " + this.phone;
