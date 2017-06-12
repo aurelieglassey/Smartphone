@@ -1,15 +1,20 @@
 package smartphone;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
-
+/**
+ * Cette classe contient toutes les données nécessaires pour un contact
+ * @author Aurélie
+ *
+ */
 public class Contact implements Serializable 
 {
 	private static final long serialVersionUID = 1L;
 	
-	//imageFile file;
+	private File imageFile;
 	private String name;
 	private String firstname;
 	private String email;
@@ -38,10 +43,10 @@ public class Contact implements Serializable
 
 	/**
 	 * Création du contact
-	 * @param name //nom du contact
-	 * @param firstname //prénom du contact
-	 * @param email //email du contact
-	 * @param phone //numéro de téléphone
+	 * @param name : nom du contact
+	 * @param firstname : prénom du contact
+	 * @param email : email du contact
+	 * @param phone : numéro de téléphone
 	 */
 	public Contact (String phone, String firstname, String name, String email )
 	{
@@ -92,6 +97,16 @@ public class Contact implements Serializable
 	public void setPhone(String phone)
 	{
 		this.phone = phone;
+	}
+	
+	public File getImageFile()
+	{
+		return imageFile;
+	}
+
+	public void setImageFile(File imageFile)
+	{
+		this.imageFile = imageFile;
 	}
 	
 	/**

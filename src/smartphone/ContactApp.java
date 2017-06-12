@@ -1,6 +1,7 @@
 package smartphone;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -9,9 +10,12 @@ import java.util.Arrays;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -21,34 +25,32 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-//Manque image du contact
-//méthode de sérialization
-//commenter le code avec /**
-//Ecriture du smartphone : Railway
-//Design
+import org.w3c.dom.events.MouseEvent;
 
-//Junit trouver 1 méthode dont on peut savoir le résultat
+//Manque méthode image du contact : deux méthode : récupérer la liste de contact //+ associer une photo à un contact (File, contact)
+//commenter les statics
+//image d'ajout du contact
 
-
-//deux méthode : récupérer la liste de contact 
-	//+ associer une photo à un contact (File, contact)
-
-
-
+/**
+ * Application contact qui contient les interfaces et ce que les boutons génèrent comme action
+ * @author Aurélie
+ *
+ */
 public class ContactApp extends AbstractApp
 {
-	private Contact[] listContact;
 	private JList<Contact> jlist;
-
+	
 	private JButton bAddContact = new SmartButton ( new ImageIcon("smartphone_root/sys/addContact.jpg"));
 	private JButton bSaveContact = new SmartButton ("Save");
 	private JButton bCancel = new SmartButton ("Cancel"); 
 	private JButton bRemove = new SmartButton ("Remove contact");
 	private JButton bModify = new SmartButton ("Modify contact");
-
+	private JButton bPhoto = new JButton (new ImageIcon("smartphone_root/sys/addpicture.PNG"));
+	
 	private JPanel panelNorth = new JPanel();
 	private JPanel panelList = new JPanel();
 	private JPanel panelAddContact = null;
@@ -56,12 +58,10 @@ public class ContactApp extends AbstractApp
 
 	private JLabel lName = new SmartLabel("Name");
 	private JLabel lFirstName = new SmartLabel("Firstname");
-	private JLabel lEmail = new SmartLabel("email (facultatif)");
+	private JLabel lEmail = new SmartLabel("Email");
 	private JLabel lPhoneNumber = new SmartLabel("Phone number");
-	private JLabel lTitreaAdd = new SmartLabel ("Add a Contact");
+	private JLabel lTitreAdd = new SmartLabel ("Add a Contact");
 	private JLabel lTitreModif = new SmartLabel ("Modify a Contact");
-	
-	private JButton bPhoto = new JButton (new ImageIcon("smartphone_root/sys/return.PNG"));
 
 	private JTextField tName = new SmartTextField();
 	private JTextField tFirstName = new SmartTextField();
@@ -71,7 +71,7 @@ public class ContactApp extends AbstractApp
 	private Contact contactSelected ;
 
 	/**
-	 * Constructeur de l'application de contact. On y trouve une Jlist ainsi qu'un bouton d'ajout (pour un contact)
+	 * Constructeur de l'application contact. On y trouve une Jlist qui stockera tous les contacts ainsi qu'un bouton d'ajout (pour un contact)
 	 * @param phone
 	 */
 	public ContactApp( Smartphone phone )
@@ -80,6 +80,7 @@ public class ContactApp extends AbstractApp
 
 		this.mainPanel.setLayout(new BorderLayout());
 		this.mainPanel.setBackground(new Color(40, 40, 40, 255));
+		
 		
 		File contactSer = new File(".\\Contactlist.ser");
 		try
@@ -102,6 +103,9 @@ public class ContactApp extends AbstractApp
 
 		panelList.setBackground( new Color(40, 40, 40, 255) );
 		panelList.add(jlist);
+
+		
+		bAddContact.setOpaque(true);
 		
 		panelNorth.setBackground(new Color(40, 40, 40, 255));
 		panelNorth.setLayout(new BorderLayout());
@@ -115,19 +119,34 @@ public class ContactApp extends AbstractApp
 		bCancel.addActionListener(new ListenerContact());
 		bRemove.addActionListener(new ListenerContact());
 		bModify.addActionListener(new ListenerContact());
-		
+		bPhoto.addActionListener(new ListenerContact());
 	}
-
+	
+	/**
+	 * Nouveau Panel
+	 */
 	public JPanel generateMainPanel()
 	{
 		return new JPanel();
 	}
 	
-	private JPanel generatepanel(  JTextField phone, JTextField firstName, JTextField name, JTextField email, boolean flushFields, JButton left, JButton right, JLabel titre )
+	/**
+	 * Generatepanel est appelé chaque fois qu'un nouveau panel est nécessaire (ici lors de l'ajout d'un contact ou la modification d'un contact)
+	 * @param phone : numéro de téléphone
+	 * @param firstName : prénom
+	 * @param name : nom
+	 * @param email : email
+	 * @param flushFields : si besoin d'effacer le contenus des JTextField
+	 * @param left : bouton gauche de l'appareil
+	 * @param right : bouton droite de l'appareil
+	 * @param titre : Titre d'ajout ou de modification
+	 * @return
+	 */
+	private JPanel generatepanel( JTextField phone, JTextField firstName, JTextField name, JTextField email, boolean flushFields, JButton left, JButton right, JLabel titre )
 	{
 		//Générer les panels d'ajout et de modification
 		
-		if ( flushFields )
+		if ( flushFields ) //met vide les données de contact lors d'un ajout
 		{
 			phone.setText("");
 			firstName.setText("");
@@ -136,50 +155,92 @@ public class ContactApp extends AbstractApp
 		}
 		
 		JPanel p = new JPanel();
+		p.setBackground(new Color(250, 250, 250));
 		p.setLayout(new BorderLayout());
 		
 		JPanel panelTitre = new JPanel();
-		panelTitre.setBackground(new Color(250, 250, 250));
+		titre.setBackground(new Color(255, 225, 228));
+		panelTitre.setBackground(new Color(255, 225, 228, 255));
+		panelTitre.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, new Color(192, 0, 0)));
 		panelTitre.add(titre);
-
+		
 		JPanel panelBox = new JPanel (); //Pour les données à remplir d'un contact
-		panelBox.setBackground(new Color(250, 250, 250));
-		
 		panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.Y_AXIS));
-		
-		bPhoto.setPreferredSize(new Dimension(400, 200));
+		Box box = Box.createVerticalBox();
+		box.add(panelBox);
+		box.setBackground(new Color(250, 250, 250));
+			
 		bPhoto.setOpaque(true);
-		bPhoto.setBackground(new Color(250, 250, 250));
-		bPhoto.setBorder(null);
+		bPhoto.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.BLACK, Color.BLACK));
 		
-		panelBox.add(bPhoto);
+		box.add(bPhoto);
 		
-		panelBox.add(lName);
-		panelBox.add(name);
-
-		panelBox.add(lFirstName);
-		panelBox.add(firstName);
-
-		panelBox.add(lEmail);
-		panelBox.add(email);
-
-		panelBox.add(lPhoneNumber);
-		panelBox.add(phone);
+		box.add(lName);
+		box.add(name);
+			
+		box.add(lFirstName);
+		box.add(firstName);
 		
-
+		box.add(lEmail);
+		box.add(email);
+		
+		box.add(lPhoneNumber);
+		box.add(phone);
+		
 		JPanel panelSouthButton = new JPanel(); //pour les boutons cancel et save
 		panelSouthButton.setPreferredSize(new Dimension(480, 50));
 		panelSouthButton.setLayout(new GridLayout(1, 2));
 		panelSouthButton.add(left);
 		panelSouthButton.add(right);
 
+		
 		p.add(panelTitre, BorderLayout.NORTH);
-		p.add(panelBox, BorderLayout.CENTER);
+		p.add(box, BorderLayout.CENTER);
 		p.add(panelSouthButton, BorderLayout.SOUTH);
 		
 		return p;
 	}
 	
+	/**
+	 * Méthode de rafraîchissement de la liste lors d'un ajout, d'une modification ou d'une suppression d'un contact.
+	 */
+	private void refreshlist() 
+	{
+		Contact[] tmp = new Contact[0];
+		tmp = ContactRepertory.getContactlist().toArray(tmp);
+		jlist.setListData( tmp );
+	}
+	
+	/**
+	 * Méthode pour le bouton du retour de l'appareil
+	 */
+	public void returnPressed()
+	{
+		JPanel removed = popPanel();
+		
+		if(panelAddContact!=null)
+		{
+			panelAddContact.remove(removed);
+			panelAddContact = null;
+		}
+		
+		if(panelModifyContact!=null)
+		{
+			panelModifyContact.remove(removed);
+			panelModifyContact=null;
+		}
+	}
+
+//
+	public void associate (File f, Contact c)
+	{
+		if(ContactRepertory.getContactlist().contains(c)) //chercher le contact c dans ma liste (contains(c), retourn un boolean)
+		{
+			//si trouvé, stocker ImageFile dans contact + sérialisation
+			Utils.serializeObjects(new File (".\\Contactlist.ser"), ContactRepertory.getContactlist());
+		}		
+		System.out.println("Si pas trouver le contact dans liste, rien ne se passe"); //si pas trouver rien ne se passe
+	}
 	
 	/**
 	 * Cette classe contient tous les ActionListener des boutons de l'application Contact
@@ -189,23 +250,18 @@ public class ContactApp extends AbstractApp
 	class ListenerContact implements ActionListener 
 	{
 		public void actionPerformed(ActionEvent e)
-		{
-
-
+		{	
 			if(e.getSource()==bAddContact)
 			{
-				System.out.println("Ajout contact");
-				panelAddContact = generatepanel( tPhoneNumber, tFirstName, tName, tEmail, true, bCancel, bSaveContact, lTitreaAdd );
+				panelAddContact = generatepanel( tPhoneNumber, tFirstName, tName, tEmail, true, bCancel, bSaveContact, lTitreAdd );
 				pushPanel(panelAddContact);
 				refreshlist();
 			}
 			
 			if (e.getSource()==bCancel)
 			{
-				System.out.println("cancel");
 				panelAddContact = null;
 				popPanel();
-				
 			}
 
 			if (e.getSource()==bSaveContact)
@@ -216,13 +272,11 @@ public class ContactApp extends AbstractApp
 					System.out.println("Données incomplètes à l'ajout : Manque name, firstname ou phone");
 				}
 				else {
-					System.out.println("Save");
 					ContactRepertory.addContact(tPhoneNumber.getText(), tFirstName.getText(), tName.getText(), tEmail.getText() );
 					panelAddContact = null;
 					popPanel();
 					refreshlist();
-				}
-				
+				}	
 			}
 			
 			if (e.getSource()==bRemove)
@@ -242,15 +296,14 @@ public class ContactApp extends AbstractApp
 				}
 				else {
 					//suppression du contact sélectionner et ajout du contact modifier
+					lTitreModif.setBackground(new Color(255, 225, 228));
 					ContactRepertory.removeContact(jlist.getSelectedValue());
 					ContactRepertory.addContact(tPhoneNumber.getText(), tFirstName.getText(), tName.getText(), tEmail.getText());
 					panelModifyContact = null;
 					popPanel();
 					refreshlist();
 				}
-				
 			}
-			
 		}	
 	}
 	
@@ -287,38 +340,4 @@ public class ContactApp extends AbstractApp
 		}
 	}
 	
-	private void refreshlist() //méthode de rafraîchissement de la liste lors d'un ajout, modification ou suppression d'un contact.
-	{
-		Contact[] tmp = new Contact[0];
-		tmp = ContactRepertory.getContactlist().toArray(tmp);
-		jlist.setListData( tmp );
-	}
-	
-	/**
-	 * Méthode pour le bouton du retour
-	 */
-	public void returnPressed()
-	{
-		JPanel removed = popPanel();
-		
-		if(panelAddContact!=null)
-		{
-			panelAddContact.remove(removed);
-			panelAddContact = null;
-		}
-		
-		if(panelModifyContact!=null)
-		{
-			panelModifyContact.remove(removed);
-			panelModifyContact=null;
-		}
-	}
-	
-	public void associate (File f, Contact c)
-	{
-		//chercher le contact c dans ma liste (contains(c), retourn un boolean)
-		//si pas trouver rien ne se passe
-		//si trouvé, stocker ImageFile dans contact
-		//sérialisation
-	}
 }

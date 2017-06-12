@@ -9,7 +9,12 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.border.BevelBorder;
-
+/**
+ * Classe qui met en forme l'apparence d'un bouton dans l'application contact
+ * Cette classe contient deux constructeurs, un avec un texte en paramètre et l'autre avec une image en paramètre
+ * @author Aurélie
+ *
+ */
 public class SmartButton extends JButton
 {
 
@@ -20,7 +25,9 @@ public class SmartButton extends JButton
 	public SmartButton (String text)
 	{
 		super(text);
-		apparenceButton();
+		setBackground(new Color(255, 225, 228, 255));
+		setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, new Color(192, 0, 0)));
+		setFont(new Font ("Raleway", Font.PLAIN, 24));
 	}
 	
 	/**
@@ -30,14 +37,8 @@ public class SmartButton extends JButton
 	public SmartButton (Icon icon)
 	{
 		super( icon );
-		apparenceButton();
-	}
-	
-	private void apparenceButton()
-	{
 		setBackground(new Color(30, 30, 30, 255));
 		setForeground(Color.WHITE);
-		
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.WHITE, Color.GRAY));
 		setFont(new Font ("Raleway", Font.PLAIN, 24));
 	}

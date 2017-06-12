@@ -14,28 +14,44 @@ import java.util.ArrayList;
 import javax.swing.JLabel;
 
 
-
+/**
+ * ContactRepertory contient l'arraylist pour regrouper les contacts.
+ * Elle contient les méthodes d'ajout et de suppression des contacts dans l'arraylist.
+ * @author Aurélie
+ *
+ */
 public class ContactRepertory
 {
 
+	/**
+	 * Contient la liste de contact 
+	 */
 	private static ArrayList<Contact> contactlist = new ArrayList<Contact>();
+	
+	/**
+	 * Variable qui concerve le contact qui vient d'être fait
+	 */
 	private static Contact newcontact;
 	
-	//Méthode qui ajoute un contact dans l'arraylist et sérialize l'object
-	public static void addContact(String name, String fristname, String mail, String phone) 
+	/**
+	 * Ajout d'un contact dans l'arraylist et sérialization de l'object
+	 * @param phone
+	 * @param fristname
+	 * @param name
+	 * @param email
+	 */
+	protected static void addContact(String phone, String fristname, String name, String email) 
 	{
-		if(name != ""){
-			System.out.println("rien");
-			//ajout du contact dans l'arraylist et sauvegarde de l'arraylist ou le contact a été ajouté
-			newcontact = new Contact (name, fristname, mail, phone);
-			contactlist.add(newcontact);
-			
-			Utils.serializeObjects(new File (".\\Contactlist.ser"), contactlist);
-		}
+		newcontact = new Contact (phone, fristname, name, email);
+		contactlist.add(newcontact);
+		Utils.serializeObjects(new File (".\\Contactlist.ser"), contactlist);
+		
 	}
 	
-	//Méthode qui efface un contact
-	public static void removeContact(Contact contactSelected)
+	/**
+	 *Effacer un contact dasn l'arraylist + sérialization
+	 */
+	protected static void removeContact(Contact contactSelected)
 	{
 		contactlist.remove(contactSelected);
 		Utils.serializeObjects(new File (".\\Contactlist.ser"), contactlist);

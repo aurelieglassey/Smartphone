@@ -1,4 +1,4 @@
-package smartphone;
+package JUnit;
 
 import static org.junit.Assert.*;
 
@@ -6,7 +6,9 @@ import org.junit.Assert;
 import org.junit.Test;
 //Insipiré de : http://www.java2s.com/Code/JavaAPI/junit.framework/AssertassertEqualsStringexpectedStringactual.htm
 
-public class JUnitContact
+import smartphone.Contact;
+
+public class JUnitContactTest
 {
 
 	/**
