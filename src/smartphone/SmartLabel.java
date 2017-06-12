@@ -8,7 +8,7 @@ import javax.swing.JLabel;
 
 /**
  * Classe qui met en forme l'apparence d'un label dans l'application contact
- * @author Aurélie
+ * @author AurÃ©lie
  *
  */
 public class SmartLabel extends JLabel

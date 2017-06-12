@@ -39,32 +39,32 @@ public class Utils
 		// Facteur de redimensionnement
 		float resizeFactor = 1.0f;
 		
-		// Coordonnées auxquelles commencer le rognage
+		// CoordonnÃ©es auxquelles commencer le rognage
 		int cropStartX = 0;
 		int cropStartY = 0;
 		
-		// Vrai si réduire l'image à la hauteur de la vignette ne laisse pas de vide
+		// Vrai si rÃ©duire l'image Ã  la hauteur de la vignette ne laisse pas de vide
 		if ( newWidth * (1.f/imgRatio) >= newHeight )
 		{
 			resizeFactor = ((float)newWidth) / w;
 			cropStartY = Math.round((resizeFactor*h - newHeight) / 2);
 		}
 		
-		// Vrai si réduire l'image à la largeur de la vignette ne laisse pas de vide
+		// Vrai si rÃ©duire l'image Ã  la largeur de la vignette ne laisse pas de vide
 		else if ( newHeight * imgRatio >= newHeight )
 		{
 			resizeFactor = ((float)newHeight) / h;
 			cropStartX = Math.round((resizeFactor*w - newWidth) / 2);
 		}
 		
-		// Image redimensionnée
+		// Image redimensionnÃ©e
 		Image scaled = img.getScaledInstance( (int)(resizeFactor*w), (int)(resizeFactor*h), Image.SCALE_FAST );
 		
-		// On rogne les parties de l'image qui dépasse la dimension de la vignette
+		// On rogne les parties de l'image qui dÃ©passe la dimension de la vignette
 		ImageFilter cropFilter = new CropImageFilter( cropStartX, cropStartY, newWidth, newHeight );
 		FilteredImageSource fis = new FilteredImageSource( scaled.getSource(), cropFilter );
 		
-		// Retour de l'image rognée et redimensionnée
+		// Retour de l'image rognÃ©e et redimensionnÃ©e
 		return Toolkit.getDefaultToolkit().createImage( fis );
 	}
 
@@ -79,7 +79,7 @@ public class Utils
 	{
 		FilteredImageSource fis = new FilteredImageSource( img.getSource(), filter );
 		
-		// Retour de l'image rognée et redimensionnée
+		// Retour de l'image rognÃ©e et redimensionnÃ©e
 		return Toolkit.getDefaultToolkit().createImage( fis );
 	}
 	
@@ -87,7 +87,7 @@ public class Utils
 	{
 		try
 		{
-			System.out.println("Méthode serializeObjects");
+			System.out.println("MÃ©thode serializeObjects");
 			FileOutputStream fos = new FileOutputStream(f);
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			
@@ -99,7 +99,7 @@ public class Utils
 			oos.close(); 
 		} 
 		
-		catch (Exception e) //si fichier inaccessible, on lève l'exception
+		catch (Exception e) //si fichier inaccessible, on lÃ¨ve l'exception
 		{
 			System.err.println( "EXCEPTION SERIALIZE" );
 			e.printStackTrace();
@@ -111,7 +111,7 @@ public class Utils
 		ArrayList <Object> arraylist= new ArrayList<>();
 		try
 		{
-			System.out.println("Méthode deserializeObject");
+			System.out.println("MÃ©thode deserializeObject");
 			FileInputStream fis = new FileInputStream("Contactlist.ser");
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			while (true)

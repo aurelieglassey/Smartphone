@@ -30,7 +30,7 @@ public class ImageButton extends JButton
 	public ImageButton( Image image, int width, int height )
 	{
 		this.setBackground( new Color(0,0,0,0) );
-		this.setContentAreaFilled( false ); // PLus approprié que setOpaque() pour les fonds transparents
+		this.setContentAreaFilled( false ); // PLus appropriÃ© que setOpaque() pour les fonds transparents
 		this.setBorder( null );
 		
 		this.setImage( image, width, height );

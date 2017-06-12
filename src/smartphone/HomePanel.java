@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 /**
- * HomePanel est un JPanel représentant l'écran d'accueil du smartphone. Il affiche une horloge
+ * HomePanel est un JPanel reprÃ©sentant l'Ã©cran d'accueil du smartphone. Il affiche une horloge
  * ainsi que les boutons des applications.
  * @author Fabien Terrani
  */

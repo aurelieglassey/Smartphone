@@ -16,8 +16,8 @@ import javax.swing.JLabel;
 
 /**
  * ContactRepertory contient l'arraylist pour regrouper les contacts.
- * Elle contient les méthodes d'ajout et de suppression des contacts dans l'arraylist.
- * @author Aurélie
+ * Elle contient les mÃ©thodes d'ajout et de suppression des contacts dans l'arraylist.
+ * @author AurÃ©lie
  *
  */
 public class ContactRepertory
@@ -29,12 +29,12 @@ public class ContactRepertory
 	private static ArrayList<Contact> contactlist = new ArrayList<Contact>();
 	
 	/**
-	 * Variable qui concerve le contact qui vient d'être fait
+	 * Variable qui concerve le contact qui vient d'Ãªtre fait
 	 */
 	private static Contact newcontact;
 	
 	/**
-	 * Ajout d'un contact dans l'arraylist et sérialization de l'object
+	 * Ajout d'un contact dans l'arraylist et sÃ©rialization de l'object
 	 * @param phone
 	 * @param fristname
 	 * @param name
@@ -49,7 +49,7 @@ public class ContactRepertory
 	}
 	
 	/**
-	 *Effacer un contact dasn l'arraylist + sérialization
+	 *Effacer un contact dasn l'arraylist + sÃ©rialization
 	 */
 	protected static void removeContact(Contact contactSelected)
 	{

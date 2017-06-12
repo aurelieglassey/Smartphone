@@ -86,7 +86,7 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		this.mainPanel.setBackground( Smartphone.getBackgroundColor() );
 		this.mainPanel.setLayout(new BorderLayout());
 		
-		// Création du titre de l'application
+		// CrÃ©ation du titre de l'application
 		appTitle = new JLabel("My music");
 		appTitle.setBorder( BorderFactory.createEmptyBorder(5,5,5,5) );
 		appTitle.setForeground( Color.WHITE );
@@ -352,7 +352,7 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 			}
 		};
 		
-		// La position du curseur est mise à jour 20 fois par seconde
+		// La position du curseur est mise Ã  jour 20 fois par seconde
 		t.schedule( moveSlider, 0, 1000/20 );
 	}
 	
@@ -394,7 +394,7 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 	        format = audioFile.getFormat();
 	        //ais = AudioSystem.getAudioInputStream( currentTrack );
 	      
-	        // On décrit un Clip (son chargé en mémoire) qui a le format du fichier à lire
+	        // On dÃ©crit un Clip (son chargÃ© en mÃ©moire) qui a le format du fichier Ã  lire
 	        Line.Info dtli = new DataLine.Info( Clip.class, format );
 	      
 	        clip = (Clip) AudioSystem.getLine( dtli );

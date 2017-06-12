@@ -70,13 +70,13 @@ public class GalleryApp extends AbstractApp implements ActionListener
 	private HashMap<String,ImageFilter> imgFilters;
 	private JComboBox<String> filterBox;
 	
-	// Filtre permettant de sélectionner les noms de fichiers ayant une extension prise en charge par ImageIO
+	// Filtre permettant de sÃ©lectionner les noms de fichiers ayant une extension prise en charge par ImageIO
 	private static final FileNameExtensionFilter extFilter = new FileNameExtensionFilter(
 		"Fichiers image",
 		ImageIO.getReaderFileSuffixes()
 	);
 	
-	// Filtre permettant de sélectionner les fichiers compatibles avec ImageIO
+	// Filtre permettant de sÃ©lectionner les fichiers compatibles avec ImageIO
 	private static final FileFilter imageFilter = new FileFilter()
 	{
 		public boolean accept(File pathname)
@@ -150,8 +150,8 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			
 			catch (IOException e)
 			{
-				// Problème pendant la création d'un fichier image
-				System.out.println( "Problème lors de la lecture de l'image : " + galleryFile );
+				// ProblÃ¨me pendant la crÃ©ation d'un fichier image
+				System.out.println( "ProblÃ¨me lors de la lecture de l'image : " + galleryFile );
 			}
 		}
 		
@@ -176,7 +176,7 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		
 		imgFilters.put("Image originale", null);
 		imgFilters.put("Noir et blanc", new GrayFilter());
-		imgFilters.put("Sépia", new SepiaFilter());
+		imgFilters.put("SÃ©pia", new SepiaFilter());
 		imgFilters.put("Contraste", new ContrastFilter());
 		imgFilters.put("Saturation", new SaturateFilter());
 		

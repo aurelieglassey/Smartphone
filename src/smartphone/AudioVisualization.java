@@ -82,7 +82,7 @@ public class AudioVisualization extends JPanel
 		double msDuration = ais.getFrameLength() / format.getFrameRate() * 1000.0;
 		
 		
-		int updatePerSecond = ANIMATION_FREQUENCY; // Fréquence à laquelle on va mettre à jour l'animation
+		int updatePerSecond = ANIMATION_FREQUENCY; // FrÃ©quence Ã  laquelle on va mettre Ã  jour l'animation
 		double msChunkDuration = 1000.0/updatePerSecond; // L'intervalle de temps en ms sur lequel on recherche l'amplitude maximum
 		double framePerChunk = frameRate * (msChunkDuration/1000.0);
 		
@@ -106,7 +106,7 @@ public class AudioVisualization extends JPanel
 		{
 			int chunkIndex;
 			
-			// On parcourt toutes les frames renvoyées et on recherche l'échantillon avec la plus grande amplitude
+			// On parcourt toutes les frames renvoyÃ©es et on recherche l'Ã©chantillon avec la plus grande amplitude
 			for (int i = 0; i < readBytes; i+= bytesPerFrame)
 			{
 				chunkIndex = (int) Math.min(
@@ -127,7 +127,7 @@ public class AudioVisualization extends JPanel
 							sampleBits |= readBuffer[ sampleOffset + j ] << (8 * j);
 					}
 					
-					// On calcule la version positive du nombre si l'encodage est signé
+					// On calcule la version positive du nombre si l'encodage est signÃ©
 					if ( (sampleBits & signBit) > 0)
 					{
 						sampleBits = (~sampleBits + 1) & valueMask;
@@ -140,7 +140,7 @@ public class AudioVisualization extends JPanel
 					
 					amplitude = sampleBits / middleValue;
 					
-					// On ne garde que la plus haute amplitude rencontrée
+					// On ne garde que la plus haute amplitude rencontrÃ©e
 					if ( amplitude > this.maxAmplitudes[chunkIndex] )
 						this.maxAmplitudes[chunkIndex] = (float) amplitude;
 				}
@@ -149,7 +149,7 @@ public class AudioVisualization extends JPanel
 			}
 		}
 		
-		// Contrôle des valeurs obtenues
+		// ContrÃ´le des valeurs obtenues
 		for ( int i = 0; i < this.maxAmplitudes.length; i++)
 		{
 			if( this.maxAmplitudes[i] > 1.0 )
@@ -233,7 +233,7 @@ public class AudioVisualization extends JPanel
 					
 					gr.setColor( c );
 					
-					// Boucle pour dupliquer les barres à gauche et à droite
+					// Boucle pour dupliquer les barres Ã  gauche et Ã  droite
 					for (int k = 0; k < 2; k++)
 					{
 						if (k != 0 && i != 0)

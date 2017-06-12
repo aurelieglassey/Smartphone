@@ -9,7 +9,7 @@ import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 /**
  * Classe qui met en forme l'apparence d'un textfield dans l'application contact
- * @author Aurélie
+ * @author AurÃ©lie
  *
  */
 public class SmartTextField extends JTextField

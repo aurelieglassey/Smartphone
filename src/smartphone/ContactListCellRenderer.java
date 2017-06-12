@@ -38,8 +38,8 @@ public class ContactListCellRenderer extends SmartListCellRenderer
 	public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 			boolean cellHasFocus)
 	{
-		// Ce ListCellRenderer est basé sur DefaultListCellRenderer qui hérite de JLabel.
-		// DefaultListCellRenderer se renvoie lui-même pour dessiner l'item de liste.
+		// Ce ListCellRenderer est basÃ© sur DefaultListCellRenderer qui hÃ©rite de JLabel.
+		// DefaultListCellRenderer se renvoie lui-mÃªme pour dessiner l'item de liste.
 		JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		
 		if ( value instanceof Contact )

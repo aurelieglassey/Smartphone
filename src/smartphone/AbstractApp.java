@@ -41,9 +41,9 @@ public abstract class AbstractApp implements Serializable
 	}
 	
 	/**
-	 * Permet à une application de retourner sa propre version d'un JPanel
-	 * pour lui permettre d'avoir un contrôle sur le processus de painting.
-	 * @return Un objet de classe JPanel ou d'une classe étendant JPanel
+	 * Permet Ã  une application de retourner sa propre version d'un JPanel
+	 * pour lui permettre d'avoir un contrÃ´le sur le processus de painting.
+	 * @return Un objet de classe JPanel ou d'une classe Ã©tendant JPanel
 	 */
 	public abstract JPanel generateMainPanel();
 	

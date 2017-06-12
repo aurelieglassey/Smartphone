@@ -6,8 +6,8 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 /**
- * Cette classe contient toutes les données nécessaires pour un contact
- * @author Aurélie
+ * Cette classe contient toutes les donnÃ©es nÃ©cessaires pour un contact
+ * @author AurÃ©lie
  *
  */
 public class Contact implements Serializable 
@@ -21,7 +21,7 @@ public class Contact implements Serializable
 	private String phone;
 
 	/**
-	 * Création du contact avec les 2 paramètres minimums
+	 * CrÃ©ation du contact avec les 2 paramÃ¨tres minimums
 	 * @param firstname
 	 * @param phone
 	 */
@@ -31,7 +31,7 @@ public class Contact implements Serializable
 	}
 	
 	/**
-	 * Création du contact avec 3 paramètres 
+	 * CrÃ©ation du contact avec 3 paramÃ¨tres 
 	 * @param name
 	 * @param firstname
 	 * @param phone
@@ -42,18 +42,18 @@ public class Contact implements Serializable
 	}
 
 	/**
-	 * Création du contact
+	 * CrÃ©ation du contact
 	 * @param name : nom du contact
-	 * @param firstname : prénom du contact
+	 * @param firstname : prÃ©nom du contact
 	 * @param email : email du contact
-	 * @param phone : numéro de téléphone
+	 * @param phone : numÃ©ro de tÃ©lÃ©phone
 	 */
 	public Contact (String phone, String firstname, String name, String email )
 	{
 		
 		if((name.equals("") && firstname.equals("")) || phone.equals(""))
 		{
-			throw new IllegalArgumentException("Données insuffisantes (au moins un numéro et un nom/prénom requis)");
+			throw new IllegalArgumentException("DonnÃ©es insuffisantes (au moins un numÃ©ro et un nom/prÃ©nom requis)");
 		}
 
 		this.name = name; 
@@ -110,7 +110,7 @@ public class Contact implements Serializable
 	}
 	
 	/**
-	 * Affichage des données d'un contact
+	 * Affichage des donnÃ©es d'un contact
 	 */
 	public String toString ()
 	{

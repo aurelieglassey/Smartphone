@@ -71,14 +71,14 @@ public class MusicFile extends File
 				// Si on tombe sur le chunk LIST et qu'il est de type INFO, on lit les tags
 				if ( chunk.getFormat().equals("LIST") && chunk.getType().equals("INFO") )
 				{
-					// ATTENTION ! LA longueur annoncée par LIST ne compte pas les caractères NULL de padding à la fin des tags.
-					// Ces caractères semblent être ajoutés si le nombre de caractères de la valeur plus le NULL placé à la fin est impair.
+					// ATTENTION ! LA longueur annoncÃ©e par LIST ne compte pas les caractÃ¨res NULL de padding Ã  la fin des tags.
+					// Ces caractÃ¨res semblent Ãªtre ajoutÃ©s si le nombre de caractÃ¨res de la valeur plus le NULL placÃ© Ã  la fin est impair.
 					String key, value;
 					long len;
 					
 					String[] infoReadTags = {"INAM","IPRD","IART","ICRD","ITRK"};
 					
-					// Trie les noms de tags pris en compte pour les futurs appels à binarySearch()
+					// Trie les noms de tags pris en compte pour les futurs appels Ã  binarySearch()
 					Arrays.sort( infoReadTags );
 					
 					while ( chunk.available() > 0 )
@@ -86,16 +86,16 @@ public class MusicFile extends File
 						// On lit 4 bytes (longueur standard pour le nom des tags LIST(INFO)
 						key = chunk.readString(4);
 						
-						// Nombre de bytes à lire pour avoir la valeur du champ (y compris le caractère NUL en fin de valeur)
+						// Nombre de bytes Ã  lire pour avoir la valeur du champ (y compris le caractÃ¨re NUL en fin de valeur)
 						len = chunk.readUnsignedInt();
 						
 						if ( Arrays.binarySearch( infoReadTags, key ) >= 0 )
 						{
-							// readString() lit le nombre de bytes voulu puis retourne la chaîne trouvée en s'arrêtant au premier
-							// caractère NUL rencontré
+							// readString() lit le nombre de bytes voulu puis retourne la chaÃ®ne trouvÃ©e en s'arrÃªtant au premier
+							// caractÃ¨re NUL rencontrÃ©
 							value = chunk.readString( (int) len );
 							
-							// On affiche uniquement les clefs qu'on connaît
+							// On affiche uniquement les clefs qu'on connaÃ®t
 							switch( key )
 							{
 								case "INAM": title = value; break;
@@ -111,8 +111,8 @@ public class MusicFile extends File
 							chunk.skipBytes( (int) len );
 						}
 						
-						// Pour une raison étrange, si la longueur de la valeur et de son caractère NUL de padding est impair,
-						// un caractère NUL supplémentaire est ajouté... Il faut donc l'ignorer.
+						// Pour une raison Ã©trange, si la longueur de la valeur et de son caractÃ¨re NUL de padding est impair,
+						// un caractÃ¨re NUL supplÃ©mentaire est ajoutÃ©... Il faut donc l'ignorer.
 						if (len % 2 != 0) chunk.read();
 					}
 				}
@@ -149,7 +149,7 @@ public class MusicFile extends File
 					{
 						String[] id3ReadTags = {"TPE1","TALB","TIT2","TDRC"};
 						
-						// Trie les noms de tags pris en compte pour les futurs appels à binarySearch()
+						// Trie les noms de tags pris en compte pour les futurs appels Ã  binarySearch()
 						Arrays.sort( id3ReadTags );
 						
 						boolean paddingReached = false;
@@ -186,7 +186,7 @@ public class MusicFile extends File
 							
 							else if ( id3FrameId.startsWith("T") && !zlibCompressed && !frameEncrypted )
 							{
-								// On récupère la valeur du tag s'il fait partie des tags pris en compte
+								// On rÃ©cupÃ¨re la valeur du tag s'il fait partie des tags pris en compte
 								if ( Arrays.binarySearch(id3ReadTags, id3FrameId) >= 0 )
 								{
 									byte encoding = chunk.readByte();
@@ -240,7 +240,7 @@ public class MusicFile extends File
 		
 		catch (Exception e)
 		{
-			// Erreur lors de la récupération des métadonnées
+			// Erreur lors de la rÃ©cupÃ©ration des mÃ©tadonnÃ©es
 		}
 	}
 	

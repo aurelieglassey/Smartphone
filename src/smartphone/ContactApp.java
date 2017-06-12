@@ -31,13 +31,13 @@ import javax.swing.event.ListSelectionListener;
 
 import org.w3c.dom.events.MouseEvent;
 
-//Manque méthode image du contact : deux méthode : récupérer la liste de contact //+ associer une photo à un contact (File, contact)
+//Manque mÃ©thode image du contact : deux mÃ©thode : rÃ©cupÃ©rer la liste de contact //+ associer une photo Ã  un contact (File, contact)
 //commenter les statics
 //image d'ajout du contact
 
 /**
- * Application contact qui contient les interfaces et ce que les boutons génèrent comme action
- * @author Aurélie
+ * Application contact qui contient les interfaces et ce que les boutons gÃ©nÃ¨rent comme action
+ * @author AurÃ©lie
  *
  */
 public class ContactApp extends AbstractApp
@@ -89,7 +89,7 @@ public class ContactApp extends AbstractApp
 		} 
 		catch (IOException e)
 		{
-			System.err.println( "Impossible de créer " + contactSer );
+			System.err.println( "Impossible de crÃ©er " + contactSer );
 		}
 		
 		Object[] obj = Utils.deserializeObject( contactSer );
@@ -131,9 +131,9 @@ public class ContactApp extends AbstractApp
 	}
 	
 	/**
-	 * Generatepanel est appelé chaque fois qu'un nouveau panel est nécessaire (ici lors de l'ajout d'un contact ou la modification d'un contact)
-	 * @param phone : numéro de téléphone
-	 * @param firstName : prénom
+	 * Generatepanel est appelÃ© chaque fois qu'un nouveau panel est nÃ©cessaire (ici lors de l'ajout d'un contact ou la modification d'un contact)
+	 * @param phone : numÃ©ro de tÃ©lÃ©phone
+	 * @param firstName : prÃ©nom
 	 * @param name : nom
 	 * @param email : email
 	 * @param flushFields : si besoin d'effacer le contenus des JTextField
@@ -144,9 +144,9 @@ public class ContactApp extends AbstractApp
 	 */
 	private JPanel generatepanel( JTextField phone, JTextField firstName, JTextField name, JTextField email, boolean flushFields, JButton left, JButton right, JLabel titre )
 	{
-		//Générer les panels d'ajout et de modification
+		//GÃ©nÃ©rer les panels d'ajout et de modification
 		
-		if ( flushFields ) //met vide les données de contact lors d'un ajout
+		if ( flushFields ) //met vide les donnÃ©es de contact lors d'un ajout
 		{
 			phone.setText("");
 			firstName.setText("");
@@ -164,7 +164,7 @@ public class ContactApp extends AbstractApp
 		panelTitre.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, new Color(192, 0, 0)));
 		panelTitre.add(titre);
 		
-		JPanel panelBox = new JPanel (); //Pour les données à remplir d'un contact
+		JPanel panelBox = new JPanel (); //Pour les donnÃ©es Ã  remplir d'un contact
 		panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.Y_AXIS));
 		Box box = Box.createVerticalBox();
 		box.add(panelBox);
@@ -202,7 +202,7 @@ public class ContactApp extends AbstractApp
 	}
 	
 	/**
-	 * Méthode de rafraîchissement de la liste lors d'un ajout, d'une modification ou d'une suppression d'un contact.
+	 * MÃ©thode de rafraÃ®chissement de la liste lors d'un ajout, d'une modification ou d'une suppression d'un contact.
 	 */
 	private void refreshlist() 
 	{
@@ -212,7 +212,7 @@ public class ContactApp extends AbstractApp
 	}
 	
 	/**
-	 * Méthode pour le bouton du retour de l'appareil
+	 * MÃ©thode pour le bouton du retour de l'appareil
 	 */
 	public void returnPressed()
 	{
@@ -236,7 +236,7 @@ public class ContactApp extends AbstractApp
 	{
 		if(ContactRepertory.getContactlist().contains(c)) //chercher le contact c dans ma liste (contains(c), retourn un boolean)
 		{
-			//si trouvé, stocker ImageFile dans contact + sérialisation
+			//si trouvÃ©, stocker ImageFile dans contact + sÃ©rialisation
 			Utils.serializeObjects(new File (".\\Contactlist.ser"), ContactRepertory.getContactlist());
 		}		
 		System.out.println("Si pas trouver le contact dans liste, rien ne se passe"); //si pas trouver rien ne se passe
@@ -244,7 +244,7 @@ public class ContactApp extends AbstractApp
 	
 	/**
 	 * Cette classe contient tous les ActionListener des boutons de l'application Contact
-	 * @author Aurélie
+	 * @author AurÃ©lie
 	 *
 	 */
 	class ListenerContact implements ActionListener 
@@ -266,10 +266,10 @@ public class ContactApp extends AbstractApp
 
 			if (e.getSource()==bSaveContact)
 			{
-				//vérification que le nom, prénom et le téléphone ne manquent pas
+				//vÃ©rification que le nom, prÃ©nom et le tÃ©lÃ©phone ne manquent pas
 				if((tName.getText().equals("") && tFirstName.getText().equals("")) || tPhoneNumber.getText().equals(""))
 				{
-					System.out.println("Données incomplètes à l'ajout : Manque name, firstname ou phone");
+					System.out.println("DonnÃ©es incomplÃ¨tes Ã  l'ajout : Manque name, firstname ou phone");
 				}
 				else {
 					ContactRepertory.addContact(tPhoneNumber.getText(), tFirstName.getText(), tName.getText(), tEmail.getText() );
@@ -292,10 +292,10 @@ public class ContactApp extends AbstractApp
 			{
 				if(tName.getText().equals("") && tFirstName.getText().equals("") || tPhoneNumber.getText().equals(""))
 				{
-					System.out.println("Données incomplètes à la modification : Manque name, firstname ou phone");
+					System.out.println("DonnÃ©es incomplÃ¨tes Ã  la modification : Manque name, firstname ou phone");
 				}
 				else {
-					//suppression du contact sélectionner et ajout du contact modifier
+					//suppression du contact sÃ©lectionner et ajout du contact modifier
 					lTitreModif.setBackground(new Color(255, 225, 228));
 					ContactRepertory.removeContact(jlist.getSelectedValue());
 					ContactRepertory.addContact(tPhoneNumber.getText(), tFirstName.getText(), tName.getText(), tEmail.getText());
@@ -308,8 +308,8 @@ public class ContactApp extends AbstractApp
 	}
 	
 	/**
-	 * Cette classe est nécessaire pour la selection d'un objet dans la JList
-	 * @author Aurélie
+	 * Cette classe est nÃ©cessaire pour la selection d'un objet dans la JList
+	 * @author AurÃ©lie
 	 *
 	 */
 	public class SelectionListener implements ListSelectionListener
@@ -324,7 +324,7 @@ public class ContactApp extends AbstractApp
 					
 					if ( contactSelected != null ) //si la selection a bien eu lieu dans notre Jlist
 					{
-						System.out.println("Contact selectionné :" +contactSelected);
+						System.out.println("Contact selectionnÃ© :" +contactSelected);
 						
 						tPhoneNumber.setText(contactSelected.getPhone());
 						tFirstName.setText(contactSelected.getFirstname());
