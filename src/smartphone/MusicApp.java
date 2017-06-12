@@ -22,6 +22,7 @@ import java.util.TimerTask;
 
 import javax.sound.sampled.*;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -50,6 +51,7 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 	private DefaultListModel<MusicFile> listModel;
 
 	private JPanel centerPanel;
+	private JPanel infoPanel;
 	private JPanel bottomPanel;
 	
 	private MusicFile currentTrack;
@@ -59,8 +61,9 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 	private Clip clip;
 	
 	private volatile boolean ignoreChanges = false;
-	
+
 	private JLabel currentTrackInfo;
+	private JLabel albumInfo;
 	private JLabel currentTime;
 	private JLabel totalTime;
 	private JButton stop;
@@ -121,20 +124,33 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		centerPanel = new JPanel();
 		centerPanel.setLayout( new GridLayout(1,1));
 		centerPanel.setBackground( Smartphone.getBackgroundColor() );
-		centerPanel.setBackground( Color.RED );
 		centerPanel.add( musicPane, BorderLayout.CENTER );
 		
 		
 		bottomPanel = new JPanel();
 		bottomPanel.setBackground( Smartphone.getBackgroundColor() );
-		bottomPanel.setLayout( new GridLayout( 3, 1, 5, 5) );
-		bottomPanel.setBorder( BorderFactory.createEmptyBorder(20, 20, 20, 20) );
+		bottomPanel.setLayout( new GridLayout( 4, 1, 20, 20) );
+		bottomPanel.setBorder( BorderFactory.createEmptyBorder(10,10,10,10) );
+		
+		infoPanel = new JPanel();
+		infoPanel.setBackground( Smartphone.getBackgroundColor() );
+		infoPanel.setLayout( new BorderLayout() );
 		
 		currentTrackInfo = new JLabel("");
 		currentTrackInfo.setFont( Smartphone.getSmartFont("medium") );
 		currentTrackInfo.setForeground( Color.WHITE );
 		currentTrackInfo.setHorizontalAlignment( SwingConstants.CENTER );
-		bottomPanel.add( currentTrackInfo );
+		//currentTrackInfo.setBorder( BorderFactory.createEmptyBorder(10,10,10,10) );
+		infoPanel.add( currentTrackInfo, BorderLayout.NORTH );
+		
+		albumInfo = new JLabel("");
+		albumInfo.setFont( Smartphone.getSmartFont("small") );
+		albumInfo.setForeground( Color.WHITE );
+		albumInfo.setHorizontalAlignment( SwingConstants.CENTER );
+		//albumInfo.setBorder( BorderFactory.createEmptyBorder(0,10,10,10) );
+		infoPanel.add( albumInfo, BorderLayout.SOUTH );
+		
+		bottomPanel.add( infoPanel );
 		
 		slider = new JSlider( 0, 0, 0 );
 		slider.setForeground( Color.WHITE );
@@ -274,6 +290,10 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 	{
 		centerPanel.remove( musicPane );
 		centerPanel.add( visualization );
+		
+		centerPanel.repaint();
+		centerPanel.revalidate();
+		
 		showingWave = true;
 	}
 	
@@ -281,6 +301,10 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 	{
 		centerPanel.remove( visualization );
 		centerPanel.add( musicPane );
+		
+		centerPanel.repaint();
+		centerPanel.revalidate();
+		
 		showingWave = false;
 	}
 	
@@ -384,6 +408,7 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		
 		currentTrack = file;
 		currentTrackInfo.setText( file.getSongInfo() );
+		albumInfo.setText( file.getAlbumInfo() );
 		
 		try
 		{

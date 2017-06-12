@@ -179,7 +179,7 @@ public class ContactApp extends AbstractApp
 		bPhoto.setOpaque(true);
 		bPhoto.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.BLACK, Color.BLACK));
 		
-		if ( c != null )
+		if ( c != null && c.getImageFile() != null )
 		{
 			ImageIcon icon = new ImageIcon( c.getImageFile().toString() );
 			icon = Utils.resizeIcon(icon, 100, 100);

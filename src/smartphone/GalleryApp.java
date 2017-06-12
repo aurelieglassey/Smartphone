@@ -377,6 +377,8 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			cancel.setActionCommand( ACTION_RETURN );
 			cancel.addActionListener( this );
 			
+			filterBox.setSelectedIndex(0);
+			
 			JPanel p = new JPanel();
 			p.setBackground( Smartphone.getBackgroundColor() );
 			p.setLayout( new FlowLayout( FlowLayout.CENTER, 20, 100 ) );
@@ -581,7 +583,7 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			return ((Math.sin( value * Math.PI - (Math.PI/2.0) ) + 1.0) / 2.0);
 		}
 	}
-	
+
 	private static class SaturateFilter extends RGBImageFilter
 	{
 		public int filterRGB(int x, int y, int rgb)
