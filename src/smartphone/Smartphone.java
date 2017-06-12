@@ -440,6 +440,22 @@ public class Smartphone extends JFrame implements ActionListener
 		
 		return img;
 	}
+	
+	public AbstractApp getAppInstance( Class classObj )
+	{
+		AbstractApp found = null;
+		
+		for (AbstractApp app : apps)
+		{
+			if ( app.getClass().isAssignableFrom(classObj) )
+			{
+				found = app;
+				break;
+			}
+		}
+		
+		return found;
+	}
 
 	/*private void showAppButtons()
 	{

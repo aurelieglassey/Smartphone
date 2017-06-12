@@ -51,7 +51,7 @@ public class ContactListCellRenderer extends SmartListCellRenderer
 			
 			try
 			{
-				contactImage = ImageIO.read( new File(".") );
+				contactImage = ImageIO.read( c.getImageFile() );
 				
 				// Redimensionnement de l'image du contact en 60x60
 				contactImage = Utils.resizeImage( contactImage, iconSize, iconSize );

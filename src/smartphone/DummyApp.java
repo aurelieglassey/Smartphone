@@ -43,7 +43,7 @@ public class DummyApp extends AbstractApp implements ActionListener
 		p.setLayout( new BorderLayout() );
 		
 		JLabel lab = new JLabel( "" + (panels != null ? panels.size() : 0) );
-		lab.setFont( new Font("Arial", Font.PLAIN, 100 ) );
+		lab.setFont( new Font("Arial", Font.PLAIN, 300 ) );
 		lab.setForeground( Color.WHITE );
 		lab.setHorizontalAlignment( SwingConstants.CENTER );
 

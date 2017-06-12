@@ -13,6 +13,9 @@ import java.awt.Image;
 import java.awt.LinearGradientPaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageFilter;
 import java.awt.image.RGBImageFilter;
@@ -30,6 +33,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
@@ -49,13 +53,15 @@ public class GalleryApp extends AbstractApp implements ActionListener
 	private int scrollBarWidth;
 
 	private static final String PROP_IMAGEFILE = "imageFile";
+	
 	private static final String ACTION_ZOOM_IMAGE = "zoomImage";
 	private static final String ACTION_ADD_TO_CONTACT = "addToContact";
+	private static final String ACTION_ASSOCIATE_TO_CONTACT = "associateToContact";
 	private static final String ACTION_DELETE_IMAGE = "deleteImage";
 	private static final String ACTION_MODIFY_IMAGE = "modifyImage";
 	private static final String ACTION_APPLY_FILTER = "applyFilter";
 	private static final String ACTION_SAVE_IMAGE = "saveImage";
-	private static final String ACTION_CANCEL = "cancel";
+	private static final String ACTION_RETURN = "return";
 	
 	
 
@@ -254,7 +260,7 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		return preview;
 	}
 
-	public void actionPerformed(ActionEvent e)
+	public void actionPerformed( ActionEvent e )
 	{
 		String command = e.getActionCommand();
 		
@@ -292,9 +298,11 @@ public class GalleryApp extends AbstractApp implements ActionListener
 				zoomPanel = new JPanel();
 				zoomPanel.setLayout( new BorderLayout() );
 				zoomPanel.setBackground( Smartphone.getBackgroundColor() );
+				zoomPanel.setBackground( Color.RED );
 				
 				ImageIcon icon = new ImageIcon( chosenImage.toString() );
 				zoomLabel  = new JLabel( icon );
+				zoomLabel.setBackground( Color.GREEN );
 				
 				Dimension imgSize = new Dimension(
 					icon.getIconWidth(),
@@ -305,6 +313,7 @@ public class GalleryApp extends AbstractApp implements ActionListener
 				JScrollPane pane = new SmartScrollPane( zoomLabel );
 				pane.setBorder( null );
 				pane.setBackground( Smartphone.getBackgroundColor() );
+				pane.setBackground( Color.BLUE );
 				
 				/*Dimension screenSize = this.phone.getScreenSize();
 				Dimension paneSize = new Dimension(200, 200);
@@ -365,7 +374,7 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			save.addActionListener( this );
 			
 			JButton cancel = new SmartButton("Cancel");
-			cancel.setActionCommand( ACTION_CANCEL );
+			cancel.setActionCommand( ACTION_RETURN );
 			cancel.addActionListener( this );
 			
 			JPanel p = new JPanel();
@@ -422,10 +431,90 @@ public class GalleryApp extends AbstractApp implements ActionListener
 
 		else if ( command.equals(ACTION_ADD_TO_CONTACT) )
 		{
-			// TODO
+			AbstractApp app = this.phone.getAppInstance( ContactApp.class );
+			
+			if (app != null && app instanceof ContactApp)
+			{
+				ContactApp contactApp = (ContactApp) app;
+				
+				JPanel addToContact = new JPanel();
+				addToContact.setLayout( new BorderLayout() );
+				
+				JList<Contact> contactList = new SmartList<Contact>();
+				contactList.setListData(
+					contactApp.getContactlist().toArray( new Contact[0] )
+				);
+				contactList.setCellRenderer( new ContactListCellRenderer() );
+				contactList.addMouseListener( new MouseAdapter()
+				{
+					public void mouseClicked( MouseEvent e )
+					{
+						if (e.getClickCount() == 2 && !contactList.getValueIsAdjusting() )
+						{
+							ActionEvent event = new ActionEvent(
+								contactList,
+								ActionEvent.ACTION_PERFORMED,
+								ACTION_ASSOCIATE_TO_CONTACT
+							);
+							
+							actionPerformed( event );
+						}
+					}
+				});
+				
+				addToContact.add( contactList, BorderLayout.CENTER );
+				
+				pushPanel( addToContact );
+				
+				//contactApp.associate(chosenImage, c);
+			}
 		}
 		
-		else if ( command.equals(ACTION_CANCEL) )
+		else if ( command.equals(ACTION_ASSOCIATE_TO_CONTACT) )
+		{
+			System.out.println("association..." );
+			
+			String content = "Erreur lors de l'association de l'image au contact !";
+			
+			
+			if ( e.getSource() instanceof JList<?> )
+			{
+				JList<Contact> contactList = (JList<Contact>) e.getSource();
+				
+				Contact c = contactList.getSelectedValue();
+				AbstractApp app = this.phone.getAppInstance( ContactApp.class );
+				
+				if (app != null && app instanceof ContactApp)
+				{
+					ContactApp contactApp = (ContactApp) app;
+					
+					contactApp.associate( chosenImage, c );
+					
+					content = "Contact associé !";
+				}
+			}
+			
+			JPanel message = new JPanel();
+			message.setLayout( new GridLayout(2,1) );
+			message.setBackground( Smartphone.getBackgroundColor() );
+			
+			JLabel info = new JLabel( content );
+			info.setFont( Smartphone.getSmartFont("large"));
+			info.setForeground( Color.WHITE );
+			info.setHorizontalAlignment( SwingConstants.CENTER );
+			
+			JButton pop = new SmartButton("Ok");
+			pop.setActionCommand( ACTION_RETURN );
+			pop.addActionListener( this );
+
+			message.add( info );
+			message.add( pop );
+			
+			popPanel();
+			pushPanel( message );
+		}
+		
+		else if ( command.equals(ACTION_RETURN) )
 		{
 			returnPressed();
 		}

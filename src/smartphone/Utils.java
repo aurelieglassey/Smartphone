@@ -101,8 +101,7 @@ public class Utils
 		
 		catch (Exception e) //si fichier inaccessible, on lève l'exception
 		{
-			System.err.println( "EXCEPTION SERIALIZE" );
-			e.printStackTrace();
+			System.err.println( "Problème lors de la serialization" );
 		}
 	}
 	
@@ -112,8 +111,9 @@ public class Utils
 		try
 		{
 			System.out.println("Méthode deserializeObject");
-			FileInputStream fis = new FileInputStream("Contactlist.ser");
+			FileInputStream fis = new FileInputStream( f );
 			ObjectInputStream ois = new ObjectInputStream(fis);
+			
 			while (true)
 			{
 				arraylist.add(ois.readObject());
@@ -122,10 +122,8 @@ public class Utils
 		} 
 		
 		catch (Exception e) 
-		{
-			System.err.println( "EXCEPTION DESERIALIZE" );
-			e.printStackTrace();
-		} 
+		{}
+		
 		return arraylist.toArray();
 	}
 }

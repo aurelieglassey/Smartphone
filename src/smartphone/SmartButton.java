@@ -28,9 +28,7 @@ public class SmartButton extends JButton
 	public SmartButton (String text)
 	{
 		super(text);
-		setBackground(new Color(255, 225, 228, 255));
-		setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, new Color(192, 0, 0)));
-		setFont(new Font ("Raleway", Font.PLAIN, 24));
+		apparenceButton();
 	}
 	
 	/**
