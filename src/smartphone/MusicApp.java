@@ -1,11 +1,14 @@
 package smartphone;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,169 +17,443 @@ import java.util.ArrayList;
 
 
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.DataLine.Info;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 
-//ajouter dans ma fenêtre mes fichiers de son
-//double cliquer et démarrer la lecture de d'un son
-
-public class MusicApp extends AbstractApp
+public class MusicApp extends AbstractApp implements ActionListener, ChangeListener, LineListener
 {
-	private JFileChooser chooser = new JFileChooser();
+	private JLabel appTitle;
+
+	private JScrollPane musicPane;
+	private JList <MusicFile> musicList;
+	private DefaultListModel<MusicFile> listModel;
+
+	private JPanel centerPanel;
+	private JPanel bottomPanel;
 	
-	private JButton bsearchMusic = new JButton("Search new Music");
-	private JButton baddPlaylist = new JButton ("Add a Playlist");
-	private JButton bremovePlaylist = new JButton ("Remove a Playlist");
+	private MusicFile currentTrack;
+	private AudioInputStream ais;
+	private AudioFileFormat audioFile;
+	private AudioFormat format;
+	private Clip clip;
 	
-	private JPanel panelButton = new JPanel ();
+	private volatile boolean ignoreChanges = false;
 	
-	private JLabel ltitre = new JLabel("My Playlists");
+	private JLabel currentTrackInfo;
+	private JLabel currentTime;
+	private JLabel totalTime;
+	private JButton stop;
+	private JButton play;
+	private JButton visButton;
+	private ImageIcon playIcon;
+	private ImageIcon pauseIcon;
+	private ImageIcon stopIcon;
+	private JSlider slider;
 	
-	protected ArrayList<File> musiclist = new ArrayList<File>();
-	private JList <File>jlist ;
-	
+	Timer t;
+  	TimerTask moveSlider = null;
+  	
+  	private AudioVisualization visualization;
+  	private boolean showingWave = false;
 	
 	public MusicApp( Smartphone phone )
 	{
 		super( phone, "Music app", "music" );
 		
+		t = new Timer();
+		
+		this.mainPanel.setBackground( Smartphone.getBackgroundColor() );
 		this.mainPanel.setLayout(new BorderLayout());
-	
+		
+		// Création du titre de l'application
+		appTitle = new JLabel("My music");
+		appTitle.setBorder( BorderFactory.createEmptyBorder(5,5,5,5) );
+		appTitle.setForeground( Color.WHITE );
+		appTitle.setFont( Smartphone.getSmartFont("large") );
+		appTitle.setHorizontalAlignment( SwingConstants.CENTER );
+		this.mainPanel.add(appTitle, BorderLayout.NORTH);
+		
+		
 		File dossierMusic = this.phone.getSoundFolder();
+		File[] files = dossierMusic.listFiles();
 		
-		//insertion des fichiers dans un tableau
-		File[] listofMusic = dossierMusic.listFiles();
-
+		listModel = new DefaultListModel<>();
 		
-		musiclist.addAll( Arrays.asList(listofMusic) );
-		
-		
-		jlist= new JList(musiclist.toArray());
-		
-		
-		this.mainPanel.add(panelButton, BorderLayout.SOUTH);
-		this.mainPanel.add(jlist);
-		this.mainPanel.add(ltitre, BorderLayout.NORTH);
-		
-		panelButton.setLayout(new FlowLayout());	
-		panelButton.add(bsearchMusic);
-		panelButton.add(baddPlaylist);
-		panelButton.add(bremovePlaylist);
-		
-		bsearchMusic.addActionListener( new Listener() );
-		jlist.getSelectionModel();
-		jlist.addListSelectionListener( new JlistListener());
-	}
-	
-
-	class JlistListener implements ListSelectionListener
-	{
-
-		public void valueChanged(ListSelectionEvent e)
+		for (File f : files)
 		{
-			if(!jlist.getValueIsAdjusting()){
-				System.out.println("Click sur la Jlist");
-				
+			try
+			{
+				listModel.addElement( new MusicFile(f.getCanonicalPath()) );
 			}
 			
-			
-		}
-		
-		
-	}
-
-	public class Listener implements ActionListener
-	{
-		public void actionPerformed(ActionEvent e) {
-			
-			
-			if(e.getSource()==bsearchMusic)
+			catch (IOException e)
 			{
-				System.out.println("Search Music");
-				 int returnVal = chooser.showOpenDialog( null );
-				 
-				 if(returnVal == JFileChooser.CANCEL_OPTION)
-				 {
-					 System.out.println("You chose to cancel this action ");
-				 }
-				 
-				 if(returnVal == JFileChooser.APPROVE_OPTION)
-				 {
-					 File file = chooser.getSelectedFile();
-					 System.out.println("Nom fichier : " +file.getName());
-					 
-				 } 
-			}	 
+				System.err.println( "Erreur lors de l'ajout dans la liste de musiques" );
+			}
+		}
+		
+		musicList = new SmartList<MusicFile>( listModel );
+		musicList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+		musicList.setCellRenderer( new ContactListCellRenderer() );
+		musicPane = new SmartScrollPane( musicList );
+		
+		centerPanel = new JPanel();
+		centerPanel.setLayout( new GridLayout(1,1));
+		centerPanel.setBackground( Smartphone.getBackgroundColor() );
+		centerPanel.setBackground( Color.RED );
+		centerPanel.add( musicPane, BorderLayout.CENTER );
+		
+		
+		bottomPanel = new JPanel();
+		bottomPanel.setBackground( Smartphone.getBackgroundColor() );
+		bottomPanel.setLayout( new GridLayout( 3, 1, 5, 5) );
+		bottomPanel.setBorder( BorderFactory.createEmptyBorder(20, 20, 20, 20) );
+		
+		currentTrackInfo = new JLabel("");
+		currentTrackInfo.setFont( Smartphone.getSmartFont("medium") );
+		currentTrackInfo.setForeground( Color.WHITE );
+		currentTrackInfo.setHorizontalAlignment( SwingConstants.CENTER );
+		bottomPanel.add( currentTrackInfo );
+		
+		slider = new JSlider( 0, 0, 0 );
+		slider.setForeground( Color.WHITE );
+		slider.setBackground( Smartphone.getBackgroundColor() );
+		slider.addChangeListener( this );
+		bottomPanel.add( slider );
+		
+		JPanel buttonArea = new JPanel();
+		buttonArea.setLayout( new FlowLayout( FlowLayout.LEFT, 5, 5) );
+		buttonArea.setBackground( Smartphone.getBackgroundColor() );
+
+		playIcon = new ImageIcon( new File(this.phone.getSysFolder(), "pictogram_play.png").toString() );
+		pauseIcon = new ImageIcon( new File(this.phone.getSysFolder(), "pictogram_pause.png").toString() );
+		stopIcon = new ImageIcon( new File(this.phone.getSysFolder(), "pictogram_stop.png").toString() );
+		
+		currentTime = new JLabel( clipPosition( null ) );
+		currentTime.setFont( Smartphone.getSmartFont("medium") );
+		currentTime.setForeground( Color.WHITE );
+		
+		JLabel separator = new JLabel("/");
+		separator.setFont( Smartphone.getSmartFont("medium") );
+		separator.setForeground( Color.WHITE );
+		
+		totalTime = new JLabel( clipDuration( null ) );
+		totalTime.setFont( Smartphone.getSmartFont("medium") );
+		totalTime.setForeground( Color.WHITE );
+		play = new SmartButton( playIcon );
+		stop = new SmartButton( stopIcon );
+		visButton = new SmartButton( "Toggle wave" );
+		
+		play.addActionListener( this );
+		stop.addActionListener( this );
+		visButton.addActionListener( this );
+		
+		buttonArea.add( stop );
+		buttonArea.add( play );
+		buttonArea.add( visButton );
+		buttonArea.add( currentTime );
+		buttonArea.add( separator );
+		buttonArea.add( totalTime );
+		bottomPanel.add( buttonArea );
+		
+		this.mainPanel.add( centerPanel, BorderLayout.CENTER );
+		this.mainPanel.add( bottomPanel, BorderLayout.SOUTH );
+		
+		musicList.addMouseListener( new MouseAdapter()
+		{
+			public void mouseClicked( MouseEvent e )
+			{
+				if (e.getClickCount() == 2)
+				{
+					setCurrentTrack( musicList.getSelectedValue() );
+				}
+			}
+		});
+		
+		visualization = new AudioVisualization();
+	}
+	
+	public void stateChanged( ChangeEvent e )
+	{
+		if (ignoreChanges) return;
+		
+		if ( clip != null )
+		{
+			long newPosition = slider.getValue() * 1000000;
+			clip.setMicrosecondPosition( newPosition );
+		}
+		
+		updateUIFromClip();
+	}
+	
+	private void updateUIFromClip()
+	{
+		if (clip != null && clip.isActive() )
+		{
+			play.setIcon( pauseIcon );
+			
+			currentTime.setText( clipPosition(clip) );
+			totalTime.setText( clipDuration(clip) );
+			slider.setMaximum( (int)(clip.getMicrosecondLength() / 1000000) );
+			slider.setValue( (int)(clip.getMicrosecondPosition() / 1000000) );
+			startMovingSlider();
+			
+			
+			float currentProgress = ((float)clip.getMicrosecondPosition()) / clip.getMicrosecondLength();
+			
+			visualization.resumeAnimation();
+			visualization.setProgress( currentProgress );
+		}
+		
+		else
+		{
+			play.setIcon( playIcon );
+			
+			currentTime.setText( clipPosition(clip) );
+			totalTime.setText( clipDuration(clip) );
+			
+			if (clip != null)
+			{
+				slider.setMaximum( (int)(clip.getMicrosecondLength() / 1000000) );
+				slider.setValue( (int)(clip.getMicrosecondPosition() / 1000000) );
+			}
+			
+			stopMovingSlider();
+			
+			visualization.pauseAnimation();
 		}
 	}
 
+	public void actionPerformed( ActionEvent e )
+	{
+		if ( e.getSource() == stop )
+		{
+			stop();
+			updateUIFromClip();
+		}
+
+		else if (e.getSource() == play )
+		{
+			if ( clip != null && clip.isActive() )
+				pause();
+			else
+				play();
+		}
+
+		else if (e.getSource() == visButton )
+		{
+			if (!showingWave)
+				showVisualization();
+			else
+				showMusicList();
+		}
+	}
+
+	private void showVisualization()
+	{
+		centerPanel.remove( musicPane );
+		centerPanel.add( visualization );
+		showingWave = true;
+	}
+	
+	private void showMusicList()
+	{
+		centerPanel.remove( visualization );
+		centerPanel.add( musicPane );
+		showingWave = false;
+	}
+	
 	public JPanel generateMainPanel()
 	{
 		return new JPanel();
 	}
 	
-	//soundfolder
-	public void lectureFile (){
-		
-		File f = new File ("C:\\Users\\Aurélie\\Desktop\\MusicSmartphone");
-		
-		try {
-			//lecture d'un son .waw
-		    AudioFileFormat audioFile = AudioSystem.getAudioFileFormat( f );
-	        AudioFormat format = audioFile.getFormat();
-	      
-	        // On décrit un Clip (son chargé en mémoire) qui a le format du fichier à lire
-	        Info dtli = new DataLine.Info( Clip.class, format );
-	      
-	        Clip clip = (Clip) AudioSystem.getLine( dtli );
-	      
-	        AudioInputStream ais = AudioSystem.getAudioInputStream( f );
-	        clip.open( ais );
-	        clip.start( );
-	      
-	      // On attend tant que la ligne ne joue pas
-	      //while ( !clip.isRunning() ) Thread.sleep(10);
-	      
-	      // On attend tant que la ligne joue... malin !
-	      //while ( clip.isRunning() ) Thread.sleep(10);
-
-		}
-		
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		} 
-		
-		catch (UnsupportedAudioFileException e)
-		{
-			e.printStackTrace();
-		} 
-		
-		catch (LineUnavailableException e)
-		{
-			e.printStackTrace();
-		} 
-	}
-
 	public void returnPressed()
 	{
 		
+	}
+	
+	private void stop()
+	{
+		if ( clip != null )
+			clip.close();
+		
+		updateUIFromClip();
+		
+		//currentTime.setText( clipPosition(null) );
+		//slider.setValue(0);
+	}
+
+	private void pause()
+	{
+		if ( clip != null && clip.isActive() )
+			clip.stop();
+		
+		updateUIFromClip();
+	}
+	
+	private void play()
+	{
+		if ( currentTrack == null && !musicList.isSelectionEmpty() )
+		{
+			setCurrentTrack( musicList.getSelectedValue() );
+		}
+		
+		if (clip != null)
+		{
+			try
+			{
+				if ( !clip.isOpen() )
+				{
+					ais = AudioSystem.getAudioInputStream( currentTrack );
+					clip.open( ais );
+				}
+				
+				clip.start();
+			}
+			
+			catch( Exception ex )
+			{
+				System.err.println( "Ligne indisponible !" );
+			}
+		}
+		
+		updateUIFromClip();
+	}
+	
+	private void startMovingSlider()
+	{
+		moveSlider = new TimerTask()
+     	{
+			public void run()
+			{
+				updateCursorPosition();
+			}
+		};
+		
+		// La position du curseur est mise à jour 20 fois par seconde
+		t.schedule( moveSlider, 0, 1000/20 );
+	}
+	
+	private void updateCursorPosition()
+	{
+		if ( clip != null )
+		{
+			currentTime.setText( clipPosition(clip) );
+			
+			long secPosition = Math.round( clip.getMicrosecondPosition() / 1000000.0 );
+			
+			ignoreChanges = true;
+			slider.setValue( (int) secPosition );
+			ignoreChanges = false;
+		}
+	}
+	
+	private void stopMovingSlider()
+	{
+		if ( moveSlider != null )
+			moveSlider.cancel();
+		
+		t.purge();
+	}
+	
+	private void setCurrentTrack( MusicFile file )
+	{
+		stop();
+		
+		currentTrack = file;
+		currentTrackInfo.setText( file.getSongInfo() );
+		
+		try
+		{
+			visualization.fetchFileData( file );
+			
+			//lecture d'un son .wav
+		    audioFile = AudioSystem.getAudioFileFormat( file );
+	        format = audioFile.getFormat();
+	        //ais = AudioSystem.getAudioInputStream( currentTrack );
+	      
+	        // On décrit un Clip (son chargé en mémoire) qui a le format du fichier à lire
+	        Line.Info dtli = new DataLine.Info( Clip.class, format );
+	      
+	        clip = (Clip) AudioSystem.getLine( dtli );
+	        clip.addLineListener( this );
+	        //clip.open( ais );
+	        
+	        play();
+		}
+		
+		catch (Exception e)
+		{
+			//e.printStackTrace();
+			System.err.println( "Erreur lors de la lecture du fichier." );
+		}
+	}
+	
+	private String usToMinSec( long microSeconds )
+	{
+		long seconds = Math.round( microSeconds / 1000000.0 );
+		
+		return String.format("%d:%02d", (seconds/60), (seconds%60));
+	}
+	
+	private String clipDuration( Clip c )
+	{
+		long minSec = 0;
+		
+		if (c != null)
+		{
+			long length = c.getMicrosecondLength();
+			
+			if ( length != AudioSystem.NOT_SPECIFIED )
+			{
+				minSec = length;
+			}
+		}
+		
+		return usToMinSec( minSec );
+	}
+	
+	private String clipPosition( Clip c )
+	{
+		long minSec = 0;
+		
+		if (c != null)
+		{
+			long pos = c.getMicrosecondPosition();
+			
+			if ( pos != AudioSystem.NOT_SPECIFIED )
+			{
+				minSec = pos;
+			}
+		}
+		
+		return usToMinSec( minSec );
+	}
+
+	public void update(LineEvent e)
+	{
+		updateUIFromClip();
 	}
 }

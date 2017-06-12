@@ -16,9 +16,17 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 public class Utils
 {
+	public static ImageIcon resizeIcon( ImageIcon icon, int newWidth, int newHeight )
+	{
+		Image img = icon.getImage();
+		img = Utils.resizeImage( img, newWidth, newHeight );
+		return new ImageIcon( img );
+	}
+	
 	public static Image resizeImage( Image img, int newWidth, int newHeight )
 	{
 		// Largeur et hauteur de l'image avant modification
@@ -59,6 +67,13 @@ public class Utils
 		// Retour de l'image rognée et redimensionnée
 		return Toolkit.getDefaultToolkit().createImage( fis );
 	}
+
+	public static ImageIcon applyImageFilter( ImageIcon icon, ImageFilter filter )
+	{
+		Image img = icon.getImage();
+		img = Utils.applyImageFilter( img, filter );
+		return new ImageIcon( img );
+	}
 	
 	public static Image applyImageFilter( Image img, ImageFilter filter )
 	{
@@ -84,8 +99,9 @@ public class Utils
 			oos.close(); 
 		} 
 		
-		catch (IOException e) //si fichier inaccessible, on lève l'exception
+		catch (Exception e) //si fichier inaccessible, on lève l'exception
 		{
+			System.err.println( "EXCEPTION SERIALIZE" );
 			e.printStackTrace();
 		}
 	}
@@ -95,7 +111,7 @@ public class Utils
 		ArrayList <Object> arraylist= new ArrayList<>();
 		try
 		{
-			System.out.println("Méthode déserializeObject");
+			System.out.println("Méthode deserializeObject");
 			FileInputStream fis = new FileInputStream("Contactlist.ser");
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			while (true)
@@ -105,14 +121,11 @@ public class Utils
 			
 		} 
 		
-		catch (IOException e) 
+		catch (Exception e) 
 		{
+			System.err.println( "EXCEPTION DESERIALIZE" );
 			e.printStackTrace();
 		} 
-		catch (ClassNotFoundException e)
-		{
-			e.printStackTrace();
-		}
 		return arraylist.toArray();
 	}
 }

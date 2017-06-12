@@ -1,5 +1,6 @@
 package smartphone;
 
+import java.awt.Color;
 import java.util.Vector;
 
 import javax.swing.JList;
@@ -33,8 +34,10 @@ public class SmartList<E> extends JList<E>
 	
 	private void customizeList()
 	{
+		setCellRenderer( new SmartListCellRenderer() );
+		
 		//this.getModel().addListDataListener(arg0);
 		setFont( Smartphone.getSmartFont("medium") );
-		setBackground( Smartphone.getBackgroundColor() );
+		setBackground( Color.WHITE );
 	}
 }

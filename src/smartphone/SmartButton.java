@@ -9,17 +9,20 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+
 /**
  * Classe qui met en forme l'apparence d'un bouton dans l'application contact
- * Cette classe contient deux constructeurs, un avec un texte en paramètre et l'autre avec une image en paramètre
- * @author Aurélie
+ * Cette classe contient deux constructeurs, un avec un texte en paramÃ¨tre et l'autre avec une image en paramÃ¨tre
+ * @author AurÃ©lie
  *
  */
 public class SmartButton extends JButton
 {
 
 	/**
-	 * Premier constructeur avec du text en paramètre.
+	 * Premier constructeur avec du text en paramÃ¨tre.
 	 * @param text
 	 */
 	public SmartButton (String text)
@@ -31,16 +34,23 @@ public class SmartButton extends JButton
 	}
 	
 	/**
-	 * Deuxième constructeur avec un image en paramètre 
+	 * DeuxiÃ¨me constructeur avec un image en paramÃ¨tre 
 	 * @param icon
 	 */
 	public SmartButton (Icon icon)
 	{
 		super( icon );
-		setBackground(new Color(30, 30, 30, 255));
-		setForeground(Color.WHITE);
-		setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.WHITE, Color.GRAY));
-		setFont(new Font ("Raleway", Font.PLAIN, 24));
+		apparenceButton();
 	}
 	
+	private void apparenceButton()
+	{
+		setBackground( Smartphone.getBackgroundColor().brighter().brighter() );
+		setForeground( Color.WHITE );
+		setFont( Smartphone.getSmartFont("smart") );
+		
+		Border empty = BorderFactory.createEmptyBorder( 5, 15, 5, 15);
+		setBorder( empty );
+		setFocusPainted( false );
+	}
 }

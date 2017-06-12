@@ -12,6 +12,7 @@ import java.util.Random;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class DummyApp extends AbstractApp implements ActionListener
 {
@@ -25,7 +26,6 @@ public class DummyApp extends AbstractApp implements ActionListener
 	public void returnPressed()
 	{
 		JPanel removed = popPanel();
-		
 		panels.remove( removed );
 	}
 	
@@ -40,18 +40,26 @@ public class DummyApp extends AbstractApp implements ActionListener
 			r.nextFloat(),
 			1.0f
 		));
+		p.setLayout( new BorderLayout() );
 		
 		JLabel lab = new JLabel( "" + (panels != null ? panels.size() : 0) );
-		lab.setFont( new Font("Arial", Font.PLAIN, 60 ) );
+		lab.setFont( new Font("Arial", Font.PLAIN, 100 ) );
 		lab.setForeground( Color.WHITE );
+		lab.setHorizontalAlignment( SwingConstants.CENTER );
 
-		JButton btnPush = new JButton("Push a panel");
-		
+		JButton btnPush = new SmartButton("Push");
+		btnPush.setActionCommand("push");
 		btnPush.addActionListener( this );
 		
+		JButton btnPop = new SmartButton("Pop");
+		btnPop.setActionCommand("pop");
+		btnPop.addActionListener( this );
+		
 		JPanel south = new JPanel();
-		south.setLayout( new FlowLayout() );
+		south.setBackground( p.getBackground() );
+		south.setLayout( new FlowLayout( FlowLayout.CENTER, 20, 200 ) );
 		south.add( btnPush );
+		south.add( btnPop );
 		
 		p.add( south, BorderLayout.SOUTH );
 		p.add( lab, BorderLayout.CENTER );
@@ -70,9 +78,20 @@ public class DummyApp extends AbstractApp implements ActionListener
 		super.pushPanel( p );
 	}
 
-	public void actionPerformed(ActionEvent e)
+	public void actionPerformed( ActionEvent e )
 	{
-		JPanel p = makePanel();
-		pushPanel( p );
+		String command = e.getActionCommand();
+		
+		switch( command )
+		{
+			case "push":
+				JPanel p = makePanel();
+				pushPanel( p );
+				break;
+			
+			case "pop":
+				returnPressed();
+				break;
+		}
 	}
 }

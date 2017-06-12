@@ -17,12 +17,9 @@ import javax.swing.JButton;
 
 public class ImageButton extends JButton
 {
-	private Image image;
 	private Image imgIcon;
 	private Image imgRolloverIcon;
 	private Image imgPressedIcon;
-	private int imageWidth;
-	private int imageHeight;
 	
 
 	public ImageButton( Image image )
@@ -32,12 +29,15 @@ public class ImageButton extends JButton
 	
 	public ImageButton( Image image, int width, int height )
 	{
-		// Stockage des données de l'image
-		this.image = image;
-		this.imageWidth = width;
-		this.imageHeight = height;
+		this.setBackground( new Color(0,0,0,0) );
+		this.setContentAreaFilled( false ); // PLus approprié que setOpaque() pour les fonds transparents
+		this.setBorder( null );
 		
-		
+		this.setImage( image, width, height );
+	}
+	
+	public void setImage( Image image, int width, int height )
+	{
 		this.imgIcon = Utils.resizeImage(image, width, height);
 		this.imgRolloverIcon = Utils.applyImageFilter( this.imgIcon, new YellowFilter() );
 		this.imgPressedIcon = Utils.applyImageFilter( this.imgIcon, new WhiteFilter() );
@@ -45,21 +45,6 @@ public class ImageButton extends JButton
 		this.setIcon( new ImageIcon( this.imgIcon ));
 		this.setRolloverIcon( new ImageIcon( imgRolloverIcon ));
 		this.setPressedIcon( new ImageIcon( imgPressedIcon ));
-		
-		this.setBackground( new Color(0,0,0,0) );
-		
-		// Préférer setContentAreaFilled() pour les boutons icônes !
-		//this.setOpaque( false );
-		this.setContentAreaFilled( false );
-		
-		this.setBorder( null );
-	}
-
-	
-	
-	public Image getImage()
-	{
-		return image;
 	}
 
 	private static class WhiteFilter extends RGBImageFilter
