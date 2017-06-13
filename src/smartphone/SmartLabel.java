@@ -7,7 +7,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 /**
- * Classe qui met en forme l'apparence d'un label dans l'application contact
+ * Classe qui met en forme l'apparence d'un label 
  * @author Aurélie
  *
  */
@@ -16,7 +16,8 @@ public class SmartLabel extends JLabel
 
 	/**
 	 * Constructeur de la classe SmartLabel
-	 * @param text
+	 * Mise en forme des bords, de la couleur et de l'écriture d'un label
+	 * @param text text des labels
 	 */
 	public SmartLabel(String text)
 	{

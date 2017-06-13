@@ -23,7 +23,8 @@ public class SmartButton extends JButton
 
 	/**
 	 * Premier constructeur avec du text en paramètre.
-	 * @param text
+	 * Appel de la méthode apparenceButton(); pour la mise en forme du bouton
+	 * @param text text du bouton
 	 */
 	public SmartButton (String text)
 	{
@@ -33,7 +34,8 @@ public class SmartButton extends JButton
 	
 	/**
 	 * Deuxième constructeur avec un image en paramètre 
-	 * @param icon
+	 * Appel de la méthode apparenceButton(); pour la mise en forme du bouton
+	 * @param icon icon du bouton
 	 */
 	public SmartButton (Icon icon)
 	{
@@ -41,6 +43,10 @@ public class SmartButton extends JButton
 		apparenceButton();
 	}
 	
+	/**
+	 * Méthode mise en forme d'un bouton : Que le paramètre d'entrée d'un bouton soit une Icon ou un String, l'apparence du bouton est la même
+	 * Mise en forme de la couleur de fond, des bords et de l'écriture d'un bouton.
+	 */
 	private void apparenceButton()
 	{
 		setBackground( Smartphone.getBackgroundColor().brighter().brighter() );
