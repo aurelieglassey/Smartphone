@@ -17,11 +17,6 @@ import javax.swing.JButton;
 
 public class ImageButton extends JButton
 {
-	private Image imgIcon;
-	private Image imgRolloverIcon;
-	private Image imgPressedIcon;
-	
-
 	public ImageButton( Image image )
 	{
 		this( image, 50, 50 );
@@ -38,11 +33,11 @@ public class ImageButton extends JButton
 	
 	public void setImage( Image image, int width, int height )
 	{
-		this.imgIcon = Utils.resizeImage(image, width, height);
-		this.imgRolloverIcon = Utils.applyImageFilter( this.imgIcon, new YellowFilter() );
-		this.imgPressedIcon = Utils.applyImageFilter( this.imgIcon, new WhiteFilter() );
+		Image imgIcon = Utils.resizeImage(image, width, height);
+		Image imgRolloverIcon = Utils.applyImageFilter( imgIcon, new YellowFilter() );
+		Image imgPressedIcon = Utils.applyImageFilter( imgIcon, new WhiteFilter() );
 		
-		this.setIcon( new ImageIcon( this.imgIcon ));
+		this.setIcon( new ImageIcon( imgIcon ));
 		this.setRolloverIcon( new ImageIcon( imgRolloverIcon ));
 		this.setPressedIcon( new ImageIcon( imgPressedIcon ));
 	}

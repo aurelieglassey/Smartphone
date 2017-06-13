@@ -18,6 +18,10 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+/**
+ * Classe regroupant divers utilitaires pour la gestion d'images et la sérialization.
+ * @author Fabien Terrani
+ */
 public class Utils
 {
 	public static ImageIcon resizeIcon( ImageIcon icon, int newWidth, int newHeight )

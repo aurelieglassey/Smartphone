@@ -7,43 +7,86 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
 
+/**
+ * Cette classe permet de stocker les informations d'un fichier son. Les formats
+ * de métadonnées reconnus sont le INFO-LIST et les tags ID3.
+ * @author Fabien Terrani
+ */
 public class MusicFile extends File
 {
 	private static final long serialVersionUID = 1L;
-
+	
+	/**
+	 * Chaîne à afficher si le titre n'est pas connu.
+	 */
 	private static final String UNKNOWN_TITLE = "<Titre inconnu>";
+	
+	/**
+	 * Chaîne à afficher si l'artiste n'est pas connu.
+	 */
 	private static final String UNKNOWN_ARTIST = "<Artiste inconnu>";
 	
+	/**
+	 * Titre.
+	 */
 	private String title;
+	
+	/**
+	 * Artiste.
+	 */
 	private String artist;
+	
+	/**
+	 * Album.
+	 */
 	private String album;
+	
+	/**
+	 * Date de copyright.
+	 */
 	private String copyrightDate;
+	
+	/**
+	 * Numéro de piste.
+	 */
 	private String track;
 	
+	/**
+	 * Crée un nouveau fichier son
+	 * @param parent Répertoire parent
+	 * @param child Nom du fichier
+	 */
 	public MusicFile( File parent, String child )
 	{
 		super( parent, child );
 		init();
 	}
 	
+	/**
+	 * Crée un nouveau fichier son
+	 * @param parent Chemin du répertoire parent
+	 * @param child Nom du fichier
+	 */
 	public MusicFile( String parent, String child )
 	{
 		super( parent, child );
 		init();
 	}
-
-	public MusicFile( URI uri )
-	{
-		super( uri );
-		init();
-	}
 	
+	/**
+	 * Crée un nouveau fichier son
+	 * @param pathname Chemin vers le fichier
+	 */
 	public MusicFile( String pathname )
 	{
 		super( pathname );
 		init();
 	}
 	
+	/**
+	 * Initialise les champs des métadonnées à des valeurs par défaut et
+	 * recherche les valeurs présentes dans le fichier son.
+	 */
 	private void init()
 	{
 		title = UNKNOWN_TITLE;
@@ -55,6 +98,9 @@ public class MusicFile extends File
 		fetchMetadata();
 	}
 	
+	/**
+	 * Lit le fichier son et enregistre les métadonnées dans les champs de la classe.
+	 */
 	private void fetchMetadata()
 	{
 		boolean id3Found = false;
@@ -244,6 +290,10 @@ public class MusicFile extends File
 		}
 	}
 	
+	/**
+	 * Retourne les métadonnées du fichier son (titre et artiste) ou le nom du fichier
+	 * si ces informations sont manquantes.
+	 */
 	public String toString()
 	{
 		if ( title == UNKNOWN_TITLE || artist == UNKNOWN_ARTIST )
@@ -251,12 +301,21 @@ public class MusicFile extends File
 		else
 			return getSongInfo();
 	}
-
+	
+	/**
+	 * Retourne l'artiste et le titre du fichier son.
+	 * @return L'artiste et le titre du fichier son.
+	 */
 	public String getSongInfo()
 	{
 		return getSongInfo( true );
 	}
 	
+	/**
+	 * Retourne l'artiste et le titre du fichier son dans l'ordre défini par artisteFirst.
+	 * @param artistFirst Retourne l'artiste puis le titre si TRUE, ou le titre puis l'artiste si FALSE.
+	 * @return Une chaîne contenant le titre et l'artiste, dans l'ordre déterminé par artistFirst.
+	 */
 	public String getSongInfo( boolean artistFirst )
 	{
 		if ( artistFirst )
@@ -265,6 +324,10 @@ public class MusicFile extends File
 			return (title + " - " + artist);
 	}
 	
+	/**
+	 * Retourne les informations sur l'album du fichier son.
+	 * @return Une chaîne contenant le nom de l'album et l'année de copyright entre parenthèses.
+	 */
 	public String getAlbumInfo()
 	{
 		String info = null;
@@ -280,17 +343,50 @@ public class MusicFile extends File
 		return info;
 	}
 
+	/**
+	 * Retourne le titre du fichier son.
+	 * @return Le titre du fichier son.
+	 */
 	public String getTitle()
 	{
 		return title;
 	}
-
+	
+	/**
+	 * Retourne l'artiste du fichier son.
+	 * @return Le nom de l'artiste du fichier son.
+	 */
 	public String getArtist()
 	{
 		return artist;
 	}
 
+	/**
+	 * Retourne l'album du fichier son.
+	 * @return Le nom de l'album du fichier son, ou une chaîne vide
+	 * s'il n'a pas été trouvé.
+	 */
 	public String getAlbum()
+	{
+		return album;
+	}
+	
+	/**
+	 * Retourne la date de copyright du fichier son.
+	 * @return La date de copyright du fichier son, ou une chaîne vide
+	 * si elle n'a pas pu être trouvée.
+	 */
+	public String getCopyrightDate()
+	{
+		return copyrightDate;
+	}
+	
+	/**
+	 * Retourne le numéro de piste du fichier son.
+	 * @return Le numéro de piste du fichier son, ou une chaîne vide
+	 * s'il n'a pas été trouvé.
+	 */
+	public String getTrack()
 	{
 		return album;
 	}

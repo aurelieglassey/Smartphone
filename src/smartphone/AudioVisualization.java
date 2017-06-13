@@ -17,28 +17,102 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JPanel;
 
+/**
+ * Cette classe génère une visualisation du son contenu dans un fichier.
+ * L'amplitude de l'onde sonore est représentée par une série de barres
+ * verticales de différentes hauteurs. Tout le son contenu dans le fichier
+ * est lu et évalué afin de calculer l'amplitude maximum de l'onde à chaque
+ * rafraîchissement de l'animation.
+ * @author Fabien Terrani
+ */
 public class AudioVisualization extends JPanel
 {
+	/**
+	 * Les 500 dernières amplitudes affichées dans la visualisation.
+	 */
 	private float[] values = new float[500];
+	
+	/**
+	 * L'espacement entre deux barres en pixels.
+	 */
 	private static int hGap = 2;
+	
+	/**
+	 * La largeur d'une barre en pixels.
+	 */
 	private static int barWidth = 2;
-	private static int usedLength = 90;
+	
+	/**
+	 * Le nombre de barres à afficher dans la visualisation. Ne peut
+	 * pas être supérieur à values.length et varie dynamiquement avec
+	 * la largeur du composant.
+	 */
+	private int usedLength = 90;
+	
+	/**
+	 * La hauteur maximum d'une barre par rapport à la hauteur du composant.
+	 */
 	private static float maxHeightFactor = 0.95f;
-
+	
+	/**
+	 * Identifiant du jeu de couleurs par défaut.
+	 */
 	public static final int THEME_DEFAULT = 1;
+	
+	/**
+	 * Identifiant du jeu de couleurs feu.
+	 */
 	public static final int THEME_FIRE = 2;
+	
+	/**
+	 * Identifiant du jeu de couleurs eau.
+	 */
 	public static final int THEME_WATER = 3;
 	
+	/**
+	 * Identifiant du jeu de couleurs actuellement utilisé.
+	 */
 	private int currentTheme = THEME_DEFAULT;
 	
+	/**
+	 * Fréquence de rafraîchissement de l'animation.
+	 */
 	private static final int ANIMATION_FREQUENCY = 40;
+	
+	/**
+	 * Tableau contenant les amplitudes maximum pour chaque période
+	 * de l'animation. Sa longueur est variable et dépend de la longueur
+	 * du son contenu dans le fichier.
+	 */
 	private float[] maxAmplitudes;
 	
+	/**
+	 * Timer utilisé pour rafraîchir l'animation.
+	 */
 	private Timer t;
+	
+	/**
+	 * Tâche exécutée par le Timer pour rafraîchir l'animation.
+	 */
 	private TimerTask animTask;
+	
+	/**
+	 * L'index de la prochaine amplitude à afficher dans l'animation.
+	 * Cet index correspond au tableau maxAmplitudes.
+	 */
 	private int currentValueIndex = 0;
+	
+	/**
+	 * Booléen représentant l'état de l'animation. TRUE si l'animation
+	 * est en pause (des amplitudes à 0.0 sont envoyées pour l'affichage),
+	 * FALSE si l'animation est en train d'être affichée. Après la construction
+	 * de l'objet, l'animation est en pause par défaut.
+	 */
 	private boolean paused = true;
 	
+	/**
+	 * Crée une nouvelle visualisation audio (en pause par défaut).
+	 */
 	public AudioVisualization()
 	{
 		setBackground( Color.BLACK );
@@ -55,9 +129,49 @@ public class AudioVisualization extends JPanel
 		});
 		
 		t = new Timer();
-		startAnimation();
+		
+		initAnimation();
+		pauseAnimation();
 	}
 	
+	/**
+	 * Crée une nouvelle visualisation audio associée au son du fichier
+	 * fourni en paramètre. L'animation est en pause par défaut.
+	 * @param f Le fichier WAVE contenant le son à utiliser pour l'animation
+	 * @throws Exception Émet une exception si l'encodage du son dans le fichier
+	 * n'est pas supporté. Actuellement, seul le PCM par entiers signé et
+	 * non signé est supporté.
+	 */
+	public AudioVisualization( File f ) throws Exception
+	{
+		this();
+		fetchFileData( f );
+	}
+	
+	/**
+	 * Crée une nouvelle visualisation audio associée au son du fichier
+	 * fourni en paramètre. L'animation est en pause par défaut.
+	 * @param f Le fichier WAVE contenant le son à utiliser pour l'animation
+	 * @param startImmediately TRUE pour démarrer l'animation immédiatement, FALSE pour la laisser en pause.
+	 * @throws Exception Émet une exception si l'encodage du son dans le fichier
+	 * n'est pas supporté. Actuellement, seul le PCM par entiers signé et
+	 * non signé est supporté.
+	 */
+	public AudioVisualization( File f, boolean startImmediately ) throws Exception
+	{
+		this( f );
+		
+		if (startImmediately)
+			resumeAnimation();
+	}
+	
+	/**
+	 * Lit le son du fichier passé en paramètre pour générer l'animation.
+	 * @param f Le fichier WAVE contenant le son à utiliser pour l'animation
+	 * @throws Exception Émet une exception si l'encodage du son dans le fichier
+	 * n'est pas supporté. Actuellement, seul le PCM par entiers signé et
+	 * non signé est supporté.
+	 */
 	public void fetchFileData( File f ) throws Exception
 	{
 		AudioFileFormat audioFile = AudioSystem.getAudioFileFormat( f );
@@ -159,6 +273,9 @@ public class AudioVisualization extends JPanel
 		}
 	}
 	
+	/**
+	 * Méthode surchargée pour dessiner le frame courant de l'animation.
+	 */
 	public void paintComponent( Graphics gr )
 	{
 		if (gr instanceof Graphics2D)
@@ -175,7 +292,7 @@ public class AudioVisualization extends JPanel
 			float[] color = new float[4];
 			
 			// Boucle pour afficher les barres
-			for (int i = 0; i < usedLength; i++)
+			for (int i = 0; i < usedLength && i < values.length; i++)
 			{
 				if (values[i] == 0) continue;
 				
@@ -249,8 +366,11 @@ public class AudioVisualization extends JPanel
 		
 		else super.paintComponent( gr );
 	}
-
-	public void startAnimation()
+	
+	/**
+	 * Initialise et démarre le rafraîchissement de l'animation.
+	 */
+	public void initAnimation()
 	{
 		animTask = new TimerTask()
 		{
@@ -262,17 +382,29 @@ public class AudioVisualization extends JPanel
 		
 		t.schedule( animTask, 0, 1000/ANIMATION_FREQUENCY );
 	}
-
+	
+	/**
+	 * Met l'animation en pause en stoppant la génération de nouvelles barres.
+	 */
 	public void pauseAnimation()
 	{
 		paused = true;
 	}
 	
+	/**
+	 * Reprend l'animation et génère de nouvelles barres.
+	 */
 	public void resumeAnimation()
 	{
 		paused = false;
 	}
 	
+	/**
+	 * Change l'amplitude actuelle pour celle désignée par le nombre flottant
+	 * passé en paramètre.
+	 * @param progress Le moment de l'animation auquel se rendre. 0.0 désigne
+	 * le début du son (première amplitude) et 1.0 la fin du son (dernière amplitude).
+	 */
 	public void setProgress( float progress )
 	{
 		if (progress > 1.0f) progress = 1.0f;
@@ -281,6 +413,10 @@ public class AudioVisualization extends JPanel
 		currentValueIndex = Math.round(progress * (maxAmplitudes.length-1));
 	}
 	
+	/**
+	 * Affiche l'image suivante de l'animation. Si l'animation est en pause,
+	 * génère des barres avec une hauteur de 0 pixels.
+	 */
 	public void nextFrame()
 	{
 		float amplitude = 0.0f;
@@ -307,6 +443,9 @@ public class AudioVisualization extends JPanel
 		repaint();
 	}
 	
+	/**
+	 * Met fin au thread utilisé pour le rafraîchissement de l'animation.
+	 */
 	public void finalize()
 	{
 		t.cancel();

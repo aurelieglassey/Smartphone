@@ -15,8 +15,7 @@ import javax.swing.border.CompoundBorder;
 /**
  * Classe qui met en forme l'apparence d'un bouton dans l'application contact
  * Cette classe contient deux constructeurs, un avec un texte en paramètre et l'autre avec une image en paramètre
- * @author Aurélie
- *
+ * @author Aurélie Glassey
  */
 public class SmartButton extends JButton
 {
@@ -24,7 +23,7 @@ public class SmartButton extends JButton
 	/**
 	 * Premier constructeur avec du text en paramètre.
 	 * Appel de la méthode apparenceButton(); pour la mise en forme du bouton
-	 * @param text text du bouton
+	 * @param text Texte du bouton
 	 */
 	public SmartButton (String text)
 	{
@@ -35,7 +34,7 @@ public class SmartButton extends JButton
 	/**
 	 * Deuxième constructeur avec un image en paramètre 
 	 * Appel de la méthode apparenceButton(); pour la mise en forme du bouton
-	 * @param icon icon du bouton
+	 * @param icon L'icône à afficher dans le bouton
 	 */
 	public SmartButton (Icon icon)
 	{
@@ -44,8 +43,8 @@ public class SmartButton extends JButton
 	}
 	
 	/**
-	 * Méthode mise en forme d'un bouton : Que le paramètre d'entrée d'un bouton soit une Icon ou un String, l'apparence du bouton est la même
-	 * Mise en forme de la couleur de fond, des bords et de l'écriture d'un bouton.
+	 * Adapte l'apparence du bouton au smartphone. Que le paramètre d'entrée d'un bouton soit une Icon ou
+   * un String, l'apparence du bouton est la même. Adapte la couleur de fond, les bords et l'écriture d'un bouton.
 	 */
 	private void apparenceButton()
 	{

@@ -14,21 +14,41 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+/**
+ * Cette classe représente une application de démonstration, utilisée
+ * pour tester la génération et le retrait de panels des applications.
+ * @author Fabien Terrani
+ */
 public class DummyApp extends AbstractApp implements ActionListener
 {
+	/**
+	 * Ensemble des panels de test affichés par l'application.
+	 */
 	private ArrayList<JPanel> panels = new ArrayList<>();
 	
+	/**
+	 * Crée l'application et la connecte au téléphone passé en paramètre.
+	 * @param phone L'objet Smartphone sur lequel l'application est installée
+	 */
 	public DummyApp( Smartphone phone )
 	{
 		super( phone, "Dummy app", "dummy" );
 	}
 	
+	/**
+	 * Gère l'appui sur le bouton Retour
+	 */
 	public void returnPressed()
 	{
 		JPanel removed = popPanel();
 		panels.remove( removed );
 	}
 	
+	/**
+	 * Crée un JPanel avec une couleur de fond aléatoire et un numéro indiquant
+	 * la profondeur du panel.
+	 * @return Le nouveau JPanel créé
+	 */
 	private JPanel makePanel()
 	{
 		JPanel p = new JPanel();
@@ -67,17 +87,27 @@ public class DummyApp extends AbstractApp implements ActionListener
 		return p;
 	}
 	
+	/**
+	 * Génère le panel racine de l'application.
+	 */
 	public JPanel generateMainPanel()
 	{
 		return makePanel();
 	}
-
+	
+	/**
+	 * Ajoute un nouveau panel sur la pile de panels de l'application.
+	 * Méthode surchargée pour ajouter le panel au tableau panels.
+	 */
 	public void pushPanel( JPanel p )
 	{
 		panels.add( p );
 		super.pushPanel( p );
 	}
-
+	
+	/**
+	 * Méthode de gestion des clics sur les boutons.
+	 */
 	public void actionPerformed( ActionEvent e )
 	{
 		String command = e.getActionCommand();
