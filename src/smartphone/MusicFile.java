@@ -114,6 +114,8 @@ public class MusicFile extends File
 			{
 				RIFFReader chunk = rr.nextChunk();
 				
+				
+				
 				// Si on tombe sur le chunk LIST et qu'il est de type INFO, on lit les tags
 				if ( chunk.getFormat().equals("LIST") && chunk.getType().equals("INFO") )
 				{
@@ -163,7 +165,7 @@ public class MusicFile extends File
 					}
 				}
 				
-				if ( chunk.getFormat().equals("id3 ") )
+				if ( chunk.getFormat().toLowerCase().equals("id3 ") )
 				{
 					id3Found = true;
 					String id3Magic = chunk.readString(3);

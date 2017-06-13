@@ -35,7 +35,6 @@ import javax.swing.event.ListSelectionListener;
  * Application contact qui contient les interfaces, les boutons, les méthodes nécessaire et la liste de contact.
  * On peut ajouter, supprimer ou modifier un contact à partir de l'arraylist.
  * @author Aurélie Glassey
- *
  */
 public class ContactApp extends AbstractApp
 {
@@ -122,6 +121,7 @@ public class ContactApp extends AbstractApp
 		bAddContact.setBackground( new Color(250, 250, 250, 255) );
 		
 		panelNorth.setBackground(new Color(250, 250, 250, 255));
+		//panelNorth.setBackground( Color.RED );
 		panelNorth.setLayout(new BorderLayout());
 		panelNorth.add(bAddContact, BorderLayout.EAST);
 		
@@ -266,13 +266,10 @@ public class ContactApp extends AbstractApp
 		
 		if(contactListData.contains(c)) //chercher le contact c dans ma liste (contains(c), retourn un boolean)
 		{
-			System.out.println( "Contact trouvé !" );
 			//si trouvé, stocker ImageFile dans contact + sérialisation
 			
 			// Association de l'image au contact
 			c.setImageFile( f );
-			
-			System.out.println( "Image associée !" );
 			
 			for (Contact c2 : contactListData)
 			{
@@ -353,7 +350,7 @@ public class ContactApp extends AbstractApp
 				//vérification que le nom, prénom et le téléphone ne manquent pas
 				if((tName.getText().equals("") && tFirstName.getText().equals("")) || tPhoneNumber.getText().equals(""))
 				{
-					System.out.println("Données incomplètes à l'ajout : Manque name, firstname ou phone");
+					JOptionPane.showMessageDialog(null, "Données incomplètes à l'ajout : Manque name, firstname ou phone");
 				}
 				else {
 					addContact(tPhoneNumber.getText(), tFirstName.getText(), tName.getText(), tEmail.getText() );
@@ -382,7 +379,7 @@ public class ContactApp extends AbstractApp
 			{
 				if(tName.getText().equals("") && tFirstName.getText().equals("") || tPhoneNumber.getText().equals(""))
 				{
-					System.out.println("Données incomplètes à la modification : Manque name, firstname ou phone");
+					JOptionPane.showMessageDialog(null, "Données incomplètes à la modification : Manque name, firstname ou phone");
 				}
 				else {
 					//suppression du contact sélectionner et ajout du contact modifier
@@ -427,5 +424,4 @@ public class ContactApp extends AbstractApp
 			}
 		}
 	}
-	
 }

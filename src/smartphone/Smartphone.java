@@ -223,7 +223,7 @@ public class Smartphone extends JFrame implements ActionListener
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Smartphone");
-		//this.setResizable(false); //désactiver les boutons de redimensionnement de la fenêtre
+		this.setResizable(false);
 		
 		
 		// On ajoute la carte du homescreen de base
@@ -712,17 +712,55 @@ public class Smartphone extends JFrame implements ActionListener
 	 */
 	private class Card
 	{
-		// Constantes pour identifier les types de cartes utilisés
+		/**
+		 * Carte d'un type inconnu.
+		 */
 		public static final String CARD_TYPE_UNKNOWN = "UNK";
+		
+		/**
+		 * Carte contenant un espace d'affichage pour une application du smartphone.
+		 */
 		public static final String CARD_TYPE_APP = "APP";
+		
+		/**
+		 * Carte contenant l'écran d'accueil du smartphone.
+		 */
 		public static final String CARD_TYPE_HOME = "HOM";
 		
+		/**
+		 * Type de la carte.
+		 */
 		private String type;
+		
+		/**
+		 * Nom de la carte.
+		 */
 		private String name;
+		
+		/**
+		 * Application liée à la carte. Utilisé uniquement si la carte est
+		 * de type CARD_TYPE_APP ; contient null sinon.
+		 */
 		private AbstractApp app;
+		
+		/**
+		 * Un identifiant numérique ajouté à la carte pour la différencier des cartes
+		 * du même nom.
+		 */
 		private int position;
+		
+		/**
+		 * Le JPanel contenu dans la carte.
+		 */
 		private JPanel panel;
-
+		
+		/**
+		 * Crée une nouvelle carte.
+		 * @param type Le type de la carte
+		 * @param name Le nom de la carte
+		 * @param position Un identifiant numérique pour différencier la carte de celles qui ont le même nom
+		 * @param panel Le panel correspondant à la carte
+		 */
 		private Card( String type, String name, int position, JPanel panel )
 		{
 			this.type = type;
@@ -732,6 +770,13 @@ public class Smartphone extends JFrame implements ActionListener
 			this.panel = panel;
 		}
 		
+		/**
+		 * Crée une nouvelle carte.
+		 * @param type Le type de la carte
+		 * @param app L'application propriétaire de la carte
+		 * @param position Le numéro de la carte dans la pile de cartes de l'application
+		 * @param panel Le panel correspondant à la carte
+		 */
 		private Card( String type, AbstractApp app, int position, JPanel panel )
 		{
 			this.type = type;
@@ -741,11 +786,18 @@ public class Smartphone extends JFrame implements ActionListener
 			this.panel = panel;
 		}
 		
+		/**
+		 * Retourne le nom de la carte.
+		 * @return Une chaîne suivant le format "[type]_[name]_[position]"
+		 */
 		public String getCardName()
 		{
 			return type + "_" + name + "_" + position;
 		}
 		
+		/**
+		 * Retourne le nom de la carte.
+		 */
 		public String toString()
 		{
 			return getCardName();

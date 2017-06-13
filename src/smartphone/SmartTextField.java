@@ -10,11 +10,9 @@ import javax.swing.border.BevelBorder;
 /**
  * Classe qui met en forme l'apparence d'un textfield 
  * @author Aurélie Glassey
- *
  */
 public class SmartTextField extends JTextField
 {
-
 	/**
 	 * Constructeur de la classe SmartTextField
 	 * Mise en forme des bords, de la couleur de fond et de l'écriture d'un JTextField

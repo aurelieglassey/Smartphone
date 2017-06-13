@@ -44,7 +44,7 @@ public class SmartButton extends JButton
 	
 	/**
 	 * Adapte l'apparence du bouton au smartphone. Que le paramètre d'entrée d'un bouton soit une Icon ou
-   * un String, l'apparence du bouton est la même. Adapte la couleur de fond, les bords et l'écriture d'un bouton.
+	 * un String, l'apparence du bouton est la même. Adapte la couleur de fond, les bords et l'écriture d'un bouton.
 	 */
 	private void apparenceButton()
 	{

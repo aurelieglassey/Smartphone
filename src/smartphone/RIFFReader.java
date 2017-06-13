@@ -377,9 +377,9 @@ public final class RIFFReader extends InputStream
     }
 	
     /**
-     * Lit un byte dans le flux.
+     * Lit un byte dans le flux (signé).
      * @return Un byte en tant qu'entier 8 bits signé
-     * @throws IOException
+     * @throws IOException Exception rejetée en cas de problème de lecture
      */
     public byte readByte() throws IOException
     {
@@ -389,12 +389,10 @@ public final class RIFFReader extends InputStream
         return (byte) ch;
     }
 	
-	// Lit un short en LITTLE ENDIAN dans le flux
-    // Read 16 bit signed integer from stream
-    /**
-     * Lit un short en LITTLE ENDIAN dans le flux.
-     * @return Un byte en tant qu'entier 8 bits signé
-     * @throws IOException
+	/**
+     * Lit un short dans le flux (signé).
+     * @return Un short en tant qu'entier 16 bits signé (2 bytes lus en LITTLE ENDIAN)
+     * @throws IOException Exception rejetée en cas de problème de lecture
      */
     public short readShort() throws IOException
     {
@@ -407,8 +405,11 @@ public final class RIFFReader extends InputStream
         return (short)(ch1 | (ch2 << 8));
     }
 
-	// Lit un int en LITTLE ENDIAN dans le flux
-    // Read 32 bit signed integer from stream
+    /**
+     * Lit un int dans le flux (signé).
+     * @return Un int en tant qu'entier 32 bits signé (4 bytes lus en LITTLE ENDIAN)
+     * @throws IOException Exception rejetée en cas de problème de lecture
+     */
     public int readInt() throws IOException
     {
         int ch1 = read();
@@ -426,8 +427,11 @@ public final class RIFFReader extends InputStream
         return ch1 + (ch2 << 8) | (ch3 << 16) | (ch4 << 24);
     }
 
-	// Lit un long en LITTLE ENDIAN dans le flux
-    // Read 64 bit signed integer from stream
+    /**
+     * Lit un long dans le flux (signé).
+     * @return Un long en tant qu'entier 64 bits signé (8 bytes lus en LITTLE ENDIAN)
+     * @throws IOException Exception rejetée en cas de problème de lecture
+     */
     public long readLong() throws IOException
     {
         long ch1 = read();
@@ -458,8 +462,11 @@ public final class RIFFReader extends InputStream
                 | (ch5 << 32) | (ch6 << 40) | (ch7 << 48) | (ch8 << 56);
     }
 	
-	// Lit un byte non signé dans le flux et le retourne comme int
-    // Read 8 bit unsigned integer from stream
+    /**
+     * Lit un byte dans le flux (non signé).
+     * @return Un int en tant qu'entier 8 bits non signé
+     * @throws IOException Exception rejetée en cas de problème de lecture
+     */
     public int readUnsignedByte() throws IOException
     {
         int ch = read();
@@ -467,8 +474,12 @@ public final class RIFFReader extends InputStream
             throw new EOFException();
         return ch;
     }
-	// Lit un short non signé en LITTLE ENDIAN dans le flux et le retourne comme int
-    // Read 16 bit unsigned integer from stream
+    
+    /**
+     * Lit un short dans le flux (non signé).
+     * @return Un int en tant qu'entier 16 bits non signé (2 bytes lus en LITTLE ENDIAN)
+     * @throws IOException Exception rejetée en cas de problème de lecture
+     */
     public int readUnsignedShort() throws IOException
     {
         int ch1 = read();
@@ -480,8 +491,11 @@ public final class RIFFReader extends InputStream
         return ch1 | (ch2 << 8);
     }
     
-	// Lit un int non signé en LITTLE ENDIAN dans le flux et le retourne comme long
-    // Read 32 bit unsigned integer from stream
+    /**
+     * Lit un int dans le flux (non signé).
+     * @return Un long en tant qu'entier 32 bits non signé (4 bytes lus en LITTLE ENDIAN)
+     * @throws IOException Exception rejetée en cas de problème de lecture
+     */
     public long readUnsignedInt() throws IOException
     {
         long ch1 = read();
@@ -499,7 +513,9 @@ public final class RIFFReader extends InputStream
         return ch1 + (ch2 << 8) | (ch3 << 16) | (ch4 << 24);
     }
     
-	// Saute les caractères restants du chunk courant et ferme le flux
+	/**
+     * Saute les caractères restants du chunk courant et ferme le flux
+     */
     public void close() throws IOException
     {
         finish();

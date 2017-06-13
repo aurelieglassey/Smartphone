@@ -5,14 +5,15 @@ import java.awt.Dimension;
 
 import javax.swing.JScrollPane;
 /**
- * Classe qui met en forme un ScrollPane pour la liste de contact et la liste de musique
- * @author Fabien
- *
+ * Classe qui met en forme un ScrollPane pour l'adapter au smartphone.
+ * Retire ses bords, applique la couleur de fond par défaut et élargit
+ * les scrollbars.
+ * @author Fabien Terrani
  */
 public class SmartScrollPane extends JScrollPane
 {
 	/**
-	 * Constructeur de la classe SmartScrollPane sans paramètres
+	 * Crée un nouveau SmartScrollPane.
 	 */
 	public SmartScrollPane()
 	{
@@ -21,8 +22,8 @@ public class SmartScrollPane extends JScrollPane
 	}
 
 	/**
-	 * Constructeur de la classe SmartScrollPane avec un paramètre view
-	 * @param view
+	 * Crée un nouveau SmartScrollPane affichant le composant passé en paramètre.
+	 * @param view Le composant à parcourir par le scrollpane
 	 */
 	public SmartScrollPane( Component view )
 	{
@@ -31,8 +32,8 @@ public class SmartScrollPane extends JScrollPane
 	}
 	
 	/**
-	 * Méthode qui met en forme le scrollPane.
-	 * Adapte la largeur, enlève les bords et met en forme la couleur de fond d'un ScrollPane
+	 * Met en forme le scrollPane : adapte l'épaisseur des scrollbars, enlève les bords
+	 * et applique la couleur de fond par défaut.
 	 */
 	public void customizeScrollPane()
 	{

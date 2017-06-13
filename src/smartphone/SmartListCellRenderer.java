@@ -13,13 +13,23 @@ import javax.swing.JList;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 
+/**
+ * Renderer utilisé pour adapter l'apparence des items de liste au smartphone.
+ * @author Fabien Terrani
+ */
 public class SmartListCellRenderer extends DefaultListCellRenderer
 {
+	/**
+	 * Crée un nouveau cell renderer.
+	 */
 	public SmartListCellRenderer()
 	{
 		super();
 	}
 	
+	/**
+	 * Retourne le composant utilisé pour afficher la valeur de la liste.
+	 */
 	public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus)
 	{
 		JComponent c = (JComponent) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -39,6 +49,9 @@ public class SmartListCellRenderer extends DefaultListCellRenderer
 		return c;
 	}
 	
+	/**
+	 * Ajoute un dégradé gris-clair et blanc en fond des items de liste.
+	 */
 	public void paintComponent( Graphics g )
 	{
 		if( g instanceof Graphics2D )

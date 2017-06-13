@@ -236,11 +236,11 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		
 		musicList = new SmartList<MusicFile>( listModel );
 		musicList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-		musicList.setCellRenderer( new ContactListCellRenderer() );
+		musicList.setCellRenderer( new SmartListCellRenderer() );
 		musicPane = new SmartScrollPane( musicList );
 		
 		centerPanel = new JPanel();
-		centerPanel.setLayout( new GridLayout(1,1));
+		centerPanel.setLayout( new BorderLayout() );
 		centerPanel.setBackground( Smartphone.getBackgroundColor() );
 		centerPanel.add( musicPane, BorderLayout.CENTER );
 		

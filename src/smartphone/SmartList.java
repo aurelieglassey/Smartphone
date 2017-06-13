@@ -7,16 +7,16 @@ import javax.swing.JList;
 import javax.swing.ListModel;
 
 /**
+ * Liste personnalisée pour avoir l'apparence voulue sur le smartphone.
  * 
- * @author Fabien
+ * @author Fabien Terrani
  *
- * @param <E>
+ * @param <E> Le type d'objets contenus dans la liste
  */
 public class SmartList<E> extends JList<E>
 {
 	/**
-	 * Constructeur de la classe SmartList sans paramètres
-	 * Mise en forme avec la méthode customizeList();
+	 * Crée une nouvelle liste.
 	 */
 	public SmartList()
 	{
@@ -25,9 +25,8 @@ public class SmartList<E> extends JList<E>
 	}
 
 	/**
-	 * Constructeur de la classe SmartList avec un tableau en paramètre
-	 * Mise en forme du tableau avec la méthode customizeList();
-	 * @param listData liste de données
+	 * Crée une nouvelle liste.
+	 * @param listData Tableau contenant les données de la liste
 	 */
 	public SmartList( E[] listData )
 	{
@@ -36,9 +35,8 @@ public class SmartList<E> extends JList<E>
 	}
 
 	/**
-	 * Constructeur de la classe SmartList avec une arraylist en paramètre
-	 * Mise en forme de l'arraylist avec la méthode customizeList();
-	 * @param dataModel liste de données
+	 * Crée une nouvelle liste.
+	 * @param dataModel Le modèle de liste à utiliser
 	 */
 	public SmartList( ListModel<E> dataModel )
 	{
@@ -47,8 +45,8 @@ public class SmartList<E> extends JList<E>
 	}
 	
 	/**
-	 * 
-	 * @param listData
+	 * Crée une nouvelle liste.
+	 * @param listData Vector contenant les données de la liste
 	 */
 	public SmartList( Vector<? extends E> listData )
 	{
@@ -58,8 +56,7 @@ public class SmartList<E> extends JList<E>
 	
 
 	 /**
-	  * Méthode qui met en forme une SmartList
-	  * Mise en forme des bords et de la couleur de fond d'une liste/tableau
+	  * Met en forme la liste pour l'adapter au smartphone.
 	  */
 	private void customizeList()
 	{
