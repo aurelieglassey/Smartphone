@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 //Inspiré de : http://www.java2s.com/Code/JavaAPI/junit.framework/AssertassertEqualsStringexpectedStringactual.htm
 
+
 import smartphone.Contact;
 
 /**
@@ -15,7 +16,6 @@ import smartphone.Contact;
  */
 public class SmartphoneTest
 {
-
 	/**
 	 * Méthode pour tester les paramètres d'entrée s'il sont null ou non lors de la création d'un Contact
 	 * Test : si une exception est quand même appelée alors que tous les paramètres obligatoires sont rentrés
@@ -25,7 +25,7 @@ public class SmartphoneTest
 	{		
 		try
 		{
-			Contact c = new Contact ("Auré", "Glassey", "", "079 101 49 18");
+			Contact c = new Contact ("079 101 49 18", "Aurélie", "Glassey", "");
 		}
 		
 		catch (IllegalArgumentException expected)
@@ -44,7 +44,7 @@ public class SmartphoneTest
 	{		
 		try
 		{
-			Contact c = new Contact ("Auré", "Glassey", "", "");
+			Contact c = new Contact ("", "Aurélie", "Glassey", "@@@");
 			fail("Aucune exception générée alors qu'il n'y a aucun numéro de téléphone");
 		}
 		
