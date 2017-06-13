@@ -2,11 +2,19 @@ package smartphone;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageFilter;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ColorModel;
 import java.awt.image.CropImageFilter;
 import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageConsumer;
 import java.awt.image.ImageFilter;
+import java.awt.image.RGBImageFilter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -14,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -82,7 +91,6 @@ public class Utils
 		ImageFilter cropFilter = new CropImageFilter( cropStartX, cropStartY, width, height );
 		FilteredImageSource fis = new FilteredImageSource( scaled.getSource(), cropFilter );
 		
-		// Retour de l'image rognée et redimensionnée
 		return Toolkit.getDefaultToolkit().createImage( fis );
 	}
 	
@@ -122,7 +130,6 @@ public class Utils
 	{
 		try
 		{
-			System.out.println("Méthode serializeObjects");
 			FileOutputStream fos = new FileOutputStream(f);
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			
@@ -136,7 +143,7 @@ public class Utils
 		
 		catch (Exception e) //si fichier inaccessible, on lève l'exception
 		{
-			System.err.println( "Problème lors de la serialization" );
+			System.err.println( "Problème lors de la serialization de " + f );
 		}
 	}
 	
@@ -150,7 +157,6 @@ public class Utils
 		ArrayList <Object> arraylist= new ArrayList<>();
 		try
 		{
-			System.out.println("Méthode deserializeObject");
 			FileInputStream fis = new FileInputStream( f );
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			

@@ -2,12 +2,10 @@ package smartphone_test;
 
 import static org.junit.Assert.*;
 
-import org.junit.Assert;
 import org.junit.Test;
-//Inspiré de : http://www.java2s.com/Code/JavaAPI/junit.framework/AssertassertEqualsStringexpectedStringactual.htm
-
 
 import smartphone.Contact;
+import smartphone.MusicFile;
 
 /**
  * SmartPhoneTest est une classe créée pour tester les JUnit
@@ -51,6 +49,30 @@ public class SmartphoneTest
 		catch (IllegalArgumentException expected)
 		{
 			
+		}
+	}
+	
+	/**
+	 * On vérifie que les métadonnées titre et artiste d'un fichier de musique ne sont
+	 * pas vide si aucune donnée n'est trouvé.
+	 */
+	@Test
+	public void musicFileEmpty()
+	{
+		try
+		{
+			// On utilise un répertoire pour être certains que la classe ne pourra pas
+			// récupérer de métadonnée
+			MusicFile mf = new MusicFile( "." );
+			
+			if ( mf.getTitle().isEmpty() || mf.getArtist().isEmpty() )
+			{
+				fail("Le titre ou l'artiste est une chaîne vide");
+			}
+		}
+		catch (Exception e )
+		{
+			e.printStackTrace();
 		}
 	}
 }
