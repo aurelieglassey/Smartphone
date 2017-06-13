@@ -21,8 +21,9 @@ public class SmartButton extends JButton
 {
 
 	/**
-	 * Premier constructeur avec du texte en paramètre.
-	 * @param text Le texte à afficher dans le bouton
+	 * Premier constructeur avec du text en paramètre.
+	 * Appel de la méthode apparenceButton(); pour la mise en forme du bouton
+	 * @param text Texte du bouton
 	 */
 	public SmartButton (String text)
 	{
@@ -32,6 +33,7 @@ public class SmartButton extends JButton
 	
 	/**
 	 * Deuxième constructeur avec un image en paramètre 
+	 * Appel de la méthode apparenceButton(); pour la mise en forme du bouton
 	 * @param icon L'icône à afficher dans le bouton
 	 */
 	public SmartButton (Icon icon)
@@ -41,7 +43,8 @@ public class SmartButton extends JButton
 	}
 	
 	/**
-	 * Adapte l'apparence du bouton au smartphone.
+	 * Adapte l'apparence du bouton au smartphone. Que le paramètre d'entrée d'un bouton soit une Icon ou
+   * un String, l'apparence du bouton est la même. Adapte la couleur de fond, les bords et l'écriture d'un bouton.
 	 */
 	private void apparenceButton()
 	{

@@ -3,6 +3,7 @@ package smartphone;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -31,8 +32,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 /**
- * Application contact qui contient les interfaces et ce que les boutons génèrent comme action
- * @author Aurélie
+ * Application contact qui contient les interfaces, les boutons, les méthodes nécessaire et la liste de contact.
+ * On peut ajouter, supprimer ou modifier un contact à partir de l'arraylist.
+ * @author Aurélie Glassey
  *
  */
 public class ContactApp extends AbstractApp
@@ -42,37 +44,48 @@ public class ContactApp extends AbstractApp
 	 */
 	private ArrayList<Contact> contactListData = new ArrayList<Contact>();
 	
+	/**
+	 * Contient l'arraylit de contact
+	 */
 	private JList<Contact> contactList;
 	
+	//Boutons de l'application contact
 	private JButton bAddContact = new SmartButton ( new ImageIcon("smartphone_root/sys/addContact.jpg"));
 	private JButton bSaveContact = new SmartButton ("Save");
 	private JButton bCancel = new SmartButton ("Cancel"); 
 	private JButton bRemove = new SmartButton ("Remove contact");
 	private JButton bModify = new SmartButton ("Modify contact");
-	private JButton bPhoto = new JButton (new ImageIcon("smartphone_root/sys/addpicture.PNG"));
+	private JButton bPhoto = new JButton (new ImageIcon("smartphone_root/sys/pictogram_contact.PNG"));
 	
+	//Panel de l'application contact
 	private JPanel panelNorth = new JPanel();
 	private JPanel panelList = new JPanel();
 	private JPanel panelAddContact = null;
 	private JPanel panelModifyContact = null;
 	
+	//Label de l'application contact
 	private JLabel lName = new SmartLabel("Name");
 	private JLabel lFirstName = new SmartLabel("Firstname");
 	private JLabel lEmail = new SmartLabel("Email");
 	private JLabel lPhoneNumber = new SmartLabel("Phone number");
-	private JLabel lTitreAdd = new SmartLabel ("Add a Contact");
-	private JLabel lTitreModif = new SmartLabel ("Modify a Contact");
+	private JLabel lTitreAdd = new SmartLabel ("Add a contact");
+	private JLabel lTitreModif = new SmartLabel ("Modify a contact");
+	private JLabel lChampsObligatoires = new SmartLabel ("*Champs obligatoires : Name ou Firstname, et Phone");
 
+	//TextField de l'application contact
 	private JTextField tName = new SmartTextField();
 	private JTextField tFirstName = new SmartTextField();
 	private JTextField tEmail = new SmartTextField();
 	private JTextField tPhoneNumber = new SmartTextField();
 
+	/**
+	 * Contact selectionné
+	 */
 	private Contact contactSelected ;
 
 	/**
 	 * Constructeur de l'application contact. On y trouve une Jlist qui stockera tous les contacts ainsi qu'un bouton d'ajout (pour un contact)
-	 * @param phone
+	 * @param phone 
 	 */
 	public ContactApp( Smartphone phone )
 	{
@@ -101,20 +114,21 @@ public class ContactApp extends AbstractApp
 		contactList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		contactList.addMouseListener(new DoubleClickListener());
 
-		panelList.setBackground( new Color(40, 40, 40, 255) );
+		panelList.setBackground( new Color(250, 250, 250, 255) );
 		panelList.setLayout( new GridLayout(1,1) );
 		panelList.add( new SmartScrollPane(contactList) );
 
+		bAddContact.setOpaque(false);
+		bAddContact.setBackground( new Color(250, 250, 250, 255) );
 		
-		bAddContact.setOpaque(true);
-		
-		panelNorth.setBackground(new Color(40, 40, 40, 255));
+		panelNorth.setBackground(new Color(250, 250, 250, 255));
 		panelNorth.setLayout(new BorderLayout());
 		panelNorth.add(bAddContact, BorderLayout.EAST);
 		
 		this.getMainPanel().add(panelList, BorderLayout.CENTER);
 		this.getMainPanel().add(panelNorth, BorderLayout.NORTH);	
 		
+		//Actions des boutons
 		bAddContact.addActionListener(new ListenerContact());
 		bSaveContact.addActionListener(new ListenerContact());
 		bCancel.addActionListener(new ListenerContact());
@@ -125,10 +139,11 @@ public class ContactApp extends AbstractApp
 	
 	/**
 	 * Generatepanel est appelé chaque fois qu'un nouveau panel est nécessaire (ici lors de l'ajout d'un contact ou la modification d'un contact)
-	 * @param c : null pour un JPanel d'ajout, ou un object Contact pour un JPanel de modification
-	 * @param left : bouton gauche de l'appareil
-	 * @param right : bouton droite de l'appareil
-	 * @param titre : Titre d'ajout ou de modification
+	 * Lors d'un ajout de contact, les champs à remplir (nom, prénom, email, téléphone) sont mis vide
+	 * @param c null pour un JPanel d'ajout, ou un object Contact pour un JPanel de modification
+	 * @param left bouton gauche de l'appareil
+	 * @param right bouton droite de l'appareil
+	 * @param titre Titre d'ajout ou de modification
 	 * @return Le panel d'ajout ou de modification
 	 */
 	private JPanel generatePanel( Contact c, JButton left, JButton right, JLabel titre )
@@ -157,9 +172,8 @@ public class ContactApp extends AbstractApp
 		p.setLayout(new BorderLayout());
 		
 		JPanel panelTitre = new JPanel();
-		titre.setBackground(new Color(255, 225, 228));
-		panelTitre.setBackground(new Color(255, 225, 228, 255));
-		panelTitre.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, new Color(192, 0, 0)));
+		panelTitre.setBackground(new Color(250, 250, 250, 255));
+		titre.setFont(new Font ("Raleway", Font.PLAIN, 30));
 		panelTitre.add(titre);
 		
 		JPanel panelBox = new JPanel (); //Pour les données à remplir d'un contact
@@ -168,9 +182,11 @@ public class ContactApp extends AbstractApp
 		box.add(panelBox);
 		box.setBackground(new Color(250, 250, 250));
 			
+		lChampsObligatoires.setFont(new Font ("Raleway", Font.ITALIC, 15));
 		bPhoto.setOpaque(true);
 		bPhoto.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.BLACK, Color.BLACK));
 		
+	
 		if ( c != null && c.getImageFile() != null )
 		{
 			ImageIcon icon = new ImageIcon( c.getImageFile().toString() );
@@ -178,8 +194,10 @@ public class ContactApp extends AbstractApp
 			bPhoto.setIcon( icon );
 		}
 		
+		//Ajout des champs pour remplir la page de modification ou d'ajout
 		box.add(bPhoto);
-		
+		box.add(lChampsObligatoires);
+
 		box.add(lName);
 		box.add(tName);
 			
@@ -235,8 +253,13 @@ public class ContactApp extends AbstractApp
 		}
 	}
 
-	
-	public void associate (File f, Contact c)
+	/**
+	 * Méthode qui associe une image à un contact selectionné dans la liste.
+	 * Après l'ajout de la photo, sérialization de la liste de contact.
+	 * @param f Fichier ou se trouve l'image
+	 * @param c Contact auquel on souhaite ajouter une photo
+	 */
+	protected void associate (File f, Contact c)
 	{
 		System.out.println( "Fichier reçu : " + f );
 		System.out.println( "Contact : " + c );
@@ -263,10 +286,10 @@ public class ContactApp extends AbstractApp
 	
 	/**
 	 * Ajout d'un contact dans l'arraylist et sérialization de l'object
-	 * @param phone
-	 * @param firstname
-	 * @param name
-	 * @param email
+	 * @param phone numéro de téléphone
+	 * @param firstname prénom du contact
+	 * @param name nom de famille du contact
+	 * @param email email du contact
 	 */
 	private void addContact(String phone, String firstname, String name, String email) 
 	{
@@ -277,7 +300,7 @@ public class ContactApp extends AbstractApp
 	}
 	
 	/**
-	 *Effacer un contact dasn l'arraylist + sérialization
+	 *Effacer un contact dans l'arraylist + sérialization
 	 */
 	private void removeContact(Contact contactSelected)
 	{
@@ -287,25 +310,28 @@ public class ContactApp extends AbstractApp
 	}
 	
 	/**
-	 * Getters et setters de l'ArrayList
-	 * @return
+	 * Retourne l'arrayList de contact
+	 * @return arraylist de contact
 	 */
 	public ArrayList<Contact> getContactlist()
 	{
 		return contactListData;
 	}
 
+	/**
+	 * Permet de modifier l'arraylist de contact
+	 * @param contactlist liste de contact
+	 */
 	public void setContactlist(ArrayList<Contact> contactlist)
 	{
 		contactlist = contactlist;
 	}
 	
 	/**
-	 * Cette classe contient tous les ActionListener des boutons de l'application Contact
-	 * @author Aurélie
-	 *
+	 * Cette classe contient tous les ActionListener des boutons de l'application Contact ainsi que chaque action des boutons
+	 * @author Aurélie Glassey
 	 */
-	class ListenerContact implements ActionListener 
+	private class ListenerContact implements ActionListener 
 	{
 		public void actionPerformed(ActionEvent e)
 		{	
@@ -339,11 +365,17 @@ public class ContactApp extends AbstractApp
 			
 			if (e.getSource()==bRemove)
 			{
-				removeContact(contactList.getSelectedValue());
-				panelModifyContact = null;
-				popPanel();
+				JOptionPane optionPane = new JOptionPane();
 				
-				refreshlist();
+				int ret = optionPane.showConfirmDialog(null, "Delete contact ?", "", JOptionPane.CANCEL_OPTION);
+			
+				if (ret == JOptionPane.YES_OPTION){
+					removeContact(contactList.getSelectedValue());
+					panelModifyContact = null;
+					popPanel();
+					
+					refreshlist();
+				}
 			}
 			
 			if (e.getSource()==bModify)
@@ -354,7 +386,7 @@ public class ContactApp extends AbstractApp
 				}
 				else {
 					//suppression du contact sélectionner et ajout du contact modifier
-					lTitreModif.setBackground(new Color(255, 225, 228));
+					lTitreModif.setBackground(new Color(250, 250, 250));
 					removeContact(contactList.getSelectedValue());
 					addContact(tPhoneNumber.getText(), tFirstName.getText(), tName.getText(), tEmail.getText());
 					panelModifyContact = null;
@@ -366,11 +398,11 @@ public class ContactApp extends AbstractApp
 	}
 	
 	/**
-	 * Cette classe est nécessaire pour la selection d'un objet dans la JList
-	 * @author Aurélie
+	 * Cette classe est nécessaire pour la selection d'un objet dans la JList + double clique nécessaire sur la liste pour qu'elle ouvre le contact
+	 * @author Aurélie Glassey
 	 *
 	 */
-	public class DoubleClickListener extends MouseAdapter
+	private class DoubleClickListener extends MouseAdapter
 	{
 		public void mouseClicked( MouseEvent e )
 		{
