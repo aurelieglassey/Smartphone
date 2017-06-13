@@ -31,23 +31,53 @@ import java.io.InputStream;
 
 /**
  * Décodeur de flux au format RIFF (Resource Interchange File Format).
- * Cette classe sert à lire un flux structuré suivant le format RIFF (découpage du
- * fichier en chunks commençant par un nom de 4 caractèrse suivi de la longueur du
- * chunk codée sur 4 bytes en LITTLE ENDIAN).
+ * Les données sont découpées en chunks commençant par un nom de 4 caractères
+ * suivi de la longueur du chunk codée sur 4 bytes en LITTLE ENDIAN).
  * 
  * Cette classe a été reprise du package com.sun.media.sound et son code n'a pas
  * été modifié.
  * @author Karl Helgason
  */
-public final class RIFFReader extends InputStream {
-
+public final class RIFFReader extends InputStream
+{
+	/**
+	 * Instance racine du décodeur RIFF
+	 */
     private final RIFFReader root;
+    
+    /**
+     * Nombre de bytes lu en tout (sans considérer les instances filles)
+     */
     private long filepointer = 0;
+    
+    /**
+     * Nom du chunk ("RIFF", "fmt "...)
+     */
     private final String fourcc;
+    
+    /**
+     * Type du chunk, pour les chunks RIFF et LIST notamment : ("WAVE", "INFO"...)
+     */
     private String riff_type = null;
+    
+    /**
+     * Taille du chunk en bytes
+     */
     private long ckSize = Integer.MAX_VALUE;
+    
+    /**
+     * Flux d'entrée en cours de lecture
+     */
     private InputStream stream;
+    
+    /**
+     * Nombre de bytes restants à lire dans le chunk en cours
+     */
     private long avail = Integer.MAX_VALUE;
+    
+    /**
+     * Contient le chunk suivant s'il existe, null sinon
+     */
     private RIFFReader lastiterator = null;
 	
 	/**
@@ -55,8 +85,8 @@ public final class RIFFReader extends InputStream {
 	 * @param stream Le flux d'entrée
 	 * @throws IOException Exception rejetée en cas de problème de lecture
 	 */
-    public RIFFReader(InputStream stream) throws IOException {
-
+    public RIFFReader(InputStream stream) throws IOException
+    {
 		// Une instance RIFFReader peut être créée à partir d'une autre instance RIFFReader
 		// (RIFFReader étend InputStream). Dans ce cas, on conserve toujours une référence
 		// vers l'instance racine
@@ -113,7 +143,8 @@ public final class RIFFReader extends InputStream {
      * @return Le nomre de caractères lu dans le fichier
      * @throws IOException Exception rejetée en cas de problème de lecture
      */
-    public long getFilePointer() throws IOException {
+    public long getFilePointer() throws IOException
+    {
         return root.filepointer;
     }
 	
@@ -122,7 +153,8 @@ public final class RIFFReader extends InputStream {
 	 * @return TRUE s'il y a encore des caractères à lire dans le fichier, FALSE sinon
 	 * @throws IOException Exception rejetée en cas de problème de lecture
 	 */
-    public boolean hasNextChunk() throws IOException {
+    public boolean hasNextChunk() throws IOException
+    {
         if (lastiterator != null)
             lastiterator.finish();
         return avail != 0;
@@ -134,7 +166,8 @@ public final class RIFFReader extends InputStream {
      * à une instance parente.
      * @throws IOException Exception rejetée en cas de problème de lecture
      */
-    public RIFFReader nextChunk() throws IOException {
+    public RIFFReader nextChunk() throws IOException
+    {
         if (lastiterator != null)
             lastiterator.finish();
         if (avail == 0)
@@ -143,23 +176,41 @@ public final class RIFFReader extends InputStream {
         return lastiterator;
     }
 	
-	// Retourne le format du chunk (RIFF, 'fmt ', data, LIST, ...)
-    public String getFormat() {
+	/**
+	 * Retourne le format du chunk.
+	 * @return Le format du chunk (RIFF, 'fmt ', "data", "LIST", ...)
+	 */
+    public String getFormat()
+    {
         return fourcc;
     }
-	// Retourne le type du chunk (par exemple WAVE pour RIFF, ou INFO pour LIST)
-    public String getType() {
+    
+	/**
+	 * Retourne le type du chunk
+	 * @return Le type du chunk ("WAVE" pour RIFF ou "INFO" pour LIST, null sinon)
+	 */
+    public String getType()
+    {
         return riff_type;
     }
 	
-	// Retourne la taille du contenu du chunk en bytes, à partir du byte suivant immédiatement
-	// la longueur annoncée dans le fichier. La valeur est directement reprise du fichier (voir constructeur)
-    public long getSize() {
+    /**
+     * Retourne la taille du contenu du chunk en bytes.
+     * @return La taille du contenu du chunk en bytes, à partir du byte suivant immédiatement
+     * la longueur annoncée dans le fichier. La valeur est directement reprise du fichier
+     * (voir code du constructeur)
+     */
+    public long getSize()
+    {
         return ckSize;
     }
-
-	// Lit un byte et le retourne sous forme d'un int allant de 0 à 255
-    public int read() throws IOException {
+    
+    /**
+     * Lit un byte et le retourne sous forme d'un int allant de 0 à 255. Retourne -1 si la fin du flux
+     * a été atteinte.
+     */
+    public int read() throws IOException
+    {
         if (avail == 0) {
             return -1;
         }
@@ -173,8 +224,11 @@ public final class RIFFReader extends InputStream {
         return b;
     }
 	
-	// Lit len bytes dans le flux, puis les stocke dans le tableau b en commençant à la cellule offset
-    public int read(byte[] b, int offset, int len) throws IOException {
+    /**
+     * Lit len bytes dans le flux, puis les stocke dans le tableau b en commençant à la cellule offset.
+     */
+    public int read(byte[] b, int offset, int len) throws IOException
+    {
         if (avail == 0) {
             return -1; // On retourne directement -1 s'il n'y a plus de caractères disponibles
         }
@@ -196,12 +250,26 @@ public final class RIFFReader extends InputStream {
         }
     }
 	
-	// Remplit b avec les b.length prochains bytes en commençant au début du tableau
-    public final void readFully(byte b[]) throws IOException {
+	/**
+	 * Remplit b avec les b.length prochains bytes en commençant au début du tableau.
+	 * @param b Un tableau de bytes à remplir entièrement avec les prochains bytes du flux
+	 * @throws IOException Exception rejetée en cas de problème de lecture
+	 */
+    public final void readFully(byte b[]) throws IOException
+    {
         readFully(b, 0, b.length);
     }
 	
-    public final void readFully(byte b[], int off, int len) throws IOException {
+    /**
+     * Lit les len prochains bytes du flux et les insère dans le tableau b, à partir de
+     * la cellule offset.
+     * @param b Le tableau de bytes dans lequel stocker les bytes récupérés
+     * @param off La cellule à laquelle commencer l'insertion
+     * @param len Le nombre de bytes à lire
+     * @throws IOException Exception rejetée en cas de problème de lecture
+     */
+    public final void readFully(byte b[], int off, int len) throws IOException
+    {
         if (len < 0)
             throw new IndexOutOfBoundsException();
         while (len > 0) {
@@ -215,8 +283,15 @@ public final class RIFFReader extends InputStream {
         }
     }
 	
-	// Saute n bytes dans le flux SANS mettre à jour avail et filepointer
-    public final long skipBytes(long n) throws IOException {
+	/**
+     * Ignore n bytes dans le flux. Se charge d'effectuer des appels multiples
+     * à skip si nécessaire.
+     * @param n Le nombre de bytes à ignorer
+     * @return Le nombre de bytes effectivement ignorés
+     * @throws IOException Exception rejetée en cas de problème de lecture
+     */
+    public final long skipBytes(long n) throws IOException
+    {
         if (n < 0)
             return 0;
         long skipped = 0;
@@ -231,8 +306,11 @@ public final class RIFFReader extends InputStream {
         return skipped;
     }
 	
-	// Saute n bytes dans le flux en mettant à jour avail et filepointer
-    public long skip(long n) throws IOException {
+	/**
+     * Ignore n bytes dans le flux. Met à jour les variables avail et filepointer.
+     */
+    public long skip(long n) throws IOException
+    {
         if (avail == 0)
             return -1;
         if (n > avail) {
@@ -253,23 +331,36 @@ public final class RIFFReader extends InputStream {
         }
     }
 	
-	// Retourne le nombre de bytes encore non lus du flux
-    public int available() {
+    /**
+     * Retourne le nombre de bytes encore non lus dans le flux.
+     */
+    public int available()
+    {
         return (int)avail;
     }
 	
-	// Saute tous les bytes restant du flux
-    public void finish() throws IOException {
+    /**
+     * Ignore tous les bytes restants dans le flux.
+     * @throws IOException Exception rejetée en cas de problème de lecture
+     */
+    public void finish() throws IOException
+    {
         if (avail != 0) {
             skipBytes(avail);
         }
     }
-
-	// readString lit n bytes dans le flux, puis en fait une chaîne de
-	// caractères encodée ASCII. Cette méthode retourne la partie de la chaîne
-	// allant du tout premier caractère jusqu'à avant le premier caractère NUL rencontré
-    // Read ASCII chars from stream
-    public String readString(final int len) throws IOException {
+    
+    /**
+     * Lit n bytes dans le flux, puis en fait une chaîne de caractères encodée ASCII.
+     * Cette méthode retourne la partie de la chaîne allant du tout premier caractère
+     * jusqu'à avant le premier caractère NUL rencontré.
+     * @param len Le nombre de bytes à lire
+     * @return Une chaîne de caractères ASCII constituée des bytes lus jusqu'à la fin ou
+     * jusqu'à la position précédant le premier caractère NULL
+     * @throws IOException Exception rejetée en cas de problème de lecture
+     */
+    public String readString(final int len) throws IOException
+    {
         final byte[] buff;
         try {
             buff = new byte[len];
@@ -285,9 +376,13 @@ public final class RIFFReader extends InputStream {
         return new String(buff, "ascii");
     }
 	
-	// Lit un byte dans le flux
-    // Read 8 bit signed integer from stream
-    public byte readByte() throws IOException {
+    /**
+     * Lit un byte dans le flux.
+     * @return Un byte en tant qu'entier 8 bits signé
+     * @throws IOException
+     */
+    public byte readByte() throws IOException
+    {
         int ch = read();
         if (ch < 0)
             throw new EOFException();
@@ -296,7 +391,13 @@ public final class RIFFReader extends InputStream {
 	
 	// Lit un short en LITTLE ENDIAN dans le flux
     // Read 16 bit signed integer from stream
-    public short readShort() throws IOException {
+    /**
+     * Lit un short en LITTLE ENDIAN dans le flux.
+     * @return Un byte en tant qu'entier 8 bits signé
+     * @throws IOException
+     */
+    public short readShort() throws IOException
+    {
         int ch1 = read();
         int ch2 = read();
         if (ch1 < 0)
@@ -308,7 +409,8 @@ public final class RIFFReader extends InputStream {
 
 	// Lit un int en LITTLE ENDIAN dans le flux
     // Read 32 bit signed integer from stream
-    public int readInt() throws IOException {
+    public int readInt() throws IOException
+    {
         int ch1 = read();
         int ch2 = read();
         int ch3 = read();
@@ -326,7 +428,8 @@ public final class RIFFReader extends InputStream {
 
 	// Lit un long en LITTLE ENDIAN dans le flux
     // Read 64 bit signed integer from stream
-    public long readLong() throws IOException {
+    public long readLong() throws IOException
+    {
         long ch1 = read();
         long ch2 = read();
         long ch3 = read();
@@ -357,7 +460,8 @@ public final class RIFFReader extends InputStream {
 	
 	// Lit un byte non signé dans le flux et le retourne comme int
     // Read 8 bit unsigned integer from stream
-    public int readUnsignedByte() throws IOException {
+    public int readUnsignedByte() throws IOException
+    {
         int ch = read();
         if (ch < 0)
             throw new EOFException();
@@ -365,7 +469,8 @@ public final class RIFFReader extends InputStream {
     }
 	// Lit un short non signé en LITTLE ENDIAN dans le flux et le retourne comme int
     // Read 16 bit unsigned integer from stream
-    public int readUnsignedShort() throws IOException {
+    public int readUnsignedShort() throws IOException
+    {
         int ch1 = read();
         int ch2 = read();
         if (ch1 < 0)
@@ -374,9 +479,11 @@ public final class RIFFReader extends InputStream {
             throw new EOFException();
         return ch1 | (ch2 << 8);
     }
+    
 	// Lit un int non signé en LITTLE ENDIAN dans le flux et le retourne comme long
     // Read 32 bit unsigned integer from stream
-    public long readUnsignedInt() throws IOException {
+    public long readUnsignedInt() throws IOException
+    {
         long ch1 = read();
         long ch2 = read();
         long ch3 = read();
@@ -391,8 +498,10 @@ public final class RIFFReader extends InputStream {
             throw new EOFException();
         return ch1 + (ch2 << 8) | (ch3 << 16) | (ch4 << 24);
     }
+    
 	// Saute les caractères restants du chunk courant et ferme le flux
-    public void close() throws IOException {
+    public void close() throws IOException
+    {
         finish();
         if (this == root)
             stream.close();
