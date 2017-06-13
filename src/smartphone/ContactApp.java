@@ -87,7 +87,7 @@ public class ContactApp extends AbstractApp
 
 	/**
 	 * Constructeur de l'application contact. On y trouve une Jlist qui stockera tous les contacts ainsi qu'un bouton d'ajout (pour un contact)
-	 * @param phone 
+	 * @param phone Le smartphone sur lequel l'application est installée
 	 */
 	public ContactApp( Smartphone phone )
 	{
@@ -319,7 +319,8 @@ public class ContactApp extends AbstractApp
 	}
 	
 	/**
-	 *Effacer un contact dans l'arraylist + sérialization
+	 * Effacer un contact dans l'arraylist + sérialization
+	 * @param contactSelected Le contact à effacer
 	 */
 	private void removeContact(Contact contactSelected)
 	{

@@ -265,6 +265,8 @@ public class Smartphone extends JFrame implements ActionListener
 
 			File[] folders = {
 				this.rootFolder,
+				this.sysFolder,
+				this.appsFolder,
 				this.storageFolder,
 				this.imageFolder,
 				this.soundFolder
@@ -362,7 +364,7 @@ public class Smartphone extends JFrame implements ActionListener
 	
 	/**
 	 * Affiche la carte passée en paramètre.
-	 * @param cardName La carte à afficher
+	 * @param card La carte à afficher
 	 */
 	private void showCard( Card card )
 	{
