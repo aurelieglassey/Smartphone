@@ -260,9 +260,6 @@ public class ContactApp extends AbstractApp
 		// sort() appelle la méthode compareTo() de la classe Contact
 		Arrays.sort( tmp );
 		
-		for ( Contact c : tmp)
-			System.out.println( "> " + c );
-		
 		contactList.setListData( tmp );
 	}
 	
@@ -294,20 +291,12 @@ public class ContactApp extends AbstractApp
 	 */
 	protected void associate (File f, Contact c)
 	{
-		System.out.println( "Fichier reçu : " + f );
-		System.out.println( "Contact : " + c );
-		
 		if(contactListData.contains(c)) //chercher le contact c dans ma liste (contains(c), retourn un boolean)
 		{
 			//si trouvé, stocker ImageFile dans contact + sérialisation
 			
 			// Association de l'image au contact
 			c.setImageFile( f );
-			
-			for (Contact c2 : contactListData)
-			{
-				System.out.println( c2.getFirstname() + " " + c2.getPhone() + " " + c2.getImageFile() );
-			}
 			
 			// Sérialization
 			Utils.serializeObjects( this.getPhone().getContactFile(), contactListData);
@@ -447,8 +436,6 @@ public class ContactApp extends AbstractApp
 						
 						if ( contactSelected != null ) //si la selection a bien eu lieu dans notre Jlist
 						{
-							System.out.println("Contact selectionné :" +contactSelected);
-							
 							//Nouveau Panel pour la modification
 							panelModifyContact = generatePanel( contactSelected, bRemove, bModify, lTitreModif );
 							pushPanel(panelModifyContact);

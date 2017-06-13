@@ -28,12 +28,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
@@ -134,14 +136,24 @@ public class GalleryApp extends AbstractApp implements ActionListener
 	private File chosenImage = null;
 	
 	/**
+	 * Le dernier bouton cliqué dans la galerie.
+	 */
+	private ImageButton clickedButton = null;
+	
+	/**
 	 * Label utilisé pour afficher un aperçu de l'image modifiée.
 	 */
 	private JLabel previewLabel;
-	
+
 	/**
 	 * Label utilisé pour afficher un agrandissement de l'image modifiée.
 	 */
 	private JLabel zoomLabel;
+	
+	/**
+	 * Panneau avec scrollbars utilisé pour se déplacer sur l'agrandissement.
+	 */
+	private JScrollPane zoomPane;
 	
 	/**
 	 * Version miniature de l'image originale. Utilisée pour avoir un aperçu des filtres.
@@ -157,6 +169,8 @@ public class GalleryApp extends AbstractApp implements ActionListener
 	 * Liste déroulante utilisée pour afficher les filtres d'images.
 	 */
 	private JComboBox<String> filterBox;
+	
+	private static final String NO_FILTER = "Original picture";
 	
 	/**
 	 * Filtre permettant de sélectionner les noms de fichiers ayant une extension prise
@@ -204,12 +218,12 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		{
 			public void run()
 			{
-				System.out.println("Loading gallery...");
+				System.out.println("Chargement de la galerie...");
 				loadFromFiles();
 				GalleryApp.this.getMainPanel().remove( loading );
 				GalleryApp.this.getMainPanel().revalidate();
 				
-				System.out.println("Done! :)");
+				System.out.println("Chargement terminé !");
 			}
 		};
 		
@@ -278,11 +292,11 @@ public class GalleryApp extends AbstractApp implements ActionListener
 	{
 		imgFilters = new HashMap<String, ImageFilter>();
 		
-		imgFilters.put("Image originale", null);
-		imgFilters.put("Noir et blanc", new GrayFilter());
-		imgFilters.put("Sépia", new SepiaFilter());
-		imgFilters.put("Contraste", new ContrastFilter());
-		imgFilters.put("Saturation", new SaturateFilter());
+		imgFilters.put(NO_FILTER, null);
+		imgFilters.put("Black and white", new GrayFilter());
+		imgFilters.put("Sepia", new SepiaFilter());
+		imgFilters.put("Contrast", new ContrastFilter());
+		imgFilters.put("Saturate", new SaturateFilter());
 		
 		ArrayList<String> a = new ArrayList<>( imgFilters.keySet() );
 		Comparator<String> sortFilters = new Comparator<String>()
@@ -292,7 +306,7 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			 */
 			public int compare(String a, String b)
 			{
-				if (a == "Image originale")
+				if (a == NO_FILTER)
 					return -1;
 				
 				return 0;
@@ -356,6 +370,68 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		return preview;
 	}
 	
+	private JPanel getZoomPanel()
+	{
+		JPanel zoomPanel = new JPanel();
+		zoomPanel.setLayout( new BorderLayout() );
+		zoomPanel.setBackground( Smartphone.getBackgroundColor() );
+		
+		try
+		{
+			BufferedImage bimg = ImageIO.read( chosenImage );
+			
+			ImageIcon icon = new ImageIcon( bimg );
+			zoomLabel = new JLabel( icon );
+			zoomLabel.setBackground( Smartphone.getBackgroundColor() );
+			
+			Dimension imgSize = new Dimension(
+				icon.getIconWidth(),
+				icon.getIconHeight()
+			);
+			
+			imgSize= new Dimension(200, 200);
+			zoomLabel.setPreferredSize( imgSize );
+			
+			zoomPane = new SmartScrollPane( zoomLabel );
+			zoomPane.setBorder( null );
+			zoomPane.setBackground( Smartphone.getBackgroundColor() );
+			
+			zoomPanel.add( zoomPane, BorderLayout.CENTER );
+			
+			ImageIcon deleteIcon = new ImageIcon( new File(this.getPhone().getSysFolder(), "pictogram_delete.png").toString() );
+			JButton delete = new SmartButton( deleteIcon );
+			delete.setActionCommand( ACTION_DELETE_IMAGE );
+			delete.addActionListener( this );
+			
+			ImageIcon modifyIcon = new ImageIcon( new File(this.getPhone().getSysFolder(), "pictogram_edit.png").toString() );
+			JButton modify = new SmartButton( modifyIcon );
+			modify.setActionCommand( ACTION_MODIFY_IMAGE );
+			modify.addActionListener( this );
+			
+			JButton imageToContact = new SmartButton("Add to contact...");
+			imageToContact.setActionCommand( ACTION_ADD_TO_CONTACT );
+			imageToContact.addActionListener( this );
+			
+			JPanel buttons = new JPanel();
+			buttons.setBackground( Smartphone.getBackgroundColor() );
+			buttons.setLayout( new FlowLayout( FlowLayout.CENTER, 10, 10) );
+			buttons.add( delete );
+			buttons.add( modify );
+			buttons.add( imageToContact );
+			
+			zoomPanel.add( buttons, BorderLayout.SOUTH );
+		}
+		catch (Exception e)
+		{
+			JLabel errorMessage = new JLabel( "Impossible de lire l'image" );
+			errorMessage.setForeground( Color.WHITE );
+			errorMessage.setFont( Smartphone.getSmartFont("large"));
+			zoomPanel.add( errorMessage, BorderLayout.CENTER );
+		}
+		
+		return zoomPanel;
+	}
+	
 	/**
 	 * Gère l'interaction avec les différents éléments de l'application galerie.
 	 */
@@ -371,7 +447,6 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			
 			if (filter != null)
 			{
-				System.out.println( "Selected filter: " + filter.getClass().getSimpleName() );
 				Image modified = Utils.applyImageFilter( preview, filter );
 				previewLabel.setIcon( new ImageIcon(modified) );
 			}
@@ -389,56 +464,14 @@ public class GalleryApp extends AbstractApp implements ActionListener
 				if ( e.getSource() == imgButton )
 				{
 					chosenImage = (File) imgButton.getClientProperty( PROP_IMAGEFILE );
+					clickedButton = imgButton;
 					break;
 				}
 			}
 			
 			if ( chosenImage != null )
 			{
-				JPanel zoomPanel = new JPanel();
-				zoomPanel.setLayout( new BorderLayout() );
-				zoomPanel.setBackground( Smartphone.getBackgroundColor() );
-				
-				ImageIcon icon = new ImageIcon( chosenImage.toString() );
-				zoomLabel  = new JLabel( icon );
-				zoomLabel.setBackground( Smartphone.getBackgroundColor() );
-				
-				Dimension imgSize = new Dimension(
-					icon.getIconWidth(),
-					icon.getIconHeight()
-				);
-				zoomLabel.setPreferredSize( imgSize );
-				
-				JScrollPane pane = new SmartScrollPane( zoomLabel );
-				pane.setBorder( null );
-				pane.setBackground( Smartphone.getBackgroundColor() );
-				
-				/*Dimension screenSize = this.getPhone().getScreenSize();
-				Dimension paneSize = new Dimension(200, 200);
-				pane.setPreferredSize( paneSize );
-				
-				JPanel p = new JPanel();
-				p.add( pane );*/
-				
-				zoomPanel.add( pane, BorderLayout.CENTER );
-				
-				
-				
-				JButton modify = new SmartButton("Modify");
-				modify.setActionCommand( ACTION_MODIFY_IMAGE );
-				modify.addActionListener( this );
-				
-				JButton imageToContact = new SmartButton("Add to contact...");
-				imageToContact.setActionCommand( ACTION_ADD_TO_CONTACT );
-				imageToContact.addActionListener( this );
-				
-				JPanel buttons = new JPanel();
-				buttons.setBackground( Smartphone.getBackgroundColor() );
-				buttons.setLayout( new FlowLayout( FlowLayout.CENTER, 10, 10) );
-				buttons.add( modify );
-				buttons.add( imageToContact );
-				
-				zoomPanel.add( buttons, BorderLayout.SOUTH );
+				JPanel zoomPanel = getZoomPanel();
 				
 				pushPanel( zoomPanel );
 			}
@@ -467,7 +500,8 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			//imgLabel.setAlignmentX( Component.CENTER_ALIGNMENT );
 			modifyPanel.add( previewLabel, BorderLayout.CENTER );
 			
-			JButton save = new SmartButton("Save");
+			ImageIcon confirmIcon = new ImageIcon( new File(this.getPhone().getSysFolder(), "pictogram_confirm.png").toString() );
+			JButton save = new SmartButton( confirmIcon );
 			save.setActionCommand( ACTION_SAVE_IMAGE );
 			save.addActionListener( this );
 			
@@ -484,7 +518,6 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			p.add( cancel );
 			p.add( save );
 			
-			//p.setAlignmentX( Component.CENTER_ALIGNMENT );
 			modifyPanel.add( p, BorderLayout.SOUTH );
 			
 			pushPanel( modifyPanel );
@@ -492,38 +525,58 @@ public class GalleryApp extends AbstractApp implements ActionListener
 		
 		else if ( command.equals(ACTION_DELETE_IMAGE) )
 		{
-			// TODO
+			int userInput = JOptionPane.showConfirmDialog(null, "Voulez-vous vraiment supprimer cette image ?");
+			
+			if (userInput == JOptionPane.YES_OPTION)
+			{
+				chosenImage.delete();
+				
+				clickedButton.getParent().remove( clickedButton );
+				zoomLabel.setIcon( null );
+				
+				setPreferredGallerySize();
+				popPanel();
+			}
 		}
 		
 		else if ( command.equals(ACTION_SAVE_IMAGE) )
 		{
-			try
-			{
-				BufferedImage bimg = ImageIO.read( chosenImage );
-				
-				String selectedFilter = filterBox.getItemAt( filterBox.getSelectedIndex() );
-				ImageFilter filter = imgFilters.get( selectedFilter );
-				
-				Image modifiedImage = Utils.applyImageFilter( bimg, filter );
-				
-				bimg = new BufferedImage(
-					modifiedImage.getWidth(null),
-					modifiedImage.getHeight(null),
-					BufferedImage.TYPE_INT_ARGB
-				);
-				
-				bimg.getGraphics().drawImage(modifiedImage, 0, 0, null);
-				
-				ImageIO.write( bimg, "PNG", chosenImage );
-				
-				zoomLabel.setIcon( new ImageIcon(bimg) );
-				returnPressed();
-			}
+			String selectedFilter = filterBox.getItemAt( filterBox.getSelectedIndex() );
+			ImageFilter filter = imgFilters.get( selectedFilter );
 			
-			catch (Exception ex)
+			if (filter != null)
 			{
-				ex.printStackTrace();
-				return;
+				try
+				{
+					BufferedImage bimg = ImageIO.read( chosenImage );
+					Image modifiedImage = Utils.applyImageFilter( bimg, filter );
+					
+					bimg = new BufferedImage(
+						modifiedImage.getWidth(null),
+						modifiedImage.getHeight(null),
+						BufferedImage.TYPE_INT_ARGB
+					);
+					
+					bimg.getGraphics().drawImage(modifiedImage, 0, 0, null);
+					
+					ImageIO.write( bimg, "PNG", chosenImage );
+					
+					clickedButton.setImage( bimg, thumbWidth, thumbHeight );
+					
+					// Fermeture du panneau des filtres
+					popPanel();
+					
+					// Fermeture du panneau de zoom
+					popPanel();
+					
+					pushPanel( getZoomPanel() );
+				}
+				
+				catch (Exception ex)
+				{
+					ex.printStackTrace();
+					return;
+				}
 			}
 			
 			returnPressed();
@@ -536,46 +589,48 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			if (app != null && app instanceof ContactApp)
 			{
 				ContactApp contactApp = (ContactApp) app;
+				Contact[] contacts = contactApp.getContactlist().toArray( new Contact[0] );
 				
-				JPanel addToContact = new JPanel();
-				addToContact.setLayout( new BorderLayout() );
-				
-				JList<Contact> contactList = new SmartList<Contact>();
-				contactList.setListData(
-					contactApp.getContactlist().toArray( new Contact[0] )
-				);
-				contactList.setCellRenderer( new ContactListCellRenderer() );
-				contactList.addMouseListener( new MouseAdapter()
+				if ( contacts.length == 0 )
 				{
-					public void mouseClicked( MouseEvent e )
+					JOptionPane.showMessageDialog(null, "Il n'y a aucun contact enregistré.");
+				}
+				
+				else
+				{
+					JPanel addToContact = new JPanel();
+					addToContact.setLayout( new BorderLayout() );
+					
+					JList<Contact> contactList = new SmartList<Contact>();
+					contactList.setListData( contacts );
+					contactList.setCellRenderer( new ContactListCellRenderer() );
+					contactList.addMouseListener( new MouseAdapter()
 					{
-						if (e.getClickCount() == 2 && !contactList.getValueIsAdjusting() )
+						public void mouseClicked( MouseEvent e )
 						{
-							ActionEvent event = new ActionEvent(
-								contactList,
-								ActionEvent.ACTION_PERFORMED,
-								ACTION_ASSOCIATE_TO_CONTACT
-							);
-							
-							actionPerformed( event );
+							if (e.getClickCount() == 2 && !contactList.getValueIsAdjusting() )
+							{
+								ActionEvent event = new ActionEvent(
+									contactList,
+									ActionEvent.ACTION_PERFORMED,
+									ACTION_ASSOCIATE_TO_CONTACT
+								);
+								
+								actionPerformed( event );
+							}
 						}
-					}
-				});
-				
-				addToContact.add( contactList, BorderLayout.CENTER );
-				
-				pushPanel( addToContact );
-				
-				//contactApp.associate(chosenImage, c);
+					});
+					
+					addToContact.add( contactList, BorderLayout.CENTER );
+					
+					pushPanel( addToContact );
+				}
 			}
 		}
 		
 		else if ( command.equals(ACTION_ASSOCIATE_TO_CONTACT) )
 		{
-			System.out.println("association..." );
-			
 			String content = "Erreur lors de l'association de l'image au contact !";
-			
 			
 			if ( e.getSource() instanceof JList<?> )
 			{
@@ -595,7 +650,7 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			}
 			
 			JPanel message = new JPanel();
-			message.setLayout( new GridLayout(2,1) );
+			message.setLayout( new BorderLayout() );
 			message.setBackground( Smartphone.getBackgroundColor() );
 			
 			JLabel info = new JLabel( content );
@@ -607,8 +662,8 @@ public class GalleryApp extends AbstractApp implements ActionListener
 			pop.setActionCommand( ACTION_RETURN );
 			pop.addActionListener( this );
 
-			message.add( info );
-			message.add( pop );
+			message.add( info, BorderLayout.CENTER );
+			message.add( pop, BorderLayout.SOUTH );
 			
 			popPanel();
 			pushPanel( message );

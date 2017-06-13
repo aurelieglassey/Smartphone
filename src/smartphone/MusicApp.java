@@ -31,6 +31,7 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
@@ -223,15 +224,7 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		
 		for (File f : files)
 		{
-			try
-			{
-				listModel.addElement( new MusicFile(f.getCanonicalPath()) );
-			}
-			
-			catch (IOException e)
-			{
-				System.err.println( "Erreur lors de l'ajout dans la liste de musiques" );
-			}
+			listModel.addElement( new MusicFile( f.toString() ) );
 		}
 		
 		musicList = new SmartList<MusicFile>( listModel );
@@ -525,7 +518,7 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 			
 			catch( Exception ex )
 			{
-				System.err.println( "Ligne indisponible !" );
+				JOptionPane.showMessageDialog(null, "Ligne indisponible !");
 			}
 		}
 		
@@ -610,8 +603,7 @@ public class MusicApp extends AbstractApp implements ActionListener, ChangeListe
 		
 		catch (Exception e)
 		{
-			//e.printStackTrace();
-			System.err.println( "Erreur lors de la lecture du fichier." );
+			JOptionPane.showMessageDialog(null, "Erreur lors de la lecture du fichier." );
 		}
 	}
 	

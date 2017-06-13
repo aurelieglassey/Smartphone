@@ -254,7 +254,7 @@ public class Smartphone extends JFrame implements ActionListener
 	{
 		try
 		{
-			this.rootFolder = (new File(".", "smartphone_root")).getCanonicalFile();
+			this.rootFolder = (new File(".", "smartphone_root"));
 			this.sysFolder = new File( this.rootFolder, "sys" );
 			this.appsFolder = new File( this.rootFolder, "apps" );
 			this.storageFolder = new File( this.rootFolder, "storage" );
@@ -289,8 +289,6 @@ public class Smartphone extends JFrame implements ActionListener
 		
 		catch (Exception e)
 		{
-			e.printStackTrace();
-			
 			JOptionPane.showMessageDialog(
 				null,
 				"Impossible d'accéder au dossier racine du smartphone. Le programme va s'arrêter."
@@ -607,8 +605,6 @@ public class Smartphone extends JFrame implements ActionListener
 			{
 				if ( e.getSource() == app.getButton() )
 				{
-					System.out.println( app.getName() );
-					
 					if ( appPanels.get(app).size() == 0 )
 					{
 						app.startApp();
