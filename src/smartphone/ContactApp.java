@@ -3,11 +3,13 @@ package smartphone;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +29,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -108,11 +111,14 @@ public class ContactApp extends AbstractApp
 			contactListData = new ArrayList<Contact>();
 		}
 		
-		contactList = new SmartList<Contact>( contactListData.toArray(new Contact[0]) );
+		contactList = new SmartList<Contact>();
+		sortAndRefreshList();
 		contactList.setCellRenderer( new ContactListCellRenderer() );
 		contactList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		contactList.addMouseListener(new DoubleClickListener());
-
+		
+		
+		
 		panelList.setBackground( new Color(250, 250, 250, 255) );
 		panelList.setLayout( new GridLayout(1,1) );
 		panelList.add( new SmartScrollPane(contactList) );
@@ -120,9 +126,12 @@ public class ContactApp extends AbstractApp
 		bAddContact.setOpaque(false);
 		bAddContact.setBackground( new Color(250, 250, 250, 255) );
 		
+		JLabel title = new SmartLabel( "My contacts" );
+		title.setFont( Smartphone.getSmartFont("large") );
 		panelNorth.setBackground(new Color(250, 250, 250, 255));
 		//panelNorth.setBackground( Color.RED );
 		panelNorth.setLayout(new BorderLayout());
+		panelNorth.add(title, BorderLayout.WEST);
 		panelNorth.add(bAddContact, BorderLayout.EAST);
 		
 		this.getMainPanel().add(panelList, BorderLayout.CENTER);
@@ -172,30 +181,47 @@ public class ContactApp extends AbstractApp
 		p.setLayout(new BorderLayout());
 		
 		JPanel panelTitre = new JPanel();
+		panelTitre.setLayout( new BorderLayout() );
 		panelTitre.setBackground(new Color(250, 250, 250, 255));
 		titre.setFont(new Font ("Raleway", Font.PLAIN, 30));
-		panelTitre.add(titre);
+		titre.setHorizontalAlignment( SwingConstants.CENTER );
+		panelTitre.add(titre, BorderLayout.NORTH);
 		
-		JPanel panelBox = new JPanel (); //Pour les données à remplir d'un contact
-		panelBox.setLayout(new BoxLayout(panelBox, BoxLayout.Y_AXIS));
-		Box box = Box.createVerticalBox();
-		box.add(panelBox);
-		box.setBackground(new Color(250, 250, 250));
-			
-		lChampsObligatoires.setFont(new Font ("Raleway", Font.ITALIC, 15));
+		
+		
 		bPhoto.setOpaque(true);
 		bPhoto.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.BLACK, Color.BLACK));
 		
 	
+		//si il y a une image au contact
 		if ( c != null && c.getImageFile() != null )
 		{
 			ImageIcon icon = new ImageIcon( c.getImageFile().toString() );
 			icon = Utils.resizeIcon(icon, 100, 100);
 			bPhoto.setIcon( icon );
 		}
+		else //si pas d'image associée au contact
+		{
+			File defaultImage = new File (this.getPhone().getSysFolder(), "pictogram_contact.PNG");
+			bPhoto.setIcon(new ImageIcon(defaultImage.toString()));
+		}
+		
+		JPanel photoPanel = new JPanel();
+		photoPanel.setBackground( new Color(250,250,250) );
+		photoPanel.setLayout( new FlowLayout(FlowLayout.CENTER) );
+		photoPanel.add( bPhoto );
+		panelTitre.add( photoPanel, BorderLayout.SOUTH);
+		
+		
+		
+		JPanel box = new JPanel();
+		box.setLayout( new BoxLayout(box, BoxLayout.PAGE_AXIS) );
+		box.setBackground(new Color(250, 250, 250));
+			
+		lChampsObligatoires.setFont(new Font ("Raleway", Font.ITALIC, 15));
+		
 		
 		//Ajout des champs pour remplir la page de modification ou d'ajout
-		box.add(bPhoto);
 		box.add(lChampsObligatoires);
 
 		box.add(lName);
@@ -227,9 +253,16 @@ public class ContactApp extends AbstractApp
 	/**
 	 * Méthode de rafraîchissement de la liste lors d'un ajout, d'une modification ou d'une suppression d'un contact.
 	 */
-	private void refreshlist() 
+	private void sortAndRefreshList() 
 	{
 		Contact[] tmp = contactListData.toArray( new Contact[0] );
+		
+		// sort() appelle la méthode compareTo() de la classe Contact
+		Arrays.sort( tmp );
+		
+		for ( Contact c : tmp)
+			System.out.println( "> " + c );
+		
 		contactList.setListData( tmp );
 	}
 	
@@ -317,11 +350,12 @@ public class ContactApp extends AbstractApp
 
 	/**
 	 * Permet de modifier l'arraylist de contact
-	 * @param contactlist liste de contact
+	 * @param contactListData liste de contact
 	 */
-	public void setContactlist(ArrayList<Contact> contactlist)
+	public void setContactlist(ArrayList<Contact> contactListData)
 	{
-		contactlist = contactlist;
+		this.contactListData = contactListData;
+		sortAndRefreshList();
 	}
 	
 	/**
@@ -336,7 +370,7 @@ public class ContactApp extends AbstractApp
 			{
 				panelAddContact = generatePanel( null, bCancel, bSaveContact, lTitreAdd );
 				pushPanel(panelAddContact);
-				refreshlist();
+				sortAndRefreshList();
 			}
 			
 			if (e.getSource()==bCancel)
@@ -356,7 +390,7 @@ public class ContactApp extends AbstractApp
 					addContact(tPhoneNumber.getText(), tFirstName.getText(), tName.getText(), tEmail.getText() );
 					panelAddContact = null;
 					popPanel();
-					refreshlist();
+					sortAndRefreshList();
 				}	
 			}
 			
@@ -371,7 +405,7 @@ public class ContactApp extends AbstractApp
 					panelModifyContact = null;
 					popPanel();
 					
-					refreshlist();
+					sortAndRefreshList();
 				}
 			}
 			
@@ -388,7 +422,7 @@ public class ContactApp extends AbstractApp
 					addContact(tPhoneNumber.getText(), tFirstName.getText(), tName.getText(), tEmail.getText());
 					panelModifyContact = null;
 					popPanel();
-					refreshlist();
+					sortAndRefreshList();
 				}
 			}
 		}	

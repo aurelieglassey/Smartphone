@@ -7,6 +7,7 @@ import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 /**
  * Classe qui met en forme l'apparence d'un textfield 
  * @author Aurélie Glassey
@@ -21,7 +22,14 @@ public class SmartTextField extends JTextField
 	{
 		super();
 		setBackground(new Color(250, 250, 250));
-		setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, new Color(192, 0, 0)));
+		
+		Border matteBorder = BorderFactory.createMatteBorder(2, 0, 0, 0, new Color(192, 0, 0));
+		Border emptyBorder = BorderFactory.createEmptyBorder(0, 20, 0, 0);
+		
+		Border compound = BorderFactory.createCompoundBorder( matteBorder, emptyBorder );
+		setBorder( compound );
+		
+		
 		setFont(new Font ("Raleway", Font.PLAIN, 24));
 		setForeground(Color.GRAY);
 	}
