@@ -4,13 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Cette classe contient toutes les données nécessaires pour un contact
  * la class Contact est sérializable car lors de l'enregistrement d'un contact, la liste est sérializée
  * @author Aurélie Glassey
  */
-public class Contact implements Serializable 
+public class Contact implements Serializable, Comparable<Contact>
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -156,7 +157,26 @@ public class Contact implements Serializable
 	 */
 	public String toString ()
 	{
-		return this.name + " " + this.firstname + " " +this.email + " " + this.phone;
+		String str = firstname;
+		
+		if ( !name.isEmpty() )
+		{
+			//si la chaîne n'est pas vide, on ajoute un espace pour séparer le nom et le prénom
+			if ( !str.isEmpty() ) str += " ";
+			str += name;
+		}
+		
+		return str;
+	}
+	
+	/**
+	 * Compare un contact à un autre en les convertissant en chaînes
+	 * puis en les comparant avec la méthode compareTo() de la classe
+	 * String.
+	 */
+	public int compareTo( Contact c )
+	{
+		return toString().compareTo( c.toString() );
 	}
 	
 }
